@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\deadlauncher.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\deadlauncher.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\deadlauncher.csproj",
+        "projectName": "deadlauncher",
+        "projectPath": "C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\deadlauncher.csproj",
+        "packagesPath": "C:\\Users\\destructive_crab\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\destructive_crab\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Octokit": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "Raylib-cs": {
+              "target": "Package",
+              "version": "[7.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
