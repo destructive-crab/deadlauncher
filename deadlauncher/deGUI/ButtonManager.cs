@@ -83,28 +83,57 @@ public class ButtonManager
     public void ProcessInteractions()
     {
         Vector2 mousePos = Raylib.GetMousePosition();
-        
-        if (Raylib.IsMouseButtonPressed(MouseButton.Right))
+
+        if (Raylib.IsMouseButtonDown(MouseButton.Left))
         {
-            foreach (Button button in buttons)
+            foreach (GUIElement element in deGUI.Elements)
             {
-                if (button.GUIArea.Fit(mousePos.X, mousePos.Y))
+                if (element is Button button)
                 {
-                    button.InvokeRightClick();
+                    if (button.GUIArea.Fit(mousePos.X, mousePos.Y))
+                    {
+                        button.OnPressed();
+                    }
+                    else
+                    {
+                        button.OnIdle();
+                    }
                 }
             }
         }
-        
-        if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+        else
         {
-            foreach (Button button in buttons)
+            foreach (GUIElement element in deGUI.Elements)
             {
-                if (button.GUIArea.Fit(mousePos.X, mousePos.Y))
+                if (element is Button button)
                 {
-                    button.InvokeLeftClick();
+                    button.OnIdle();
                 }
             }
+        }
 
+        if (Raylib.IsMouseButtonReleased(MouseButton.Left))
+        {
+            foreach (GUIElement element in deGUI.Elements)
+            {
+                if (element.Active && element is Button button && button.GUIArea.Fit(mousePos.X, mousePos.Y))
+                {
+                    button.InvokeRightClick();
+                    return;
+                }               
+            }
+        }
+        
+        if (Raylib.IsMouseButtonReleased(MouseButton.Right))
+        {
+            foreach (GUIElement element in deGUI.Elements)
+            {
+                if (element.Active && element is Button button && button.GUIArea.Fit(mousePos.X, mousePos.Y))
+                {
+                    button.InvokeLeftClick();
+                    return;
+                }               
+            }
         }
     }
 }

@@ -9,7 +9,13 @@ public class GUIImage : GUIElement
 
     public GUIElement Parent { get; set; }
     public bool Active { get; private set; }
-    
+
+    public GUIImage(AreaManager.RectGUIArea guiArea, Texture2D texture)
+    {
+        GUIArea = guiArea;
+        Texture = texture;
+    }
+
     public void Hide()
     {
         Active = false;

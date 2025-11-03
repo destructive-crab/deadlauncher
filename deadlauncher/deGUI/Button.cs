@@ -17,6 +17,9 @@ public class Button : GUIElement
     
     public Texture2D Texture;
     public Color Color = Color.White;
+    
+    public Color DefaultColor = new Color(255, 217, 186, 255);
+    public Color PressedColor = new Color(225, 160, 130, 255);
 
     //interactions
     private Action RightCallbacks;
@@ -52,6 +55,16 @@ public class Button : GUIElement
         if(left != null) LeftCallbacks += left;
     }
 
+    public void OnPressed()
+    {
+        Color = PressedColor;
+    }
+
+    public void OnIdle()
+    {
+        Color = DefaultColor;
+    }
+
     public void InvokeRightClick()
     {
         RightCallbacks?.Invoke();
@@ -63,7 +76,4 @@ public class Button : GUIElement
     }
 
     public GUIElement Parent { get; set; }
-    public bool Active { get; private set; }
-    public void Hide() => Active = false;
-    public void Show() => Active = true;
 }

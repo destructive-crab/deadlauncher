@@ -20,8 +20,8 @@ public enum Anchor
 
 public static class deGUI
 {
-    public const int ORIGINAL_WIDTH = 500;
-    public const int ORIGINAL_HEIGHT = 400;
+    public const int ORIGINAL_WIDTH = 300;
+    public const int ORIGINAL_HEIGHT = 600;
 
     public static int ScreenWidth { get; private set; } = ORIGINAL_WIDTH;
     public static int ScreenHeight { get; private set; } = ORIGINAL_HEIGHT;
@@ -29,7 +29,8 @@ public static class deGUI
     public static readonly AreaManager Areas = new();
     public static readonly ButtonManager ButtonManager = new();
 
-    private static List<GUIElement> elements = new();
+    public static GUIElement[] Elements => elements.ToArray();
+    private static readonly List<GUIElement> elements = new();
     
     public static float WCF;
     public static float HCF;
@@ -45,6 +46,15 @@ public static class deGUI
 
         return button;
     }
+
+    public static GUIImage PushImage(Texture2D texture, Anchor anchor, int xOffset, int yOffset, int width, int height)
+    {
+        GUIImage image = new GUIImage(new AreaManager.RectGUIArea(anchor, xOffset, yOffset, width, height, ""), texture);
+        
+        elements.Add(image);
+
+        return image;
+    }
     
     public static void Draw()
     {
@@ -59,16 +69,16 @@ public static class deGUI
         
         Areas.Process();
 
-        foreach (var element in elements)
+        ButtonManager.ProcessInteractions();
+        
+        foreach (GUIElement element in elements)
         {
             if(!element.Active) continue;
             
             DrawElement(element);
         }
         
-        ButtonManager.ProcessInteractions();
-        
-        Areas.DrawDebugLayout();
+        //Areas.DrawDebugLayout();
     }
 
     private static void DrawElement(GUIElement element)
@@ -78,8 +88,22 @@ public static class deGUI
             case Button button:
                 DrawButton(button);
                 break;
+            case GUIImage image:
+                DrawImage(image);
+                break;
+            case GUIText text:
+                break;
         }
     }
+
+    private static void DrawImage(GUIImage image)
+    {
+        Vector2 anchoredPosition = GUIUtil.AnchorPosition(image.GUIArea);
+        Vector2 scale = new Vector2(GUIUtil.AdaptX(image.GUIArea.Width), GUIUtil.AdaptY(image.GUIArea.Height));
+        
+        Raylib.DrawTextureEx(image.Texture, anchoredPosition, 0, scale.X, Color.White);
+    }
+
     private static void DrawButton(Button button)
     {
         Vector2 anchoredPosition = GUIUtil.AnchorPosition(button);
