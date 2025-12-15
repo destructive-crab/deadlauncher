@@ -6,7 +6,7 @@ public class Starter
 {
     public static async Task Main()
     {
-        Console.SetOut(TextWriter.Null);
+        //Console.SetOut(TextWriter.Null);
         DeadaysLauncherWindow window = new();
         
         await Start(window);
@@ -17,7 +17,7 @@ public class Starter
         await window.versionLogic.PullVersions();
         window.versionLogic.LoadLocalData();
         await window.Prepare();
-        
+
         window.Loop();
     }
 }
