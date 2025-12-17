@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using leditor.root;
@@ -54,8 +56,10 @@ public class UIHost
 
     private void ProcessUpdateActions()
     {
-        while (UpdateActionsQueue.TryDequeue(out var action)) 
-            action();
+        while (UpdateActionsQueue.TryDequeue(out var action))
+        {
+            action.Invoke();
+        }
     }
 
     public readonly Stack<Action> ClickHandlersStack = [];

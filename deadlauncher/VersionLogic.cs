@@ -41,20 +41,20 @@ public class VersionLogic
     {
         availableOnServerIDs.Clear();
         downloadLinkMap.Clear();
+
+        GithubClient client = new("destructive-crab", "deadlauncher");
         
-        GitHubClient client = new GitHubClient(new ProductHeaderValue("Deadays-Launcher"));
-        Task<IReadOnlyList<Release>> releaseTask = client.Repository.Release.GetAll("destructive-crab", "deadlauncher");
-        await releaseTask;
+        string[] allReleases = await client.GetReleaseTags();
 
-        IReadOnlyList<Release> allReleases = releaseTask.Result;
-
-        foreach (Release release in allReleases)
+        foreach (var tag in allReleases)
         {
-            string downloadURL 
-                = $"https://github.com/destructive-crab/deadlauncher/releases/download/{release.TagName}/{release.Assets[0].Name}";
+            if(tag== "launcher") continue;
+
+            string firstAsset = client.GetAssetNamesOfRelease(tag)[0];
+            string downloadURL = client.GetDownloadOfAssetURL(tag, firstAsset);
             
-            availableOnServerIDs.Add(release.TagName);
-            downloadLinkMap.Add(release.TagName, downloadURL);
+            availableOnServerIDs.Add(tag);
+            downloadLinkMap.Add(tag, downloadURL);
         }
     }
 

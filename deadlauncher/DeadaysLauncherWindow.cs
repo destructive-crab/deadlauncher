@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -43,7 +46,7 @@ public class DeadaysLauncherWindow
         deadaysLine.Build(new Sprite(labelTex), 600, 0, 10, (int)labelTex.Size.X, (el) => new Sprite(el));
         
         versionLine.Build(version, 600, 0, 50, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
-        versionLineShadow.Build(versionShadow, 600, 5, 55, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
+        versionLineShadow.Build(versionShadow, 600, 4, 53, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
         
         uiHost.SetRoot(GetMainMenu());
 
@@ -96,30 +99,45 @@ public class DeadaysLauncherWindow
     {
         versionLogic.CurrentVersionId = id;
 
-        var e = versionLine.BaseElementShared;
-        e.DisplayedString = id;
-        
-        versionLine.SetElementWidth((int)e.GetGlobalBounds().Width);
-        versionLine.Foreach((e) => e.DisplayedString = id);
-        
-        versionLineShadow.SetElementWidth((int)e.GetGlobalBounds().Width);
-        versionLineShadow.Foreach((e) => e.DisplayedString = id);
-        
+        SetLineLabel(id);
+
         BackButton();
     }
-    
+
+    private void SetLineLabel(string text)
+    {
+        text = $" {text} ";
+        var e = versionLine.BaseElementShared;
+        e.DisplayedString = text;
+        
+        versionLine.SetElementWidth((int)e.GetGlobalBounds().Width);
+        versionLine.Foreach((e) => e.DisplayedString = text);
+        
+        versionLineShadow.SetElementWidth((int)e.GetGlobalBounds().Width);
+        versionLineShadow.Foreach((e) => e.DisplayedString = text);
+    }
+
     private async void PlayButton()
     {
+        if (versionLogic.IsSelectedVersionInstalled)
+        {
 
+        }
+        else
+        {
+        }
     }
 
     private void VersionButton()
     {
         SwitchToVersionMenu();
     }
+    
     private void LaunchSelectedVersion()
     {
-        
+        Process process = new Process();
+        process.StartInfo.FileName = versionLogic.CurrentVersionExecutablePath;
+        process.Start();
     }
 
     private void SwitchToVersionMenu()
@@ -163,15 +181,72 @@ public class DeadaysLauncherWindow
 
     private AUIElement GetMainMenu()
     {
+        if (versionLogic.IsSelectedVersionInstalled)
+        {
+            AnchorBox anchor = new AnchorBox(uiHost);
+
+            UIButton playButton =
+                new UIButton(uiHost, " play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
+            UIButton versionButton = new UIButton(uiHost, " version! version!", new Vector2f(320, 50), VersionButton);
+
+            Anchor bottomAnchor =
+                new Anchor(new FloatRect(-160, 0, window.Size.X, 40), new FloatRect(0.5f, 0.5f, 0, 0));
+
+            anchor.AddChild(bottomAnchor,
+                new AxisBox(uiHost, UIAxis.Vertical,
+                    new AxisBox(uiHost, UIAxis.Horizontal, playButton, new UILabel(uiHost)),
+                    new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost))));
+            
+            return new StackBox(uiHost, [anchor]);
+        }
+        else
+        {
+            AnchorBox anchor = new AnchorBox(uiHost);
+
+            UIButton playButton = new UIButton(uiHost, " install! install!", new Vector2f(320, 50), () => InstallSelectedVersion());
+            UIButton versionButton = new UIButton(uiHost, " version! version!", new Vector2f(320, 50), VersionButton);
+
+            Anchor bottomAnchor =
+                new Anchor(new FloatRect(-160, 0, window.Size.X, 40), new FloatRect(0.5f, 0.5f, 0, 0));
+
+            anchor.AddChild(bottomAnchor,
+                new AxisBox(uiHost, UIAxis.Vertical,
+                    new AxisBox(uiHost, UIAxis.Horizontal, playButton, new UILabel(uiHost)),
+                    new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost))));
+            
+            return new StackBox(uiHost, [anchor]);
+        }
+    }
+
+    private AUIElement GetInstallingMenu(out UILabel progressLabel)
+    {
         AnchorBox anchor = new AnchorBox(uiHost);
+       
+        Anchor bottomAnchor =
+            new Anchor(new FloatRect(-160, 0, window.Size.X, 40), new FloatRect(0.5f, 0.5f, 0, 0));
+
+        progressLabel = new UILabel(uiHost);
         
-        UIButton playButton = new UIButton(uiHost, " play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
-        UIButton versionButton = new UIButton(uiHost, " version! version!", new Vector2f(320, 50), VersionButton);
-        
-        Anchor bottomAnchor = new Anchor(new FloatRect(-160, 0, window.Size.X, 40), new FloatRect(0.5f, 0.5f, 0, 0));
-        
-        anchor.AddChild(bottomAnchor, new AxisBox(uiHost, UIAxis.Vertical, new AxisBox(uiHost, UIAxis.Horizontal, playButton, new UILabel(uiHost)), new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost))));
+        anchor.AddChild(bottomAnchor,
+            new AxisBox(uiHost, UIAxis.Vertical, 
+                new UILabel(uiHost, "installing! installing!"),
+                progressLabel));
+                
         return new StackBox(uiHost, [anchor]);
+    }
+
+    private async void InstallSelectedVersion()
+    {
+        uiHost.SetRoot(GetInstallingMenu(out UILabel label));
+        await versionLogic.DownloadSelectedVersion((progress) =>
+        {
+            //make ui update queue
+            label.Text = " " + progress.ToString() + "%";
+            //SetLineLabel(progress.ToString() + "%");
+        });
+        
+        SetLineLabel(versionLogic.CurrentVersionId);
+        SwitchToMainMenu();
     }
 
     class RunningLine<TElement>
