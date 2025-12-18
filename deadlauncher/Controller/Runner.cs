@@ -13,10 +13,10 @@ public sealed class Runner
 
     public void RunSelectedVersion()
     {
-        if (l.Model.IsInstalled(l.Model.CurrentVersionID))
+        if (l.Model.IsInstalled(l.Model.SelectedVersionId))
         {
             Process process = new Process();
-            process.StartInfo.FileName = l.Model.ExecutablePath(l.Model.CurrentVersionID);
+            process.StartInfo.FileName = l.Model.ExecutablePath(l.Model.SelectedVersionId);
             process.Start();
         }
     }

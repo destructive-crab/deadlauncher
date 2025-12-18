@@ -72,7 +72,7 @@ public class Downloader
         if (!(l.Model.IsValid(id) && !l.Model.IsInstalled(id))) return;
         
         WebClient webClient = new();
-        string zipPath = Path.Combine(versionsFolder + l.Model.CurrentVersionID + ".zip");
+        string zipPath = Path.Combine(versionsFolder + l.Model.SelectedVersionId + ".zip");
 
         webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
         await webClient.DownloadFileTaskAsync(l.Model.DownloadLink(id), zipPath);
@@ -92,5 +92,17 @@ public class Downloader
             string res = temp.Substring(0, 3);
             trackProgress?.Invoke(res);
         }
+    }
+
+    public async Task DeleteVersion(string id)
+    {
+        string path = l.Model.ExecutableFolder(id);
+        string[] files = Directory.GetFiles(path);
+        foreach (string file in files)
+        {
+            File.Delete(file);
+        }
+        Directory.Delete(path);
+        l.Model.DeleteVersionFromDrive(id);
     }
 }

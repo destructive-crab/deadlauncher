@@ -22,6 +22,7 @@ public class LauncherWindow
     private RunningLine<Text> versionLine = new();
     private RunningLine<Text> versionLineShadow = new();
 
+    private Menu previousMenu;
     private Menu currentMenu;
     private string currentRunningLineText;
 
@@ -64,6 +65,7 @@ public class LauncherWindow
         RenderWindow.Resized += RenderWindowOnResized;
         Application.Launcher.Model.OnVersionSelected += ModelOnOnVersionSelected;
         
+        SetLineText(Application.Launcher.Model.SelectedVersionId);
         OpenHomeMenu();
     }
 
@@ -139,6 +141,7 @@ public class LauncherWindow
 
     public void OpenHomeMenu()
     {
+        previousMenu = currentMenu;
         currentMenu = new HomeMenu(host);
         host.SetRoot(currentMenu.GetRoot());
     }
@@ -146,15 +149,25 @@ public class LauncherWindow
     public void OpenInstallMenu(string id)
     {
         var menu = new InstallMenu(host);
-        SetRoot(menu.GetRoot());
+        SwitchTo(menu);
         Application.Launcher.Downloader.DownloadVersion(id, menu.ProgressCallback);
-        currentMenu = menu;
     }
 
     public void OpenVersionsMenu()
     {
-        currentMenu = new VersionMenu(host);
+        SwitchTo(new VersionMenu(host));
+    }
+
+    private void SwitchTo(Menu menu)
+    {
+        previousMenu = currentMenu;
+        currentMenu = menu;
         SetRoot(currentMenu.GetRoot());
+    }
+
+    public void BackToPrevious()
+    {
+        SwitchTo(previousMenu);
     }
 
     private void SetRoot(AUIElement menu)

@@ -22,13 +22,13 @@ public sealed class Launcher
 public sealed class LauncherModel
 {
     public string RunningLineText;
-    public string CurrentVersionExecutablePath => ExecutablePath(currentVersionID);
+    public string CurrentVersionExecutablePath => ExecutablePath(selectedVersionID);
     
-    private string currentVersionID;
-    public string CurrentVersionID
+    private string selectedVersionID;
+    public string SelectedVersionId
     {
-        get { return currentVersionID; }
-        set { if (IsValid(value)) { currentVersionID = value; } }
+        get { return selectedVersionID; }
+        set { if (IsValid(value)) { selectedVersionID = value; } }
     }
 
     public string[] Installed => installedIDs.ToArray();
@@ -52,6 +52,8 @@ public sealed class LauncherModel
 
         return path;
     }
+
+    public string ExecutableFolder(string id) => foldersWithExecutableMap[id];
 
     public string? DownloadLink(string id)
     {
@@ -86,15 +88,26 @@ public sealed class LauncherModel
         return true;
     }
 
+    public void DeleteVersionFromDrive(string id)
+    {
+        installedIDs.Remove(id);
+        foldersWithExecutableMap.Remove(id);
+    }
+
     public bool SetVersion(string id)
     {
-        if (IsValid(id) && currentVersionID != id)
+        if (IsValid(id) && selectedVersionID != id)
         {
-            currentVersionID = id;
+            selectedVersionID = id;
             OnVersionSelected?.Invoke(id);
             
             return true;
         }
         return false;
+    }
+
+    public bool IsSelected(string id)
+    {
+        return selectedVersionID == id;
     }
 }

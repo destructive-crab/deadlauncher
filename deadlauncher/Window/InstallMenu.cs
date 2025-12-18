@@ -71,7 +71,7 @@ public class InstallMenu : Menu
         textBackground.FillColor = UIStyle.ButtonTop;
         progressBarText.FillColor = UIStyle.RectDefault;
         await Task.Delay(1000);
-        Application.Launcher.Window.OpenHomeMenu();
+        Application.Launcher.Window.BackToPrevious();
     }
 
     public override void Update(RenderWindow window)

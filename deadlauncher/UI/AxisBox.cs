@@ -91,7 +91,7 @@ public class AxisBox :
         }
         else
         {
-            foreach (var child in _children)
+            foreach (var child in _children.ToArray())
             {
                 child.Rect = new FloatRect(
                     position.X, position.Y,

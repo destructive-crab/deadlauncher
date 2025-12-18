@@ -6,12 +6,10 @@ namespace deadlauncher;
 
 public sealed class HomeMenu : Menu
 {
-    private Downloader downloader;
     private UIHost uiHost;
 
     public HomeMenu(UIHost host)
     {
-        this.downloader = Application.Launcher.Downloader;
         uiHost = host;
     }
 
@@ -31,7 +29,7 @@ public sealed class HomeMenu : Menu
                 new AxisBox(uiHost, UIAxis.Horizontal, firstButtonPlace, new UILabel(uiHost)),
                 new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost))));
         
-        if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.CurrentVersionID))
+        if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionId))
         {
             firstButtonPlace.Child = new UIButton(uiHost, " play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
         }
@@ -43,22 +41,9 @@ public sealed class HomeMenu : Menu
         return new StackBox(uiHost, [anchor]);
     }
 
-    public override void Update(RenderWindow window)
-    {
-    }
+    public override void Update(RenderWindow window) { }
 
-    private void VersionButton()
-    {
-        Application.Launcher.Window.OpenVersionsMenu();
-    }
-
-    private void InstallSelectedVersion()
-    {
-        Application.Launcher.Window.OpenInstallMenu(Application.Launcher.Model.CurrentVersionID);
-    }
-
-    private void LaunchSelectedVersion()
-    {
-        Application.Launcher.Runner.RunSelectedVersion();
-    }
+    private void VersionButton() => Application.Launcher.Window.OpenVersionsMenu();
+    private void InstallSelectedVersion() => Application.Launcher.Window.OpenInstallMenu(Application.Launcher.Model.SelectedVersionId);
+    private void LaunchSelectedVersion() => Application.Launcher.Runner.RunSelectedVersion();
 }
