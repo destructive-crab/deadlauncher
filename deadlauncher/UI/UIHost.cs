@@ -56,9 +56,9 @@ public class UIHost
 
     private void ProcessUpdateActions()
     {
-        while (UpdateActionsQueue.TryDequeue(out var action))
+        while (UpdateActionsQueue.TryDequeue(out Action? action))
         {
-            action.Invoke();
+            action?.Invoke();
         }
     }
 

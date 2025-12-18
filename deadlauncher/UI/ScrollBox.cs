@@ -26,8 +26,8 @@ class Scroller
         Area = new ClickArea(new FloatRect(limits.Left, limits.Top, size.X, size.Y))
         {
             OnMove = OnMove,
-            OnRightMouseButtonClick = () => { Shape.FillColor = host.Style.ScrollerPressedColor; },
-            OnRightMouseButtonReleased=  () => { Shape.FillColor = host.Style.ScrollerColor; }
+            OnRightMouseButtonClick    = () => { Shape.FillColor = host.Style.ScrollerPressedColor; },
+            OnRightMouseButtonReleased = () => { Shape.FillColor = host.Style.ScrollerColor; },
         };
         Limits = limits;
         OnUpdate = onUpdate;

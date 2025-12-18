@@ -1,0 +1,23 @@
+using System.Diagnostics;
+
+namespace deadlauncher;
+
+public sealed class Runner
+{
+    private Launcher l;
+
+    public Runner(Launcher l)
+    {
+        this.l = l;
+    }
+
+    public void RunSelectedVersion()
+    {
+        if (l.Model.IsInstalled(l.Model.CurrentVersionID))
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = l.Model.ExecutablePath(l.Model.CurrentVersionID);
+            process.Start();
+        }
+    }
+}

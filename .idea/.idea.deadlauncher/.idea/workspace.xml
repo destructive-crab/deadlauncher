@@ -8,29 +8,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dee5305-e405-4a84-81db-d3006faea068" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/deadlauncher/GithubClient.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Application.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Controller/Runner.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Launcher.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Window/HomeMenu.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Window/InstallMenu.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Window/Menu.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Window/RunningLine.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deadlauncher/Window/VersionMenu.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.deadlauncher/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.deadlauncher/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/DeadaysLauncherWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/DeadaysLauncherWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Logger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Logger.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Rect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Rect.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Starter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Starter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/AUIBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/AUIBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/AUIElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/AUIElement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/AnchorBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/AnchorBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/AxisBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/AxisBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/ClickAreasController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/ClickAreasController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/DeadaysLauncherWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Window/LauncherWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/Logger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/Logger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/Starter.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/deadlauncher/UI/ScrollBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/ScrollBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/SingleBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/SingleBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/SplitBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/SplitBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/StackBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/StackBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UIButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UIButton.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UIHost.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UIHost.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UIImageButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UIImageButton.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UIOption.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UIOption.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UISelectionList.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UISelectionList.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/UIVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UIVar.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UTLS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UTLS.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/VersionLogic.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/VersionLogic.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/UTLS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/UTLS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/VersionLogic.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Controller/Downloader.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
