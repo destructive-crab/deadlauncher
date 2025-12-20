@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -46,8 +47,9 @@ public class LauncherWindow
         
         background = new[] { menuOutline, menuBackground };
         
-        Texture labelTex = new("C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\assets\\dd_label.png");
-        Font font = new("C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\assets\\Main.ttf");
+        //"C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\assets\\dd_label.png"
+        Texture labelTex = new(ResourcesHandler.Load("dd_label.png"));
+        Font font = new(ResourcesHandler.Load("Main.ttf"));
         
         Text version = new Text("v1.5 ", font, labelTex.Size.Y/4);
         version.FillColor = new Color(0xbbdde1FF);
@@ -86,9 +88,13 @@ public class LauncherWindow
 
     public void Loop()
     {
-        while (RenderWindow.IsOpen)
+        while (RenderWindow.IsOpen )
         {
             RenderWindow.DispatchEvents();
+            if(!RenderWindow.HasFocus())
+            {
+                continue;
+            }
             
             deadaysLine.MovePositions(0.05f);
 

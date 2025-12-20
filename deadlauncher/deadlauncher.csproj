@@ -11,6 +11,9 @@
       <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
       <PackageReference Include="Octokit" Version="14.0.0" />
       <PackageReference Include="SFML.Net" Version="2.6.1" />
+	  
+	  <EmbeddedResource Include="assets/dd_label.png" />
+	  <EmbeddedResource Include="assets/Main.ttf" />
     </ItemGroup>
 
 </Project>

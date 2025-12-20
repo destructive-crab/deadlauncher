@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace deadlauncher;
 
 public static class Application
@@ -12,6 +14,8 @@ public static class Application
 
     private static async Task Start(LauncherWindow window)
     {
+        
+        
         await Launcher.Downloader.PullVersions();
         
         Launcher.Downloader.LoadLocalData();

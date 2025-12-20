@@ -8,15 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dee5305-e405-4a84-81db-d3006faea068" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/deadlauncher/ResourcesHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.deadlauncher/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.deadlauncher/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Controller/Downloader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Controller/Downloader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Controller/Runner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Controller/Runner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Launcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Launcher.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/UI/AxisBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/UI/AxisBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Window/HomeMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Window/HomeMenu.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Window/InstallMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Window/InstallMenu.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/Application.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Application.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deadlauncher/Window/LauncherWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Window/LauncherWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deadlauncher/Window/VersionMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/Window/VersionMenu.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deadlauncher/deadlauncher.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/deadlauncher/deadlauncher.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,23 +38,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Project.deadlauncher.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Project.deadlauncher.executor": "Run",
+    "Publish to folder.Publish deadlauncher to folder.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
-  <component name="RunManager" selected=".NET Project.deadlauncher">
+}]]></component>
+  <component name="RunManager" selected="Publish to folder.Publish deadlauncher to folder">
     <configuration name="Publish deadlauncher to folder" type="DotNetFolderPublish" factoryName="Publish to folder">
-      <riderPublish configuration="Release" platform="Any CPU" runtime="Portable" target_folder="$PROJECT_DIR$/deadlauncher/bin/Release/net8.0/publish" target_framework="net8.0" uuid_high="-5158220503043191166" uuid_low="-5990254129379621006" />
+      <riderPublish configuration="Release" include_native_libs_for_self_extract="true" platform="Any CPU" produce_single_file="true" runtime="win-x86" self_contained="true" target_folder="$USER_HOME$/Desktop/dlboot/launcher" target_framework="net8.0" trim_unused_assemblies="true" uuid_high="-5158220503043191166" uuid_low="-5990254129379621006" />
       <method v="2" />
     </configuration>
     <configuration name="deadlauncher" type="DotNetProject" factoryName=".NET Project">
@@ -79,6 +76,10 @@
         <option name="Build" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue=".NET Project.deadlauncher" />
+      <item itemvalue="Publish to folder.Publish deadlauncher to folder" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="VcsManagerConfiguration">
