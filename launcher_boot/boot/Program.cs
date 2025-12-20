@@ -1,39 +1,51 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using Octokit;
 
 public class DeadLauncherBoot
 {
-    public const string GithubUsername = "destructive-crab";
-    public const string GithubRepositoryName = "deadlauncher";
-    public const string GithubLauncherTag = "launcher";
+    private const string GithubUsername = "destructive-crab";
+    private const string GithubRepositoryName = "deadlauncher";
+    private const string GithubLauncherTag = "launcher";
+    private const string AssetName = "deadlauncher.exe";
 
-    public static readonly string ConfigPath = Path.Combine("deadlauncher", "config.json");
-    public static readonly string LauncherPath = Path.Combine("deadlauncher", "deadlauncher.exe");
-    public static readonly string LauncherVersionPath = Path.Combine("deadlauncher", "data", "launcher_version");
+    public static readonly string LauncherFolderPath = Path.Combine("deadlauncher");
+    public static readonly string DataFolderPath = Path.Combine(LauncherFolderPath, "data");
+    
+    public static readonly string ConfigPath = Path.Combine(DataFolderPath, "config.json");
+    public static readonly string LauncherExecutablePath = Path.Combine(LauncherFolderPath, "deadlauncher.exe");
+    public static readonly string LauncherVersionPath = Path.Combine(DataFolderPath, "launcher_version");
 
-    public static string GetPath(string path)
+    public static string GetFullPath(string path)
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), path);
+        string applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(applicationDataPath, path);
     }
     
     public static async Task Main()
     {
         Booter booter = new Booter();
+        
+        await booter.ValidateFolders();
         await booter.StartLauncher();
     }
 
     class Booter
     {
+        public async Task ValidateFolders()
+        {
+            if (!Directory.Exists(GetFullPath(LauncherFolderPath))) { Directory.CreateDirectory(GetFullPath(LauncherFolderPath)); }
+            if (!Directory.Exists(GetFullPath(DataFolderPath)))     { Directory.CreateDirectory(GetFullPath(DataFolderPath)); }
+        }
+
         public async Task StartLauncher()
         {
-            string launcherPath = GetPath(LauncherPath);
+            string launcherPath = GetFullPath(LauncherExecutablePath);
             bool isLauncherInstalled = File.Exists(launcherPath);
             string versionID = null;
 
             if (isLauncherInstalled)
             {
-                if (!File.Exists(GetPath(LauncherVersionPath)))
+                if (!File.Exists(GetFullPath(LauncherVersionPath)))
                 {
                     File.Delete(launcherPath);
                     
@@ -41,62 +53,56 @@ public class DeadLauncherBoot
                 }
                 else
                 {
-                    versionID = await File.ReadAllTextAsync(GetPath(LauncherVersionPath));
+                    versionID = await File.ReadAllTextAsync(GetFullPath(LauncherVersionPath));
                 }
             }
             
             //update logic
-            GitHubClient client = new GitHubClient(new ProductHeaderValue("Deadays-Launcher"));
-            
-            Task<Release>? releaseTask = client.Repository.Release.Get(GithubUsername, GithubRepositoryName, GithubLauncherTag);
-            await releaseTask;
-            var release = releaseTask.Result;
+            WebClient webClient = new();
+            GitHubClient client = new GitHubClient(GithubUsername, GithubRepositoryName);
+            string id = webClient.DownloadString(new Uri(client.GetAssetDownloadURL(GithubLauncherTag, "version")));
 
-            if (release == null)
-            {
-                //throw message 
-                return;
-            }
-            
             if (isLauncherInstalled)
             {
-                if (release.Name == versionID)
+                if (id == versionID)
                 {
                     BootInstalledLauncherAndShutdown();
                     return;
                 }
                 else
                 {
-                    await ReplaceLauncherWith(release);
+                    await ReplaceLauncherWith(id);
                 }
             }
             else
             {
-                await ReplaceLauncherWith(release);
+                await ReplaceLauncherWith(id);
             }
             
             BootInstalledLauncherAndShutdown();
         }
 
-        private async Task ReplaceLauncherWith(Release release)
+        private async Task ReplaceLauncherWith(string versionID)
         {
-            if (File.Exists(GetPath(LauncherPath)))
+            GitHubClient client = new(GithubUsername, GithubRepositoryName);
+            
+            if (File.Exists(GetFullPath(LauncherExecutablePath)))
             {
-                File.Delete(GetPath(LauncherPath));
+                File.Delete(GetFullPath(LauncherExecutablePath));
             }
 
-            string downloadLink = $"https://github.com/destructive-crab/deadlauncher/releases/download/{release.TagName}/{release.Assets[0].Name}";
+            string downloadLink = client.GetAssetDownloadURL(GithubLauncherTag, AssetName);
 
             WebClient webClient = new WebClient();
-            await webClient.DownloadFileTaskAsync(downloadLink, GetPath(LauncherPath));
-            File.Create(GetPath(LauncherVersionPath)).Close();
-            await File.WriteAllTextAsync(GetPath(LauncherVersionPath), release.Name);
+            await webClient.DownloadFileTaskAsync(downloadLink, GetFullPath(LauncherExecutablePath));
+            File.Create(GetFullPath(LauncherVersionPath)).Close();
+            await File.WriteAllTextAsync(GetFullPath(LauncherVersionPath), versionID);
         }
 
         private void BootInstalledLauncherAndShutdown()
         {
             Process process = new Process();
-            process.StartInfo.FileName = GetPath(LauncherPath);
+            process.StartInfo.FileName = GetFullPath(LauncherExecutablePath);
             process.Start();
             Process.GetCurrentProcess().Close();
         }
