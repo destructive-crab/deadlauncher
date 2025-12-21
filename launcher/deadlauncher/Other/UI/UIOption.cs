@@ -31,6 +31,8 @@ public sealed class UIOption : UIButton
         }
     }
 
+    public bool IsLocked;
+    
     public UIOption(UIHost host, string text, Action? action = null, bool startState = false) 
         : base(host, text, action)
     {
@@ -47,6 +49,8 @@ public sealed class UIOption : UIButton
 
     protected override void OnReleased()
     {
+        if(IsLocked) return;
+        
         base.OnReleased();
         IsSelected = !IsSelected;
     }
