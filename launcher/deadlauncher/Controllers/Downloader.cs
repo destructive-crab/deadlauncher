@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using System.Net;
 
 namespace deadlauncher;
@@ -40,9 +39,9 @@ public class Downloader
         dataFolder = Path.Combine(launcherFolder, "data");
         versionsFolder = Path.Combine(launcherFolder, "versions");
 
-        if (!Path.Exists(launcherFolder)) Directory.CreateDirectory(launcherFolder);
-        if (!Path.Exists(dataFolder))     Directory.CreateDirectory(dataFolder);
-        if (!Path.Exists(versionsFolder)) Directory.CreateDirectory(versionsFolder);
+        Application.Launcher.FileManager.ValidateFolder(launcherFolder);
+        Application.Launcher.FileManager.ValidateFolder(dataFolder);
+        Application.Launcher.FileManager.ValidateFolder(versionsFolder);
 
         string[] subdirs = Directory.GetDirectories(versionsFolder);
         
@@ -54,16 +53,17 @@ public class Downloader
         }
 
         string selectedVersionFile = Path.Combine(dataFolder, "selected_version");
+
+        string version = Application.Launcher.FileManager.ReadFile(selectedVersionFile);
         
-        if (Path.Exists(selectedVersionFile))
+        if (version != "")
         {
-            l.Model.SetVersion(File.ReadAllText(selectedVersionFile));
+            l.Model.SetVersion(version);
         }
         else
         {
             l.Model.SetVersion(l.Model.Available[0]);
-            File.Create(selectedVersionFile).Close();
-            File.WriteAllText(selectedVersionFile, l.Model.Available[0]);
+            Application.Launcher.FileManager.WriteFile(selectedVersionFile, l.Model.Available[0]);
         }
     }
 
@@ -80,13 +80,13 @@ public class Downloader
 
         string path = Path.Combine(versionsFolder, id);
         
-        ZipFile.ExtractToDirectory(zipPath, path);
-        File.Delete(zipPath);
+        Application.Launcher.FileManager.ExtractZipTo(zipPath, path);
+        Application.Launcher.FileManager.Delete(zipPath);
 
+        Application.Launcher.FileManager.ValidateFolder(path);
+        
         l.Model.RegisterVersionFolder(id, path);
-        
-        Directory.CreateDirectory(path);
-        
+
         void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             float percent = (float)e.BytesReceived / e.TotalBytesToReceive * 100;
@@ -99,12 +99,7 @@ public class Downloader
     public async Task DeleteVersion(string id)
     {
         string path = l.Model.ExecutableFolder(id);
-        string[] files = Directory.GetFiles(path);
-        foreach (string file in files)
-        {
-            File.Delete(file);
-        }
-        Directory.Delete(path);
+        Application.Launcher.FileManager.Delete(path);
         l.Model.DeleteVersionFromDrive(id);
     }
 }
