@@ -90,6 +90,11 @@ public class LauncherWindow
         SwitchTo(new VersionMenu(host));
     }
 
+    public void OpenCreditsMenu()
+    {
+        SwitchTo(new CreditsMenu(host));
+    }
+
     private void SwitchTo(Menu menu)
     {
         previousMenu = currentMenu;
@@ -125,7 +130,7 @@ public class LauncherWindow
         private RunningLine<Text> versionLineShadow = new();
         
         //consts
-        private const string FontAssetName     = "Main.ttf";
+        private const string FontAssetName     = "Line.ttf";
         private const string LabelAssetName    = "dd_label.png";
          
         private const float  ddLineXDelta      = 0.07f;

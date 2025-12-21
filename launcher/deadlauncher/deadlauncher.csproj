@@ -5,6 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+		<PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,7 +13,8 @@
       <PackageReference Include="SFML.Net" Version="2.6.1" />
 	  
 	  <EmbeddedResource Include="Assets\dd_label.png" />
-	  <EmbeddedResource Include="Assets\Main.ttf" />
+	  <EmbeddedResource Include="Assets\UI.ttf" />
+	  <EmbeddedResource Include="Assets\Line.ttf" />
     </ItemGroup>
 
 </Project>

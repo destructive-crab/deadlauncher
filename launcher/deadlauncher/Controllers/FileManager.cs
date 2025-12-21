@@ -22,7 +22,7 @@ public sealed class WindowsFileManager : FileManager
 
     public override void ValidateFolder(string path)
     {
-        if (Directory.Exists(path))
+        if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
         }

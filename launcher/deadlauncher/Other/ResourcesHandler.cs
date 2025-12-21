@@ -4,7 +4,7 @@ namespace deadlauncher;
 
 public static class ResourcesHandler
 {
-    private const string assetsFolder = "deadlauncher.assets";
+    private const string assetsFolder = "deadlauncher.Assets";
 
     public static Stream Load(string name)
     {

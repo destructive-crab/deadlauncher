@@ -29,7 +29,7 @@ public class InstallMenu : Menu
         progressBar.Size     = new Vector2f(1, 40);
         progressBar.FillColor = host.Style.NormalButton.TopColor;
 
-        Font font = new(ResourcesHandler.Load("Main.ttf"));
+        Font font = new(ResourcesHandler.Load("Line.ttf"));
         
         progressBarText = new Text();
         progressBarText.Font = font;
