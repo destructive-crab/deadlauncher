@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -12,79 +10,39 @@ public class LauncherWindow
     public RenderWindow RenderWindow { get; private set; }
     private UIHost host;
 
-    private List<Sprite> label = new List<Sprite>();
-    private List<Text> versions = new();
-    private List<Text> versionsBack = new();
-
-    private Drawable[] background;
-    
-    private RunningLine<Sprite> deadaysLine = new();
-    
-    private RunningLine<Text> versionLine = new();
-    private RunningLine<Text> versionLineShadow = new();
-
     private Menu previousMenu;
     private Menu currentMenu;
-    private string currentRunningLineText;
 
+    private WindowBackgroundGraphics backgroundGraphics;
+
+    //CONSTS
+    private const string WindowLabel       = "Deadays Launcher";
+    private const int    WindowWidth       = 600;
+    private const int    WindowHeight      = 500;
+    
     public async Task Prepare()
     {
-        RenderWindow = new RenderWindow(new VideoMode(600, 500), "Deadays Launcher", Styles.Titlebar | Styles.Close);
-        
-        RenderWindow.Closed += RenderWindowOnClosed;
-
-        RectangleShape menuOutline = new RectangleShape();
-        menuOutline.Size     = new Vector2f(RenderWindow.Size.X - 80, RenderWindow.Size.Y - 180);
-        menuOutline.Position = new Vector2f(40, 120);
-
-        menuOutline.FillColor = new UIStyle().ScrollerColor;
-        
-        RectangleShape menuBackground = new RectangleShape();
-        menuBackground.Size     = new Vector2f(RenderWindow.Size.X - 88, RenderWindow.Size.Y - 188);
-        menuBackground.Position = new Vector2f(44, 124);
-
-        menuBackground.FillColor = UIStyle.RectDefault;
-        
-        background = new[] { menuOutline, menuBackground };
-        
-        //"C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\assets\\dd_label.png"
-        Texture labelTex = new(ResourcesHandler.Load("dd_label.png"));
-        Font font = new(ResourcesHandler.Load("Main.ttf"));
-        
-        Text version = new Text("v1.5 ", font, labelTex.Size.Y/4);
-        version.FillColor = new Color(0xbbdde1FF);
-        
-        Text versionShadow = new Text("v1.5 ", font, labelTex.Size.Y/4);
-        versionShadow.FillColor = new Color(0xdc82bbFF); 
+        RenderWindow = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), WindowLabel, Styles.Titlebar | Styles.Close);
         
         host = new UIHost(new UIStyle(), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y));
 
-        deadaysLine.Build(new Sprite(labelTex), 600, 0, 10, (int)labelTex.Size.X, (el) => new Sprite(el));
+        backgroundGraphics = new WindowBackgroundGraphics(WindowWidth, WindowHeight);
         
-        versionLine.Build(version, 600, 0, 50, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
-        versionLineShadow.Build(versionShadow, 600, 4, 53, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
-        
+        RenderWindow.Closed  += RenderWindowOnClosed;
         RenderWindow.Resized += RenderWindowOnResized;
-        Application.Launcher.Model.OnVersionSelected += ModelOnOnVersionSelected;
         
-        SetLineText(Application.Launcher.Model.SelectedVersionId);
+        Application.Launcher.Model.OnVersionSelected += OnVersionSelected;
+        
         OpenHomeMenu();
     }
 
-    private void ModelOnOnVersionSelected(string obj)
+    private void OnVersionSelected(string obj)
     {
-        SetLineText(obj);
+        Application.Launcher.Model.RunningLineText = obj;
     }
 
-    private void RenderWindowOnResized(object? sender, SizeEventArgs e)
-    {
-        host.SetSize(new(e.Width, e.Height));
-    }
-
-    private void RenderWindowOnClosed(object? sender, EventArgs e)
-    {
-        Shutdown();
-    }
+    private void RenderWindowOnResized(object? sender, SizeEventArgs e) => host.SetSize(new Vector2f(e.Width, e.Height));
+    private void RenderWindowOnClosed(object? sender, EventArgs e) => Shutdown();
 
     public void Loop()
     {
@@ -96,30 +54,11 @@ public class LauncherWindow
                 continue;
             }
             
-            deadaysLine.MovePositions(0.05f);
-
-            if (Application.Launcher.Model.RunningLineText != currentRunningLineText)
-            {
-                currentRunningLineText = Application.Launcher.Model.RunningLineText;
-                SetLineText(currentRunningLineText);
-            }
-            
-            versionLine.MovePositions(0.03f);
-            versionLineShadow.MovePositions(0.03f);
-            
             host.Update(RenderWindow);
             
             RenderWindow.Clear(new Color(0x00363cFF));
             {
-                deadaysLine.Draw(RenderWindow);
-                versionLine.Draw(RenderWindow);
-                versionLineShadow.Draw(RenderWindow);
-                
-                foreach (Drawable drawable in background)
-                {
-                    RenderWindow.Draw(drawable);
-                }
-    
+                backgroundGraphics.Draw(RenderWindow);
                 currentMenu?.Update(RenderWindow);
                 host.Draw(RenderWindow);
             }            
@@ -132,19 +71,6 @@ public class LauncherWindow
         RenderWindow.Close();
     }
 
-    private void SetLineText(string text)
-    {
-        text = $" {text} ";
-        var e = versionLine.BaseElementShared;
-        e.DisplayedString = text;
-        
-        versionLine.SetElementWidth((int)e.GetGlobalBounds().Width);
-        versionLine.Foreach((e) => e.DisplayedString = text);
-        
-        versionLineShadow.SetElementWidth((int)e.GetGlobalBounds().Width);
-        versionLineShadow.Foreach((e) => e.DisplayedString = text);
-    }
-
     public void OpenHomeMenu()
     {
         previousMenu = currentMenu;
@@ -154,7 +80,7 @@ public class LauncherWindow
 
     public void OpenInstallMenu(string id)
     {
-        var menu = new InstallMenu(host);
+        InstallMenu menu = new InstallMenu(host);
         SwitchTo(menu);
         Application.Launcher.Downloader.DownloadVersion(id, menu.ProgressCallback);
     }
@@ -186,5 +112,99 @@ public class LauncherWindow
         anchorBox.AddChild(anchor, menu);
         
         host.SetRoot(anchorBox);
+    }
+
+    class WindowBackgroundGraphics
+    {
+        private string currentRunningLineText;
+        private Drawable[] background;
+        
+        private RunningLine<Sprite> deadaysLine = new();
+        
+        private RunningLine<Text> versionLine = new();
+        private RunningLine<Text> versionLineShadow = new();
+        
+        //consts
+        private const string FontAssetName     = "Main.ttf";
+        private const string LabelAssetName    = "dd_label.png";
+         
+        private const float  ddLineXDelta      = 0.07f;
+        private const float  versionLineXDelta = 0.03f;
+        private const float  ddLogoScale       = 1.65f;
+        private const int    versionLineY      = 70;
+        
+        public WindowBackgroundGraphics(int windowWidth, int windowHeight)
+        {
+            //background
+            RectangleShape menuOutline = new RectangleShape();
+            menuOutline.Size     = new Vector2f(windowWidth - 80, windowHeight - 180);
+            menuOutline.Position = new Vector2f(40, 120);
+    
+            menuOutline.FillColor = new UIStyle().ScrollerColor;
+            
+            RectangleShape menuBackground = new RectangleShape();
+            menuBackground.Size     = new Vector2f(windowWidth - 88, windowHeight - 188);
+            menuBackground.Position = new Vector2f(44, 124);
+    
+            menuBackground.FillColor = UIStyle.RectDefault;
+            
+            background = new Drawable[] { menuOutline, menuBackground };
+           
+            //deadays line
+            Texture labelTex = new(ResourcesHandler.Load(LabelAssetName));
+            
+            Sprite sprite = new Sprite(labelTex);
+            sprite.Scale = new Vector2f(1.65f, 1.65f);
+            deadaysLine.Build(sprite, 600, 0, 10, (int)sprite.GetGlobalBounds().Size.X, (el) => new Sprite(el));
+            
+            //version line
+            Font    font     = new(ResourcesHandler.Load(FontAssetName));
+         
+            Text version       = new Text("v1.5 ", font, labelTex.Size.Y/4);
+            Text versionShadow = new Text(version);
+            
+            version      .FillColor = new Color(0xbbdde1FF);
+            versionShadow.FillColor = new Color(0xdc82bbFF); 
+     
+            versionLine.Build(version, 600, 0, 70, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
+            versionLineShadow.Build(versionShadow, 600, 4, 73, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
+        }
+    
+        public void Draw(RenderTarget target)
+        {
+            deadaysLine.MovePositions(ddLineXDelta);
+
+            if (Application.Launcher.Model.RunningLineText != currentRunningLineText)
+            {
+                SetLineText(Application.Launcher.Model.RunningLineText);
+            }
+            
+            versionLine      .MovePositions(versionLineXDelta);
+            versionLineShadow.MovePositions(versionLineXDelta);
+            
+            foreach (Drawable drawable in background)
+            {
+                target.Draw(drawable);
+            }
+            
+            deadaysLine.Draw(target);
+            versionLine.Draw(target);
+            versionLineShadow.Draw(target);
+        }
+
+        public void SetLineText(string text)
+        {
+            text = $" {text} ";
+            Text e = versionLine.BaseElementShared;
+            e.DisplayedString = text;
+            
+            versionLine.SetElementWidth((int)e.GetGlobalBounds().Width);
+            versionLine.Foreach((e) => e.DisplayedString = text);
+            
+            versionLineShadow.SetElementWidth((int)e.GetGlobalBounds().Width);
+            versionLineShadow.Foreach((e) => e.DisplayedString = text);
+            
+            currentRunningLineText = text;
+        }
     }
 }

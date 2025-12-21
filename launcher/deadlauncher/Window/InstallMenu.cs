@@ -29,7 +29,7 @@ public class InstallMenu : Menu
         progressBar.Size     = new Vector2f(1, 40);
         progressBar.FillColor = host.Style.NormalButton.TopColor;
 
-        Font font = new("C:\\Users\\destructive_crab\\dev\\buisnes\\OKNO\\deadlauncher\\deadlauncher\\assets\\Main.ttf");
+        Font font = new(ResourcesHandler.Load("Main.ttf"));
         
         progressBarText = new Text();
         progressBarText.Font = font;
@@ -40,8 +40,8 @@ public class InstallMenu : Menu
 
         textBackground = new RectangleShape();
         textBackground.FillColor = UIStyle.RectDefault;
-        textBackground.Position = new(progressBarText.Position.X-4, 242);
-        textBackground.Size = new(progressBarText.GetGlobalBounds().Size.X+4, 36);
+        textBackground.Position  = new Vector2f(progressBarText.Position.X-4, 242);
+        textBackground.Size      = new Vector2f(progressBarText.GetGlobalBounds().Size.X+4, 36);
         
         return new StackBox(host, [new UILabel(host, "installing!!!!   installing!!!!")]);
     }
@@ -59,8 +59,9 @@ public class InstallMenu : Menu
             progress = (int)floatValue;
         }
 
-        if (progress == 100)
+        if (progress == 101)
         {
+            progress = 100;
             Switch();
         }
     }
@@ -70,6 +71,7 @@ public class InstallMenu : Menu
         progressBar.FillColor = UIStyle.ButtonBottom;
         textBackground.FillColor = UIStyle.ButtonTop;
         progressBarText.FillColor = UIStyle.RectDefault;
+        
         await Task.Delay(1000);
         Application.Launcher.Window.BackToPrevious();
     }
@@ -83,6 +85,7 @@ public class InstallMenu : Menu
         if (text.Length == 2) text = $" {text}";
         
         progressBarText.DisplayedString = text;
+        Application.Launcher.Model.RunningLineText = text+" %";
         
         window.Draw(progressBar);
         window.Draw(textBackground);

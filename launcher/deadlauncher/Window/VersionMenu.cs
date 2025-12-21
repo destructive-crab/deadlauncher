@@ -18,7 +18,7 @@ public class VersionMenu : Menu
     {
         Application.Launcher.Window.OpenInstallMenu(id);
     }
-    private void OpenFolder(string id) { }
+    private void OpenFolder(string id) { Application.Launcher.FileManager.OpenFolderInExplorer(Application.Launcher.Model.ExecutableFolder(id)); }
     private void VersionSelectButton(string id)
     {
         Application.Launcher.Model.SetVersion(id);
@@ -37,6 +37,7 @@ public class VersionMenu : Menu
     public override AUIElement GetRoot()
     {
         actionButtonPlaces.Clear();
+        
         RenderWindow window = Application.Launcher.Window.RenderWindow;
         UISelectionList versionList = new(host);
         AxisBox actionButtonsList = new(host, UIAxis.Vertical);
@@ -54,6 +55,7 @@ public class VersionMenu : Menu
         
         Anchor anchorBack = new(new FloatRect(0, 40, 500, -45), new FloatRect(0,1,0,0));
         
+        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
         return new StackBox(host, 
             [new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, versionList, actionButtonsList)),
              new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "         \t\u2190", new Vector2f(10, 30), BackButton))]);

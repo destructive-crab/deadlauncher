@@ -29,7 +29,7 @@ public sealed class HomeMenu : Menu
                 new AxisBox(uiHost, UIAxis.Horizontal, firstButtonPlace, new UILabel(uiHost)),
                 new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost))));
         
-        if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionId))
+        if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
         {
             firstButtonPlace.Child = new UIButton(uiHost, " play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
         }
@@ -38,12 +38,13 @@ public sealed class HomeMenu : Menu
             firstButtonPlace.Child = new UIButton(uiHost, " install! install!", new Vector2f(320, 50), InstallSelectedVersion);
         }
         
+        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
         return new StackBox(uiHost, [anchor]);
     }
 
     public override void Update(RenderWindow window) { }
 
     private void VersionButton() => Application.Launcher.Window.OpenVersionsMenu();
-    private void InstallSelectedVersion() => Application.Launcher.Window.OpenInstallMenu(Application.Launcher.Model.SelectedVersionId);
+    private void InstallSelectedVersion() => Application.Launcher.Window.OpenInstallMenu(Application.Launcher.Model.SelectedVersionID);
     private void LaunchSelectedVersion() => Application.Launcher.Runner.RunSelectedVersion();
 }

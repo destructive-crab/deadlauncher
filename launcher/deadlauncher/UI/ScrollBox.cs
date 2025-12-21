@@ -86,8 +86,8 @@ public class ScrollBox : AUIBox
     private Vector2f _difference;
     private Vector2f _scroll;
 
-    private Scroller _scrollerY;
-    private Scroller _scrollerX;
+    private readonly Scroller _scrollerY;
+    private readonly Scroller _scrollerX;
 
     private FloatRect _clickView;
 

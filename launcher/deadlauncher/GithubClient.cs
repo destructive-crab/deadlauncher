@@ -77,7 +77,6 @@ public class GithubClient
             
             while (pageContent.Contains(key))
             {
-                Console.WriteLine("HAS");
                 int startIndex = pageContent.IndexOf(key);
                 
                 int endIndex = -1;

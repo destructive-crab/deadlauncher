@@ -9,6 +9,7 @@ public sealed class Launcher
     //C
     public readonly Downloader     Downloader;
     public readonly Runner         Runner;
+    public readonly FileManager    FileManager = new WindowsFileManager();
 
     public Launcher()
     {
@@ -25,7 +26,7 @@ public sealed class LauncherModel
     public string CurrentVersionExecutablePath => ExecutablePath(selectedVersionID);
     
     private string selectedVersionID;
-    public string SelectedVersionId
+    public string SelectedVersionID
     {
         get { return selectedVersionID; }
         set { if (IsValid(value)) { selectedVersionID = value; } }
@@ -79,7 +80,7 @@ public sealed class LauncherModel
     }
     public bool RegisterVersionFolder(string id, string executablePath)
     {
-        if (installedIDs.Contains(id)) return false;
+        if (installedIDs.Contains(id))          return false;
         if (!availableOnServerIDs.Contains(id)) return false;
         
         installedIDs.Add(id);

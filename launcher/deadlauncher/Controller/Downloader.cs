@@ -72,18 +72,20 @@ public class Downloader
         if (!(l.Model.IsValid(id) && !l.Model.IsInstalled(id))) return;
         
         WebClient webClient = new();
-        string zipPath = Path.Combine(versionsFolder + l.Model.SelectedVersionId + ".zip");
+        string zipPath = Path.Combine(versionsFolder + l.Model.SelectedVersionID + ".zip");
 
         webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
         await webClient.DownloadFileTaskAsync(l.Model.DownloadLink(id), zipPath);
+        trackProgress?.Invoke("101");
 
         string path = Path.Combine(versionsFolder, id);
-        Directory.CreateDirectory(path);
         
         ZipFile.ExtractToDirectory(zipPath, path);
         File.Delete(zipPath);
 
         l.Model.RegisterVersionFolder(id, path);
+        
+        Directory.CreateDirectory(path);
         
         void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
