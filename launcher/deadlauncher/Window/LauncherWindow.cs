@@ -124,10 +124,10 @@ public class LauncherWindow
         private string currentRunningLineText;
         private Drawable[] background;
         
-        private RunningLine<Sprite> deadaysLine = new();
+        private readonly RunningLine<Sprite> deadaysLine = new();
         
-        private RunningLine<Text> versionLine = new();
-        private RunningLine<Text> versionLineShadow = new();
+        private readonly RunningLine<Text> versionLine = new();
+        private readonly RunningLine<Text> versionLineShadow = new();
         
         //consts
         private const string FontAssetName     = "Line.ttf";
@@ -172,7 +172,7 @@ public class LauncherWindow
             versionShadow.FillColor = new Color(0xdc82bbFF); 
      
             versionLine.Build(version, 600, 0, 70, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
-            versionLineShadow.Build(versionShadow, 600, 4, 73, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
+            versionLineShadow.Build(versionShadow, 600, 2, 73, (int)version.GetGlobalBounds().Size.X, (el) => new(el));
         }
     
         public void Draw(RenderTarget target)

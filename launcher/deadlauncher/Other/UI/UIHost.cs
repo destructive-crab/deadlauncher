@@ -39,7 +39,7 @@ public class UIHost
         
         if (root != null) return true;
         
-        Logger.Warn("UI Root in null!", filePath, lineNumber);
+        //Logger.Warn("UI Root in null!", filePath, lineNumber);
         return false;
     }
 
