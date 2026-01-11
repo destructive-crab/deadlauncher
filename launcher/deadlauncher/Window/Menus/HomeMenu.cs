@@ -20,8 +20,8 @@ public sealed class HomeMenu : Menu
         
         AnchorBox anchor = new AnchorBox(uiHost);
             
-        UIButton versionButton = new UIButton(uiHost, " version! version!", new Vector2f(320, 50), VersionButton);
-        UIButton creditsButton = new UIButton(uiHost, " credits! credits!", new Vector2f(320, 50), CreditsButton);    
+        UIButton versionButton = new UIButton(uiHost, "version! version!", new Vector2f(320, 50), VersionButton);
+        UIButton creditsButton = new UIButton(uiHost, "credits! credits!", new Vector2f(320, 50), CreditsButton);    
         
         Anchor bottomAnchor = new Anchor(new FloatRect(-160, 0, window.Size.X, 0), new FloatRect(0.5f, 0.4f, 0, 0));
             
@@ -33,11 +33,11 @@ public sealed class HomeMenu : Menu
         
         if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
         {
-            firstButtonPlace.Child = new UIButton(uiHost, " play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
+            firstButtonPlace.Child = new UIButton(uiHost, "play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
         }
         else
         {
-            firstButtonPlace.Child = new UIButton(uiHost, " install! install!", new Vector2f(320, 50), InstallSelectedVersion);
+            firstButtonPlace.Child = new UIButton(uiHost, "install! install!", new Vector2f(320, 50), InstallSelectedVersion);
         }
         
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;

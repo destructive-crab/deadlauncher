@@ -16,9 +16,9 @@ public class LauncherWindow
     private WindowBackgroundGraphics backgroundGraphics;
 
     //CONSTS
-    private const string WindowLabel       = "Deadays Launcher";
-    private const int    WindowWidth       = 600;
-    private const int    WindowHeight      = 500;
+    public const string WindowLabel       = "Deadays Launcher";
+    public const int    WindowWidth       = 800;
+    public const int    WindowHeight      = 500;
     
     public async Task Prepare()
     {

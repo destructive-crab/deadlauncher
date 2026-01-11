@@ -3,6 +3,8 @@ namespace deadlauncher;
 public sealed class LauncherModel
 {
     public const string NONE_SELECTED = "NONE";
+    public const string MODE_POSTFIX  = "mode";
+    
     public string RunningLineText = "";
     public string CurrentVersionExecutablePath => ExecutablePath(selectedVersionID);
     
@@ -128,9 +130,14 @@ public sealed class LauncherModel
 
             for (var i = 0; i < aDigits.Length; i++)
             {
-                int aDigit = Int32.Parse(aDigits[i]);
-                int bDigit = Int32.Parse(bDigits[i]);
-
+                if (!Int32.TryParse(aDigits[i], out int aDigit))
+                {
+                    return 0;
+                }
+                if (!Int32.TryParse(bDigits[i], out int bDigit))
+                {
+                    return 0;
+                }
                 
                 if (aDigit > bDigit) return -1;
                 if (aDigit < bDigit) return 1;

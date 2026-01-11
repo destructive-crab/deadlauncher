@@ -97,7 +97,7 @@ public class UIButton : AUIElement
         shapeOutline.FillColor = style.OutlineColor;
         
         _styleTextOffset       = Host.Style.ButtonSpace / 2;
-        textObj.Position       = shapeTop.Position + _styleTextOffset;
+        textObj.Position       = shapeTop.Position + new Vector2f(shapeTop.Size.X / 2f - textObj.GetGlobalBounds().Size.X / 2f, 0) + style.ContentOffset;
         textObj.FillColor      = style.TextColor;
 
         appliedStyle = style;

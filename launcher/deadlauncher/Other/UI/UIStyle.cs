@@ -46,7 +46,7 @@ public class UIStyle()
     
     public readonly ButtonStateStyle NormalButton = new()
     {
-        ContentOffset = new Vector2f(4, 4),
+        ContentOffset = new Vector2f(0, 4),
         
         TextColor     = RectDefault,
         
@@ -60,7 +60,7 @@ public class UIStyle()
 
     public readonly ButtonStateStyle HoveredButton = new()
     {
-        ContentOffset = new Vector2f(4, 4),
+        ContentOffset = new Vector2f(0, 4),
         
         TextColor     = RectDefault,
         
@@ -76,7 +76,7 @@ public class UIStyle()
 
     public readonly ButtonStateStyle PressedButton = new()
     {
-        ContentOffset = new Vector2f(4, 4),
+        ContentOffset = new Vector2f(0, 4),
         
         TextColor     = RectDefault,
         
