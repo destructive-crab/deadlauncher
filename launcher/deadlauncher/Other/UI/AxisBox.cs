@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
@@ -9,8 +8,7 @@ public enum UIAxis
     Vertical, Horizontal
 }
 
-public class AxisBox : 
-    AUIBox
+public class AxisBox : AUIBox
 {
     private static Vector2f CalculateSize(UIStyle style, UIAxis axis, IEnumerable<AUIElement> children)
     {
@@ -23,6 +21,7 @@ public class AxisBox :
                 size.Y = float.Max(size.Y, child.MinimalSize.Y);
                 size.X += child.MinimalSize.X + style.AxisBoxSpace;
             }
+            
             size.X -= style.AxisBoxSpace;
         }
         else
@@ -38,14 +37,14 @@ public class AxisBox :
         return size;
     }
 
-    protected override void UpdateMinimalSize()
-        => MinimalSize = CalculateSize(Host.Style, _axis, _children);
-
     private readonly List<AUIElement> _children;
     private readonly UIAxis _axis;
+    private readonly bool FitRect;
 
-    public AxisBox(UIHost host, UIAxis axis, params AUIElement[] children) : base(host, CalculateSize(host.Style, axis, children))
+    public AxisBox(UIHost host, UIAxis axis, params AUIElement[] children) : this(host, axis, false, children) { }
+    public AxisBox(UIHost host, UIAxis axis, bool fitRect = false, params AUIElement[] children) : base(host, CalculateSize(host.Style, axis, children))
     {
+        FitRect = fitRect;
         foreach (var child in children)
         {
             child.Parent = this;
@@ -79,29 +78,71 @@ public class AxisBox :
         
         if (_axis == UIAxis.Horizontal)
         {
+            if (FitRect)
+            {
+                int w = (int)Rect.Width;
+                int optimalWidth = (int)((Rect.Width - Host.Style.AxisBoxSpace*(_children.Count-1)) / _children.Count);
+                Console.WriteLine("TO FIT: " + w + " " + optimalWidth);
+                List<int> doNotFit = new();
+
+                for (var i = 0; i < _children.ToArray().Length; i++)
+                {
+                    AUIElement child = _children.ToArray()[i];
+                    
+                    if (child.MinimalSize.X > optimalWidth)
+                    {
+                        Console.WriteLine($"DONT FIT: {child.GetType() } + {child.MinimalSize}");
+                        w = (int)(Rect.Width - child.MinimalSize.X);
+                        doNotFit.Add(i);
+                        child.Rect = new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height));
+
+                        if (doNotFit.Count == _children.Count) break;
+                        
+                        optimalWidth = w / (_children.Count - doNotFit.Count);
+                        i = -1; //restarting
+                    }
+                    else
+                    {
+                        child.Rect = new FloatRect(default, new Vector2f(optimalWidth, Rect.Height));
+                    }
+                }
+            }
+            else
+            {
+                foreach (AUIElement child in _children)
+                {
+                    child.Rect = new FloatRect(
+                        default, default,
+                        child.MinimalSize.X, Rect.Height
+                    );
+                }
+            }
+
             foreach (AUIElement child in _children)
             {
-                child.Rect = new FloatRect(
-                    position.X, position.Y,
-                    child.MinimalSize.X, Rect.Height
-                );
-                
-                position.X += child.MinimalSize.X + Host.Style.AxisBoxSpace;
+                child.Rect = new FloatRect(position, child.Rect.Size);
+                position.X += child.Rect.Size.X + Host.Style.AxisBoxSpace;
             }
         }
         else
         {
-            foreach (var child in _children.ToArray())
+            //todo fitrect
+            Console.WriteLine("GOT X: " + Rect.Width);
+            foreach (AUIElement child in _children.ToArray())
             {
                 child.Rect = new FloatRect(
                     position.X, position.Y,
                     Rect.Width, child.MinimalSize.Y
                 );
+                
                 position.Y += child.MinimalSize.Y + Host.Style.AxisBoxSpace;
             }
         }
     }
     
+    protected override void UpdateMinimalSize()
+        => MinimalSize = CalculateSize(Host.Style, _axis, _children);
+
     public override void Draw(RenderTarget target)
     {
         foreach (AUIElement child in _children)

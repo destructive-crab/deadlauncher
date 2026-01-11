@@ -82,14 +82,14 @@ public class VersionMenu : Menu
             
             SingleBox actionButtonsPlace = new(host);
             
-            versionList.AddChild(new UIOption(host, GetButtonNameByVersionID(id), new Vector2f(VERSION_BUTTON_WIDTH, 45), () => VersionSelectButton(id), Application.Launcher.Model.IsSelected(id)));
+            versionList.AddChild(new UIOption(host, GetButtonNameByVersionID(id), new Vector2f(100, 45), () => VersionSelectButton(id), Application.Launcher.Model.IsSelected(id)));
 
             actionButtonsList.AddChild(actionButtonsPlace);
             actionButtonsPlace.Child = BuildActionButtons(id);
             actionButtonPlaces.Add(id, actionButtonsPlace);
         }
 
-        return new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, versionList, actionButtonsList));
+        return new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, true, versionList, actionButtonsList));
     }
 
     private AUIElement BuildVersionsListIncludeOnly(params string[] includeOnly) => BuildVersionsList(includeOnly, []);
@@ -119,7 +119,7 @@ public class VersionMenu : Menu
     
     public AxisBox BuildActionButtons(string id)
     {
-        AxisBox actionButtonsLine = new AxisBox(host, UIAxis.Horizontal);
+        AxisBox actionButtonsLine = new AxisBox(host, UIAxis.Horizontal, true);
 
         int segmentWidth = VERSION_CONTEXT_ACTIONS_WIDTH;
         
