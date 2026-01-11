@@ -56,7 +56,7 @@ public class LauncherWindow
             
             host.Update(RenderWindow);
             
-            RenderWindow.Clear(new Color(0x00363cFF));
+            RenderWindow.Clear(UIStyle.SecondBackgroundColor);
             {
                 backgroundGraphics.Draw(RenderWindow);
                 currentMenu?.Update(RenderWindow);
@@ -110,7 +110,7 @@ public class LauncherWindow
     private void SetRoot(AUIElement menu)
     {
         Anchor anchor = new Anchor(
-            new FloatRect(50, 124, RenderWindow.Size.X - 100, RenderWindow.Size.Y - 200),
+            new FloatRect(25, 124, RenderWindow.Size.X - 50, RenderWindow.Size.Y - 200),
             new FloatRect(0, 0, 0, 0));
         
         AnchorBox anchorBox = new AnchorBox(host);
@@ -153,7 +153,7 @@ public class LauncherWindow
     
             menuBackground.FillColor = UIStyle.RectDefault;
             
-            background = new Drawable[] { menuOutline, menuBackground };
+            background = new Drawable[] { /*menuOutline, menuBackground*/ };
            
             //deadays line
             Texture labelTex = new(ResourcesHandler.Load(LabelAssetName));
@@ -163,7 +163,7 @@ public class LauncherWindow
             deadaysLine.Build(sprite, 600, 0, 10, (int)sprite.GetGlobalBounds().Size.X, (el) => new Sprite(el));
             
             //version line
-            Font    font     = new(ResourcesHandler.Load(FontAssetName));
+            Font    font       = new(ResourcesHandler.Load(FontAssetName));
          
             Text version       = new Text("v1.5 ", font, labelTex.Size.Y/4);
             Text versionShadow = new Text(version);
@@ -192,8 +192,8 @@ public class LauncherWindow
                 target.Draw(drawable);
             }
             
-            deadaysLine.Draw(target);
-            versionLine.Draw(target);
+            deadaysLine      .Draw(target);
+            versionLine      .Draw(target);
             versionLineShadow.Draw(target);
         }
 

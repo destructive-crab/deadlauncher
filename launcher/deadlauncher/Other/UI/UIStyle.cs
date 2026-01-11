@@ -6,13 +6,14 @@ namespace leditor.UI;
 
 public class UIStyle()
 {
-    private static Font PrepareFont()
-    {
-        Font font = new(ResourcesHandler.Load("UI.ttf"));
-
-        return font;
-    }
+    public static readonly int   BaseOutline = 5;
     
+    public static readonly Color FirstBackgroundColor  = new(0x004671FF);
+    public static readonly Color SecondBackgroundColor = new(0x00253cFF);
+    public static readonly Color OutlineColor          = new(0xbbdde1FF);
+    
+    private static Font PrepareFont() => new(ResourcesHandler.Load("UI.ttf"));
+
     // Text
     public readonly Font Font = PrepareFont();
     public readonly uint FontSize = 24;
@@ -21,7 +22,7 @@ public class UIStyle()
     public static readonly Color RectDefault = new(0x00363cFF);
     
     // Label
-    public readonly Color LabelColor = new(0xbbdde1FF);
+    public static readonly Color LabelColor = new(0xbbdde1FF);
     
     // AxisBox
     public readonly int AxisBoxSpace = 5;
@@ -92,4 +93,7 @@ public class UIStyle()
     public readonly float ScrollerThickness = 16;
     public readonly Color ScrollerColor = ButtonTop;
     public readonly Color ScrollerPressedColor = ButtonBottom;
+    
+    //TabBox
+    public readonly int TabLineHeight = 30;
 }

@@ -9,11 +9,9 @@ public static class Application
     private static async Task Start()
     {
         await Launcher.Downloader.PullVersions();
-        
         Launcher.Downloader.LoadLocalData();
         
         await Launcher.Window.Prepare();
-
         Launcher.Window.Loop();
     }
 }

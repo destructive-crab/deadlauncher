@@ -1,3 +1,4 @@
+using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -53,12 +54,26 @@ public class VersionMenu : Menu
             actionButtonPlaces.Add(id, actionButtonsPlace);
         }
         
-        Anchor anchorBack = new(new FloatRect(0, 40, 500, -45), new FloatRect(0,1,0,0));
-        
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
-        return new StackBox(host, 
-            [new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, versionList, actionButtonsList)),
-             new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "         \t\u2190", new Vector2f(10, 30), BackButton))]);
+        var tabs = new TabBox(host,
+            new KeyValuePair<AUIElement, string>(
+                new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, versionList, actionButtonsList)),
+                "Official"),
+            new KeyValuePair<AUIElement, string>(
+                new AxisBox(host, UIAxis.Vertical, new UILabel(host, "sdfkjjskfjskfk"),
+                    new UILabel(host, "sdfkjjskfjskfk"), new UILabel(host, "sdfkjjskfjskfk")),
+                "Modes"),
+            new KeyValuePair<AUIElement, string>(
+                new AxisBox(host, UIAxis.Vertical, new UILabel(host, "sdfkjjskfjskfk"),
+                    new UILabel(host, "sdfkjjskfjskfk"), new UILabel(host, "sdfkjjskfjskfk")),
+                "Modes 2"));
+        
+        Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
+        
+        var backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
+        
+        var root = new StackBox(host, [tabs, backButton]);
+        return root;
     }
     
     public AxisBox BuildActionButtons(string id)
@@ -78,7 +93,5 @@ public class VersionMenu : Menu
         return actionButtonsLine;
     }
     
-    public override void Update(RenderWindow window)
-    {
-    }
+    public override void Update(RenderWindow window) { }
 }

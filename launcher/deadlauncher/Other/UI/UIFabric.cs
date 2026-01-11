@@ -12,7 +12,7 @@ public class UIFabric(UIHost host)
         var text = new Text(str, _host.Style.Font, _host.Style.FontSize)
         {
             Style = Text.Styles.Bold,
-            FillColor = _host.Style.LabelColor
+            FillColor = UIStyle.LabelColor
         };
 
         return text;
