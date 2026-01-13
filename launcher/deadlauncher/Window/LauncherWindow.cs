@@ -95,6 +95,11 @@ public class LauncherWindow
         SwitchTo(new CreditsMenu(host));
     }
 
+    public void OpenChangelogMenu()
+    {
+        SwitchTo(new ChangelogMenu(host, Application.Launcher.Model.SelectedVersionID));
+    }
+
     private void SwitchTo(Menu menu)
     {
         previousMenu = currentMenu;

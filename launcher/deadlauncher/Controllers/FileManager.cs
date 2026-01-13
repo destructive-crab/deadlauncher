@@ -7,7 +7,7 @@ public abstract class FileManager
 {
     public abstract void OpenFolderInExplorer(string path);
     public abstract void ValidateFolder(string path);
-    public abstract string ReadFile(string path);
+    public abstract string? ReadFile(string path);
     public abstract void WriteFile(string path, string content);
     public abstract void Delete(string path);
     public abstract void ExtractZipTo(string zipPath, string extractPath);
@@ -28,9 +28,9 @@ public sealed class WindowsFileManager : FileManager
         }
     }
 
-    public override string ReadFile(string path)
+    public override string? ReadFile(string path)
     {
-        if (!Path.Exists(path)) return "";
+        if (!Path.Exists(path)) return null;
 
         return File.ReadAllText(path);
     }

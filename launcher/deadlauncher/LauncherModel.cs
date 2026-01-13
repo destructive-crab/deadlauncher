@@ -12,7 +12,7 @@ public sealed class LauncherModel
     public string SelectedVersionID
     {
         get { return selectedVersionID; }
-        set { if (IsValid(value)) { selectedVersionID = value; } }
+        set { if (IsVersionValid(value)) { selectedVersionID = value; } }
     }
 
     public string[] Installed => installedIDs.ToArray();
@@ -36,8 +36,41 @@ public sealed class LauncherModel
 
         return path;
     }
+    
+    public string? Changelog(string id)
+    {
+        string? changelog = Application.Launcher.Downloader.GetChangelog(id);
 
-    public string ExecutableFolder(string id) => foldersWithExecutableMap[id];
+        string? folder = ExecutableFolder(id);
+        string? cached = null;
+        
+        if (folder != null)
+        {
+            cached = Application.Launcher.FileManager.ReadFile(Path.Combine(folder, "changelog.txt"));
+        }   
+        
+        if (changelog != null)
+        {
+            if (cached != null && cached != changelog)
+            {
+                Application.Launcher.FileManager.WriteFile(Path.Combine(folder, "changelog.txt"), changelog);
+            }
+            return changelog;
+        }
+        
+        if(cached != null)
+        {
+            return cached;
+        }
+
+        return changelog;
+    }
+
+    public string? ExecutableFolder(string id)
+    {
+        if (!foldersWithExecutableMap.ContainsKey(id)) return null;
+        return foldersWithExecutableMap[id];
+    }
 
     public string? DownloadLink(string id)
     {
@@ -50,7 +83,7 @@ public sealed class LauncherModel
     }
     
     public bool IsInstalled(string id) => foldersWithExecutableMap.ContainsKey(id);
-    public bool IsValid(string id) => availableOnServerIDs.Contains(id);
+    public bool IsVersionValid(string id) => availableOnServerIDs.Contains(id);
 
     public bool RegisterVersion(string id, string downloadLink)
     {
@@ -83,7 +116,7 @@ public sealed class LauncherModel
 
     public bool SetVersion(string id)
     {
-        if (IsValid(id) && selectedVersionID != id)
+        if (IsVersionValid(id) && selectedVersionID != id)
         {
             selectedVersionID = id;
             OnVersionSelected?.Invoke(id);

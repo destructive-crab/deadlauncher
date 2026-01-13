@@ -21,14 +21,16 @@ public sealed class HomeMenu : Menu
         AnchorBox anchor = new AnchorBox(uiHost);
             
         UIButton versionButton = new UIButton(uiHost, "version! version!", new Vector2f(320, 50), VersionButton);
-        UIButton creditsButton = new UIButton(uiHost, "credits! credits!", new Vector2f(320, 50), CreditsButton);    
-        
+        UIButton changelogButton = new UIButton(uiHost, "changelog!", new Vector2f(320, 50), ChangelogButton);
+        UIButton creditsButton = new UIButton(uiHost, "credits! credits!", new Vector2f(320, 50), CreditsButton);
+
         Anchor bottomAnchor = new Anchor(new FloatRect(-160, 0, window.Size.X, 0), new FloatRect(0.5f, 0.4f, 0, 0));
             
         anchor.AddChild(bottomAnchor,
             new AxisBox(uiHost, UIAxis.Vertical,
                 new AxisBox(uiHost, UIAxis.Horizontal, firstButtonPlace, new UILabel(uiHost)),
                 new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost)),
+                new AxisBox(uiHost, UIAxis.Horizontal, changelogButton, new UILabel(uiHost)),
                 new AxisBox(uiHost, UIAxis.Horizontal, creditsButton, new UILabel(uiHost))));
         
         if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
@@ -48,6 +50,7 @@ public sealed class HomeMenu : Menu
 
     private void CreditsButton() => Application.Launcher.Window.OpenCreditsMenu();
     private void VersionButton() => Application.Launcher.Window.OpenVersionsMenu();
+    private void ChangelogButton() => Application.Launcher.Window.OpenChangelogMenu();
     private void InstallSelectedVersion() => Application.Launcher.Window.OpenInstallMenu(Application.Launcher.Model.SelectedVersionID);
     private void LaunchSelectedVersion() => Application.Launcher.Runner.RunSelectedVersion();
 }

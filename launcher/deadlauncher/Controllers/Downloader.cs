@@ -54,9 +54,9 @@ public class Downloader
 
         string selectedVersionFile = Path.Combine(dataFolder, "selected_version");
 
-        string version = Application.Launcher.FileManager.ReadFile(selectedVersionFile);
+        string? version = Application.Launcher.FileManager.ReadFile(selectedVersionFile);
         
-        if (version != "")
+        if (!string.IsNullOrEmpty(version))
         {
             l.Model.SetVersion(version);
         }
@@ -69,7 +69,7 @@ public class Downloader
 
     public async Task DownloadVersion(string id, Action<string> trackProgress)
     {
-        if (!(l.Model.IsValid(id) && !l.Model.IsInstalled(id))) return;
+        if (!(l.Model.IsVersionValid(id) && !l.Model.IsInstalled(id))) return;
         
         WebClient webClient = new();
         string zipPath = Path.Combine(versionsFolder + l.Model.SelectedVersionID + ".zip");
@@ -101,5 +101,23 @@ public class Downloader
         string path = l.Model.ExecutableFolder(id);
         Application.Launcher.FileManager.Delete(path);
         l.Model.DeleteVersionFromDrive(id);
+    }
+
+    public string? GetChangelog(string id)
+    {
+        GithubClient client = new("destructive-crab", "deadlauncher");
+        string downloadURL = client.GetDownloadOfAssetURL(id, "changelog.txt");
+        
+        WebClient webClient = new();
+        
+        try
+        {
+            string changelog = webClient.DownloadString(new Uri(downloadURL));
+            return changelog;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }
