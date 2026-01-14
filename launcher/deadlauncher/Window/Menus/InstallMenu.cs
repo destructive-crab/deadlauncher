@@ -1,3 +1,4 @@
+using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -21,11 +22,11 @@ public class InstallMenu : Menu
         this.host = host;
     }
 
-    public override AUIElement GetRoot()
+    public override AUIElement GetRoot(FloatRect rect)
     {
         progressBar = new RectangleShape();
         
-        progressBar.Position = new Vector2f(60, 240);
+        progressBar.Position = rect.Position + new Vector2f(30, rect.Size.Y/2-20);
         progressBar.Size     = new Vector2f(1, 40);
         progressBar.FillColor = host.Style.NormalButton.TopColor;
 
@@ -34,20 +35,24 @@ public class InstallMenu : Menu
         progressBarText = new Text();
         progressBarText.Font = font;
         progressBarText.CharacterSize = 32;
-        progressBarText.Position = new Vector2f(280, 240);
-        progressBarText.FillColor = host.Style.NormalButton.TopColor;
         progressBarText.DisplayedString = "XXX";
+        progressBarText.Position = new Vector2f(rect.Position.X + rect.Size.X/2, progressBar.Position.Y + progressBar.Size.Y/2 - 10) - progressBarText.GetGlobalBounds().Size/2;
+        progressBarText.FillColor = host.Style.NormalButton.TopColor;
 
         textBackground = new RectangleShape();
-        textBackground.FillColor = UIStyle.RectDefault;
-        textBackground.Position  = new Vector2f(progressBarText.Position.X-4, 242);
-        textBackground.Size      = new Vector2f(progressBarText.GetGlobalBounds().Size.X+4, 36);
-        
-        return new StackBox(host, [new UILabel(host, "installing!!!!   installing!!!!")]);
+        textBackground.FillColor = UIStyle.SecondBackgroundColor;
+        textBackground.Size      = new Vector2f(progressBarText.GetGlobalBounds().Size.X + 6, progressBar.GetGlobalBounds().Size.Y - 6);
+        textBackground.Position  = new Vector2f(progressBar.Position.X + GetBarMaxWidth(rect)/2 - textBackground.Size.X/2 - 3,progressBar.Position.Y+3);
+
+        return new UIOutlineBox(host, new StackBox(host, [new UITextBox(host, "installing!!!!   installing!!!!", true)]));
     }
 
     private int progress;
-    private int barMax = 480;
+
+    private int GetBarMaxWidth(FloatRect menuRect)
+    {
+        return (int)(menuRect.Size.X - 60);
+    }
     private void TrackProgress(string obj)
     {
         if (Int32.TryParse(obj, out int value))
@@ -76,9 +81,9 @@ public class InstallMenu : Menu
         Application.Launcher.Window.BackToPrevious();
     }
 
-    public override void Update(RenderWindow window)
+    public override void Update(RenderWindow window, FloatRect menuRect)
     {
-        progressBar.Size = new Vector2f(progress/100f*barMax, progressBar.Size.Y);
+        progressBar.Size = new Vector2f(progress/100f*GetBarMaxWidth(menuRect), progressBar.Size.Y);
 
         string text = progress.ToString();
         if (text.Length == 1) text = $"  {text}";

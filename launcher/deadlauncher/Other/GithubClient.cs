@@ -69,11 +69,8 @@ public class GithubClient
 
             string pageContent = webClient.DownloadString(releasePageURL);
             string key = $"href=\"/{userID}/{repoID}/releases/download/{tag}/";
-            Console.WriteLine(key);
 
             HashSet<string> assets = new();
-            
-            Console.WriteLine(pageContent);
             
             while (pageContent.Contains(key))
             {

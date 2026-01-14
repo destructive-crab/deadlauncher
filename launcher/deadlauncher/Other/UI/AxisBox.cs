@@ -82,7 +82,6 @@ public class AxisBox : AUIBox
             {
                 int w = (int)Rect.Width;
                 int optimalWidth = (int)((Rect.Width - Host.Style.AxisBoxSpace*(_children.Count-1)) / _children.Count);
-                Console.WriteLine("TO FIT: " + w + " " + optimalWidth);
                 List<int> doNotFit = new();
 
                 for (var i = 0; i < _children.ToArray().Length; i++)
@@ -91,7 +90,6 @@ public class AxisBox : AUIBox
                     
                     if (child.MinimalSize.X > optimalWidth)
                     {
-                        Console.WriteLine($"DONT FIT: {child.GetType() } + {child.MinimalSize}");
                         w = (int)(Rect.Width - child.MinimalSize.X);
                         doNotFit.Add(i);
                         child.Rect = new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height));
@@ -127,7 +125,6 @@ public class AxisBox : AUIBox
         else
         {
             //todo fitrect
-            Console.WriteLine("GOT X: " + Rect.Width);
             foreach (AUIElement child in _children.ToArray())
             {
                 child.Rect = new FloatRect(
@@ -141,7 +138,11 @@ public class AxisBox : AUIBox
     }
     
     protected override void UpdateMinimalSize()
-        => MinimalSize = CalculateSize(Host.Style, _axis, _children);
+    {
+        MinimalSize = CalculateSize(Host.Style, _axis, _children);
+        UpdateLayout();
+        Console.WriteLine(MinimalSize);
+    }
 
     public override void Draw(RenderTarget target)
     {

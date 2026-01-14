@@ -99,21 +99,21 @@ public class VersionMenu : Menu
     private AUIElement BuildModsTab() => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
     
     
-    public override AUIElement GetRoot()
+    public override AUIElement GetRoot(FloatRect rect)
     {
         actionButtonPlaces.Clear();
         
         RenderWindow window = Application.Launcher.Window.RenderWindow;
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
         
-        TabBox tabs = new TabBox(host,
+        UITabBox uiTabs = new UITabBox(host,
             new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
             new KeyValuePair<AUIElement, string>(BuildModsTab(), "Mods"));
         
         Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
         AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
         
-        StackBox root = new StackBox(host, [tabs, backButton]);
+        StackBox root = new StackBox(host, [uiTabs, backButton]);
         return root;
     }
     
@@ -135,6 +135,4 @@ public class VersionMenu : Menu
 
         return actionButtonsLine;
     }
-    
-    public override void Update(RenderWindow window) { }
 }

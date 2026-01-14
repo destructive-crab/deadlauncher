@@ -4,7 +4,7 @@ using SFML.System;
 
 namespace deadlauncher.Other.UI;
 
-public class TabBox : AUIBox
+public class UITabBox : AUIBox
 {
     private readonly List<AUIElement> children = new();
     private readonly Dictionary<AUIElement, string> tabNamesMap = new();
@@ -21,7 +21,7 @@ public class TabBox : AUIBox
     private RectangleShape tabBackground;
     private Text tabText;
     
-    public TabBox(UIHost host, params KeyValuePair<AUIElement, string>[] children) : base(host, default)
+    public UITabBox(UIHost host, params KeyValuePair<AUIElement, string>[] children) : base(host, default)
     {
         backgroundOutline = new RectangleShape();
         background        = new RectangleShape();

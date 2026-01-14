@@ -38,7 +38,7 @@ public sealed class UIOutlineBox : AUIBox
         
         line.Position = Rect.Position - new Vector2f(outline, outline);
         line.Size     = new Vector2f(outline, Rect.Size.Y + outline * 2);
-       
+
         target.Draw(line);
 
         line.Position += new Vector2f(Rect.Size.X + outline, 0);

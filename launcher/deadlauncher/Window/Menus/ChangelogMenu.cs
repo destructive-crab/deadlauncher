@@ -1,5 +1,7 @@
+using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
+using SFML.System;
 
 namespace deadlauncher;
 
@@ -14,7 +16,7 @@ public class ChangelogMenu : Menu
         this.versionID = versionID;
     }
 
-    public override AUIElement GetRoot()
+    public override AUIElement GetRoot(FloatRect rect)
     {
         string text = "";
         if (Application.Launcher.Model.IsVersionValid(versionID))
@@ -23,10 +25,15 @@ public class ChangelogMenu : Menu
             if (changelog != null) text = changelog;
         }
 
-        return new ScrollBox(host, new UITextBox(host, text));
+        Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
+        AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
+        
+        var root = new UIOutlineBox(host, new StackBox(host, [new ScrollBox(host, new UITextBox(host, text)), backButton]));
+        return root;
     }
-
-    public override void Update(RenderWindow window)
+    
+    private void BackButton()
     {
+        Application.Launcher.Window.OpenHomeMenu();
     }
 }

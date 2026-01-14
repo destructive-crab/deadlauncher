@@ -19,12 +19,14 @@ public class UITextBox : AUIElement
     private List<Text> totalLines = new();
     private int linesCount = -1;
     private string displayString;
+    private readonly bool stretchWidth;
 
-    public UITextBox(UIHost host, string text = "") : 
+    public UITextBox(UIHost host, string text = "", bool stretchWidth = false) : 
         base(host, default)
     {
         this.textOriginal = host.Fabric.MakeText("X");
         displayString = text;
+        this.stretchWidth = stretchWidth;
     }
 
     private int currentWidth;
@@ -80,6 +82,45 @@ public class UITextBox : AUIElement
         for (var i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
+
+            if (stretchWidth)
+            {
+                int spacesCount = line.Count((c) => c == ' ');
+                string onlyWords = line.Replace(" ", "");
+                textOriginal.DisplayedString = onlyWords;
+                int onlyWordsWidth = (int)textOriginal.GetGlobalBounds().Size.X;
+                int forOneSpace = (textWidth - onlyWordsWidth) / spacesCount;
+                string resSpacing = " ";
+                for (int j = 0; true; j++)
+                {
+                    string spacing = "";
+                    for (int k = 0; k < j; k++)
+                    {
+                        spacing += " ";
+                    }
+                    textOriginal.DisplayedString = spacing;
+                    if (textOriginal.GetGlobalBounds().Size.X > forOneSpace)
+                    {
+                        resSpacing = spacing;
+                        break;
+                    }
+                }
+                
+                line = line.Replace(" ", resSpacing);
+                for (var index = 0; index < line.Length; index++)
+                {
+                    var c = line[index];
+                    if (c == ' ')
+                    {
+                        line = line.Remove(index, 1);
+                        if (index + 1 < line.Length && line[index+1] == ' ')
+                        {
+                            line = line.Remove(index + 1, 1);
+                        }
+                        break;
+                    }
+                }
+            }
             
             if (i >= totalLines.Count) totalLines.Add(new Text(textOriginal));
 

@@ -171,8 +171,9 @@ public class ScrollBox : AUIBox
         }
     }
 
-    protected override void UpdateMinimalSize() {}
-    
+    protected override void UpdateMinimalSize()
+    {
+    }
     
     public override void UpdateLayout()
     {

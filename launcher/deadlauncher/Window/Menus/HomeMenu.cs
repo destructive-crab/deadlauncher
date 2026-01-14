@@ -1,3 +1,4 @@
+using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -6,47 +7,45 @@ namespace deadlauncher;
 
 public sealed class HomeMenu : Menu
 {
-    private UIHost uiHost;
+    private UIHost host;
 
     public HomeMenu(UIHost host)
     {
-        uiHost = host;
+        this.host = host;
     }
 
-    public override AUIElement GetRoot()
+    public override AUIElement GetRoot(FloatRect rect)
     {
         RenderWindow window = Application.Launcher.Window.RenderWindow;
-        SingleBox firstButtonPlace = new SingleBox(uiHost);
+        SingleBox firstButtonPlace = new SingleBox(host);
         
-        AnchorBox anchor = new AnchorBox(uiHost);
+        AnchorBox anchor = new AnchorBox(host);
             
-        UIButton versionButton = new UIButton(uiHost, "version! version!", new Vector2f(320, 50), VersionButton);
-        UIButton changelogButton = new UIButton(uiHost, "changelog!", new Vector2f(320, 50), ChangelogButton);
-        UIButton creditsButton = new UIButton(uiHost, "credits! credits!", new Vector2f(320, 50), CreditsButton);
+        UIButton versionButton = new UIButton(host, "version! version!", new Vector2f(320, 50), VersionButton);
+        UIButton changelogButton = new UIButton(host, "changelog!", new Vector2f(320, 50), ChangelogButton);
+        UIButton creditsButton = new UIButton(host, "credits! credits!", new Vector2f(320, 50), CreditsButton);
 
         Anchor bottomAnchor = new Anchor(new FloatRect(-160, 0, window.Size.X, 0), new FloatRect(0.5f, 0.4f, 0, 0));
             
         anchor.AddChild(bottomAnchor,
-            new AxisBox(uiHost, UIAxis.Vertical,
-                new AxisBox(uiHost, UIAxis.Horizontal, firstButtonPlace, new UILabel(uiHost)),
-                new AxisBox(uiHost, UIAxis.Horizontal, versionButton, new UILabel(uiHost)),
-                new AxisBox(uiHost, UIAxis.Horizontal, changelogButton, new UILabel(uiHost)),
-                new AxisBox(uiHost, UIAxis.Horizontal, creditsButton, new UILabel(uiHost))));
+            new AxisBox(host, UIAxis.Vertical,
+                new AxisBox(host, UIAxis.Horizontal, firstButtonPlace, new UILabel(host)),
+                new AxisBox(host, UIAxis.Horizontal, versionButton, new UILabel(host)),
+                new AxisBox(host, UIAxis.Horizontal, changelogButton, new UILabel(host)),
+                new AxisBox(host, UIAxis.Horizontal, creditsButton, new UILabel(host))));
         
         if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
         {
-            firstButtonPlace.Child = new UIButton(uiHost, "play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
+            firstButtonPlace.Child = new UIButton(host, "play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
         }
         else
         {
-            firstButtonPlace.Child = new UIButton(uiHost, "install! install!", new Vector2f(320, 50), InstallSelectedVersion);
+            firstButtonPlace.Child = new UIButton(host, "install! install!", new Vector2f(320, 50), InstallSelectedVersion);
         }
         
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
-        return new StackBox(uiHost, [anchor]);
+        return new UIOutlineBox(host, new StackBox(host, [anchor]));
     }
-
-    public override void Update(RenderWindow window) { }
 
     private void CreditsButton() => Application.Launcher.Window.OpenCreditsMenu();
     private void VersionButton() => Application.Launcher.Window.OpenVersionsMenu();
