@@ -141,7 +141,6 @@ public class AxisBox : AUIBox
     {
         MinimalSize = CalculateSize(Host.Style, _axis, _children);
         UpdateLayout();
-        Console.WriteLine(MinimalSize);
     }
 
     public override void Draw(RenderTarget target)

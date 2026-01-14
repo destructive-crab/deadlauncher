@@ -103,16 +103,16 @@ public class Downloader
         l.Model.DeleteVersionFromDrive(id);
     }
 
-    public string? GetChangelog(string id)
+    public async Task<string?> GetChangelog(string id)
     {
         GithubClient client = new("destructive-crab", "deadlauncher");
         string downloadURL = client.GetDownloadOfAssetURL(id, "changelog.txt");
         
         WebClient webClient = new();
-        
+
         try
         {
-            string changelog = webClient.DownloadString(new Uri(downloadURL));
+            string changelog = await webClient.DownloadStringTaskAsync(new Uri(downloadURL));
             return changelog;
         }
         catch (Exception e)

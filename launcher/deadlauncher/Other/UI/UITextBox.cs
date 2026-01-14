@@ -10,8 +10,8 @@ public class UITextBox : AUIElement
         get => textOriginal.DisplayedString;
         set
         {
-            textOriginal.DisplayedString = value;
-            MinimalSize = Utils.TextSize(textOriginal);
+            displayString = value;
+            UpdateLayout();
         }
     }
 
@@ -30,6 +30,7 @@ public class UITextBox : AUIElement
     }
 
     private int currentWidth;
+    private string currentDisplaying;
 
     public override void UpdateLayout()
     {
@@ -37,14 +38,15 @@ public class UITextBox : AUIElement
 
         int textWidth = (int)Rect.Width;
         
-        if (textWidth != currentWidth)
+        if (textWidth != currentWidth || currentDisplaying != displayString)
         {
             currentWidth = textWidth;
             BuildLines();
         }
 
-        if (linesCount > 0 && totalLines[0].Position != Rect.Position)
+        if (linesCount > 0 && totalLines[0].Position != Rect.Position || currentDisplaying != displayString)
         {
+            currentDisplaying = displayString;
             UpdatePositions();
         }
     }

@@ -37,9 +37,9 @@ public sealed class LauncherModel
         return path;
     }
     
-    public string? Changelog(string id)
+    public async Task<string?> Changelog(string id)
     {
-        string? changelog = Application.Launcher.Downloader.GetChangelog(id);
+        string? changelog = await Application.Launcher.Downloader.GetChangelog(id);
 
         string? folder = ExecutableFolder(id);
         string? cached = null;
