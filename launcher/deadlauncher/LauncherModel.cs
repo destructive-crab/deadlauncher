@@ -2,6 +2,12 @@ namespace deadlauncher;
 
 public sealed class LauncherModel
 {
+    public readonly string LauncherFolder;
+    public readonly string DataFolder;
+    public readonly string VersionsFolder;
+
+    public string SelectedVersionFile => Path.Combine(DataFolder, "selected_version");
+
     public const string NONE_SELECTED = "NONE";
     public const string MODE_POSTFIX  = "mode";
     
@@ -26,7 +32,16 @@ public sealed class LauncherModel
     public event Action<string> OnVersionSelected;
     
     private Downloader logic => Application.Launcher.Downloader;
-    
+
+    public LauncherModel()
+    {
+        string applicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        
+        LauncherFolder = Path.Combine(applicationData, "deadlauncher");
+        DataFolder = Path.Combine(LauncherFolder, "data");
+        VersionsFolder = Path.Combine(LauncherFolder, "versions");
+    }
+
     public async Task<string?> Changelog(string id)
     {
         string? changelog = await Application.Launcher.Downloader.GetChangelog(id);
@@ -110,6 +125,7 @@ public sealed class LauncherModel
         {
             selectedVersionID = id;
             OnVersionSelected?.Invoke(id);
+            Application.Launcher.FileManager.WriteFile(SelectedVersionFile, selectedVersionID);
             
             return true;
         }

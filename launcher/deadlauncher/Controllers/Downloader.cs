@@ -5,10 +5,6 @@ namespace deadlauncher;
 
 public class Downloader
 {
-    private string launcherFolder;
-    private string dataFolder;
-    private string versionsFolder;
-
     private Launcher l;
 
     public Downloader(Launcher l)
@@ -52,17 +48,11 @@ public class Downloader
 
     public async void LoadLocalData()
     {
-        string roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        
-        launcherFolder = Path.Combine(roaming, "deadlauncher");
-        dataFolder = Path.Combine(launcherFolder, "data");
-        versionsFolder = Path.Combine(launcherFolder, "versions");
+        Application.Launcher.FileManager.ValidateFolder(Application.Launcher.Model.LauncherFolder);
+        Application.Launcher.FileManager.ValidateFolder(Application.Launcher.Model.DataFolder);
+        Application.Launcher.FileManager.ValidateFolder(Application.Launcher.Model.VersionsFolder);
 
-        Application.Launcher.FileManager.ValidateFolder(launcherFolder);
-        Application.Launcher.FileManager.ValidateFolder(dataFolder);
-        Application.Launcher.FileManager.ValidateFolder(versionsFolder);
-
-        string[] subdirs = Directory.GetDirectories(versionsFolder);
+        string[] subdirs = Directory.GetDirectories(Application.Launcher.Model.VersionsFolder);
         
         foreach (string s in subdirs)
         {
@@ -71,18 +61,18 @@ public class Downloader
             l.Model.RegisterVersionFolder(possibleID, s);
         }
 
-        string selectedVersionFile = Path.Combine(dataFolder, "selected_version");
-
-        string? version = Application.Launcher.FileManager.ReadFile(selectedVersionFile);
+        string? version = Application.Launcher.FileManager.ReadFile(Application.Launcher.Model.SelectedVersionFile);
         
         if (!string.IsNullOrEmpty(version))
         {
-            l.Model.SetVersion(version);
+            if (!l.Model.SetVersion(version))
+            {
+                l.Model.SetVersion(l.Model.Available[0]);
+            }
         }
         else
         {
             l.Model.SetVersion(l.Model.Available[0]);
-            Application.Launcher.FileManager.WriteFile(selectedVersionFile, l.Model.Available[0]);
         }
     }
 
@@ -91,13 +81,13 @@ public class Downloader
         if (!(l.Model.IsVersionValid(id) && !l.Model.IsInstalled(id))) return;
         
         WebClient webClient = new();
-        string zipPath = Path.Combine(versionsFolder + l.Model.SelectedVersionID + ".zip");
+        string zipPath = Path.Combine(Application.Launcher.Model.VersionsFolder + l.Model.SelectedVersionID + ".zip");
 
         webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
         await webClient.DownloadFileTaskAsync(l.Model.DownloadLink(id), zipPath);
         trackProgress?.Invoke("101");
 
-        string path = Path.Combine(versionsFolder, id);
+        string path = Path.Combine(Application.Launcher.Model.VersionsFolder, id);
         
         Application.Launcher.FileManager.ExtractZipTo(zipPath, path);
         Application.Launcher.FileManager.Delete(zipPath);
