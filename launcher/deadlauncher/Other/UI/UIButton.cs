@@ -47,30 +47,27 @@ public class UIButton : AUIElement
         this.textObj = textObj;
 
         Action = action;
-        
-        area.OnRightMouseButtonClick = OnPress;
-        area.OnRightMouseButtonReleased = OnReleased;
-        area.OnHover = OnHover;
-        area.OnUnhover = OnUnhover;
-
+        BuildClickArea();
         ApplyStyle(host.Style.NormalButton);
     }
     
     public UIButton(UIHost host, string text, Vector2f minimalSize, Action? action = null) : 
-        base(host, 
-/*minimal size*/ minimalSize)
+        base(host, minimalSize)
     {
         host.Fabric.MakeTextOut(text, out Text textObj);
         this.textObj = textObj;
 
         Action = action;
-        
-        area.OnRightMouseButtonClick = OnPress;
-        area.OnRightMouseButtonReleased = OnReleased;
-        area.OnHover = OnHover;
-        area.OnUnhover = OnUnhover;
-
+        BuildClickArea();
         ApplyStyle(host.Style.NormalButton);
+    }
+
+    private void BuildClickArea()
+    {
+        area.OnRightMouseButtonClick    = OnPress;
+        area.OnRightMouseButtonReleased = OnReleased;
+        area.OnHover                    = OnHover;
+        area.OnUnhover                  = OnUnhover;
     }
 
     protected virtual void ApplyStyle(ButtonStateStyle style)

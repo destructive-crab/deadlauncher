@@ -81,28 +81,40 @@ public class AxisBox : AUIBox
             if (FitRect)
             {
                 int w = (int)Rect.Width;
-                int optimalWidth = (int)((Rect.Width - Host.Style.AxisBoxSpace*(_children.Count-1)) / _children.Count);
-                List<int> doNotFit = new();
 
-                for (var i = 0; i < _children.ToArray().Length; i++)
+                if (_children.Count == 1)
                 {
-                    AUIElement child = _children.ToArray()[i];
-                    
-                    if (child.MinimalSize.X > optimalWidth)
-                    {
-                        w = (int)(Rect.Width - child.MinimalSize.X);
-                        doNotFit.Add(i);
-                        child.Rect = new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height));
+                    AUIElement child = _children[0]; 
+                    child.Rect = new FloatRect(
+                        default, default,
+                        w, Rect.Height
+                    );
+                }
+                else
+                {
+                    int optimalWidth = (int)((Rect.Width - Host.Style.AxisBoxSpace*(_children.Count-1)) / _children.Count);
+                    List<int> doNotFit = new();
 
-                        if (doNotFit.Count == _children.Count) break;
-                        
-                        optimalWidth = w / (_children.Count - doNotFit.Count);
-                        i = -1; //restarting
-                    }
-                    else
+                    for (var i = 0; i < _children.ToArray().Length; i++)
                     {
-                        child.Rect = new FloatRect(default, new Vector2f(optimalWidth, Rect.Height));
-                    }
+                        AUIElement child = _children.ToArray()[i];
+                    
+                        if (child.MinimalSize.X > optimalWidth)
+                        {
+                            w = (int)(Rect.Width - child.MinimalSize.X);
+                            doNotFit.Add(i);
+                            child.Rect = new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height));
+
+                            if (doNotFit.Count == _children.Count) break;
+                        
+                            optimalWidth = w / (_children.Count - doNotFit.Count);
+                            i = -1; //restarting
+                        }
+                        else
+                        {
+                            child.Rect = new FloatRect(default, new Vector2f(optimalWidth, Rect.Height));
+                        }
+                    }   
                 }
             }
             else

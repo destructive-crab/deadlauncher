@@ -32,7 +32,7 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         get => _rect; 
         set
         {
-            if (_rect == value) { return; }
+            if (_rect == value) return;
             
             _rect = new FloatRect(
                 value.Left, value.Top,

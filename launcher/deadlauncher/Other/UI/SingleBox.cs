@@ -11,11 +11,17 @@ public class SingleBox : AUIBox
         get => _child;
         set {
             if (value != null)
+            {
                 value.Parent = this;
+            }
             else if (_child != null)
+            {
                 _child.Parent = null;
+            }
+
             _child = value;
             UpdateMinimalSize();
+            UpdateLayout();
         }
     }
     

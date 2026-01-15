@@ -12,14 +12,34 @@ public class VersionMenu : Menu
 
     private const int VERSION_BUTTON_WIDTH = 300;
     private const int VERSION_CONTEXT_ACTIONS_WIDTH = 300;
-    
+
     public VersionMenu(UIHost host)
     {
         this.host = host;
     }
 
+    public override AUIElement GetRoot(FloatRect rect)
+    {
+        actionButtonPlaces.Clear();
+        
+        RenderWindow window = Application.Launcher.Window.RenderWindow;
+        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
+        
+        UITabBox uiTabs = new UITabBox(host,
+            new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
+            new KeyValuePair<AUIElement, string>(BuildModsTab(),     "Mods"));
+        
+        Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
+        AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
+        
+        StackBox root = new StackBox(host, [uiTabs, backButton]);
+        return root;
+    }
+
     private void InstallVersion(string id) => Application.Launcher.Window.OpenInstallMenu(id);
+
     private void OpenFolder(string id) { Application.Launcher.FileManager.OpenFolderInExplorer(Application.Launcher.Model.ExecutableFolder(id)); }
+
     private void VersionSelectButton(string id) => Application.Launcher.Model.SetVersion(id);
 
     private string GetButtonNameByVersionID(string id)
@@ -46,7 +66,7 @@ public class VersionMenu : Menu
 
         return result;
     }
-    
+
     private void BackButton()
     {
         Application.Launcher.Window.OpenHomeMenu();
@@ -97,26 +117,8 @@ public class VersionMenu : Menu
 
     private AUIElement BuildOfficialTab() => BuildVersionsListExcludeOnly(LauncherModel.MODE_POSTFIX);
     private AUIElement BuildModsTab() => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
-    
-    
-    public override AUIElement GetRoot(FloatRect rect)
-    {
-        actionButtonPlaces.Clear();
-        
-        RenderWindow window = Application.Launcher.Window.RenderWindow;
-        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
-        
-        UITabBox uiTabs = new UITabBox(host,
-            new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
-            new KeyValuePair<AUIElement, string>(BuildModsTab(), "Mods"));
-        
-        Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
-        AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
-        
-        StackBox root = new StackBox(host, [uiTabs, backButton]);
-        return root;
-    }
-    
+
+
     public AxisBox BuildActionButtons(string id)
     {
         AxisBox actionButtonsLine = new AxisBox(host, UIAxis.Horizontal, true);
