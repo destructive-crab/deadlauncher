@@ -1,18 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 
 public class DeadLauncherBoot
 {
     private const string GithubUsername = "destructive-crab";
     private const string GithubRepositoryName = "deadlauncher";
     private const string GithubLauncherTag = "launcher";
-    private const string AssetName = "deadlauncher.exe";
+    private const string AssetName = "deadlauncher";
 
     public static readonly string LauncherFolderPath = Path.Combine("deadlauncher");
     public static readonly string DataFolderPath = Path.Combine(LauncherFolderPath, "data");
     
     public static readonly string ConfigPath = Path.Combine(DataFolderPath, "config.json");
-    public static readonly string LauncherExecutablePath = Path.Combine(LauncherFolderPath, "deadlauncher.exe");
+    public static readonly string LauncherExecutablePath = Path.Combine(LauncherFolderPath, "deadlauncher");
     public static readonly string LauncherVersionPath = Path.Combine(DataFolderPath, "launcher_version");
 
     public static string GetFullPath(string path)
@@ -101,10 +102,25 @@ public class DeadLauncherBoot
 
         private void BootInstalledLauncherAndShutdown()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = GetFullPath(LauncherExecutablePath);
-            process.Start();
-            Process.GetCurrentProcess().Close();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = GetFullPath(LauncherExecutablePath+".exe");
+                process.Start();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process givePermission = new Process();
+                
+                givePermission.StartInfo.FileName = "chmod";
+                givePermission.StartInfo.Arguments = $"+x {GetFullPath(LauncherExecutablePath)}";
+                givePermission.Start();
+
+                Process launch = new();
+                launch.StartInfo.FileName = GetFullPath(LauncherExecutablePath);
+                launch.Start();
+            }
+            Process.GetCurrentProcess().Close();    
         }
     }
 }
