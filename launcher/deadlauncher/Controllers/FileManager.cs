@@ -6,21 +6,8 @@ namespace deadlauncher;
 public abstract class FileManager
 {
     public abstract void OpenFolderInExplorer(string path);
-    public abstract void ValidateFolder(string path);
-    public abstract string? ReadFile(string path);
-    public abstract void WriteFile(string path, string content);
-    public abstract void Delete(string path);
-    public abstract void ExtractZipTo(string zipPath, string extractPath);
-}
 
-public sealed class WindowsFileManager : FileManager
-{
-    public override void OpenFolderInExplorer(string path)
-    {
-        if(Path.Exists(path)) Process.Start("explorer.exe", @$"{path}"); 
-    }
-
-    public override void ValidateFolder(string path)
+    public virtual void ValidateFolder(string path)
     {
         if (!Directory.Exists(path))
         {
@@ -28,20 +15,20 @@ public sealed class WindowsFileManager : FileManager
         }
     }
 
-    public override string? ReadFile(string path)
+    public virtual string? ReadFile(string path)
     {
         if (!Path.Exists(path)) return null;
 
         return File.ReadAllText(path);
     }
 
-    public override void WriteFile(string path, string content)
+    public virtual void WriteFile(string path, string content)
     {
         if (!File.Exists(path)) File.Create(path).Close();
         File.WriteAllText(path, content);
     }
 
-    public override void Delete(string path)
+    public virtual void Delete(string path)
     {
         if (File.Exists(path))
         {
@@ -59,8 +46,24 @@ public sealed class WindowsFileManager : FileManager
         }
     }
 
-    public override void ExtractZipTo(string zipPath, string extractPath)
+    public virtual void ExtractZipTo(string zipPath, string extractPath)
     {
         ZipFile.ExtractToDirectory(zipPath, extractPath);
+    }
+}
+
+public sealed class WindowsFileManager : FileManager
+{
+    public override void OpenFolderInExplorer(string path)
+    {
+        if(Path.Exists(path)) Process.Start("explorer.exe", @$"{path}"); 
+    }
+}
+
+public sealed class LinuxFileManager : FileManager
+{
+    public override void OpenFolderInExplorer(string path)
+    {
+        if(Path.Exists(path)) Process.Start("xdg-open", @$"{path}"); 
     }
 }

@@ -44,7 +44,7 @@ public sealed class HomeMenu : Menu
         }
         
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
-        return new UIOutlineBox(host, new StackBox(host, [anchor]));
+        return new StackBox(host, [anchor]);
     }
 
     private void CreditsButton() => Application.Launcher.Window.OpenCreditsMenu();

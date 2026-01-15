@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace deadlauncher;
 
 public sealed class Launcher
@@ -9,13 +11,25 @@ public sealed class Launcher
     //C
     public readonly Downloader     Downloader;
     public readonly Runner         Runner;
-    public readonly FileManager    FileManager = new WindowsFileManager();
+    public readonly FileManager    FileManager;
 
     public Launcher()
     {
-        Downloader = new Downloader(this);
-        Runner     = new Runner(this);
-        Model      = new LauncherModel();
-        Window     = new LauncherWindow();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            FileManager = new WindowsFileManager();
+            Downloader  = new Downloader(this);
+            Runner      = new WindowsRunner(this);
+            Model       = new LauncherModel();
+            Window      = new LauncherWindow();
+        }
+        else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            FileManager = new LinuxFileManager();
+            Downloader  = new Downloader(this);
+            Runner      = new LinuxRunner(this);
+            Model       = new LauncherModel();
+            Window      = new LauncherWindow();
+        }
     }
 }

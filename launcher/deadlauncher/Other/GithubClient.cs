@@ -16,9 +16,18 @@ public class GithubClient
         repoID = repoId;
     }
 
-    public string GetDownloadOfAssetURL(string tag, string asset)
+    public string? GetDownloadOfAssetURL(string tag, string asset)
     {
-        return RepoURL + $"/releases/download/{tag}/{asset}";
+        var url = RepoURL + $"/releases/download/{tag}/{asset}";
+
+        if (IsValidURL(url))
+        {
+            return url;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public async Task<string[]> GetReleaseTags()
@@ -107,23 +116,20 @@ public class GithubClient
         }
     }
 
-    private static bool IsValidURL(string releasePageURL)
+    private static bool IsValidURL(string url)
     {
-        return true;
         try
         {
-            //Creating the HttpWebRequest
-            HttpWebRequest request = WebRequest.Create(releasePageURL) as HttpWebRequest;
-            //Setting the Request method HEAD, you can also use GET too.
+            var request = WebRequest.Create(url) as HttpWebRequest;
             request.Method = "HEAD";
-            //Getting the Web Response.
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-            //Returns TRUE if the Status code == 200
-            response.Close();
-            return (response.StatusCode == HttpStatusCode.OK);
-        }
-        catch 
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+        }   
+        catch
         {
+            Console.WriteLine(url);
             return false;
         }
     }

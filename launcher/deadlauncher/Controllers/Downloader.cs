@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace deadlauncher;
 
@@ -15,7 +16,7 @@ public class Downloader
         this.l = l;
     }
 
-    public async Task PullVersions()
+    public async Task PullVersions(string[] ignoreTagsThatContains)
     {
         GithubClient client = new("destructive-crab", "deadlauncher");
         
@@ -23,11 +24,29 @@ public class Downloader
 
         foreach (var tag in allReleases)
         {
-            if(tag== "launcher") continue;
+            bool valid = true;
+            {
+                foreach (string ignore in ignoreTagsThatContains)
+                {
+                    if (tag.Contains(ignore))
+                    {
+                        valid = false;
+                    }
+                }    
+            }
+            if (!valid) return;
 
-            string downloadURL = client.GetDownloadOfAssetURL(tag, "deadays.zip");
+            string assetName = "";
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))   { assetName = "deadays_windows.zip"; }
+            else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) { assetName = "deadays_linux.zip"; }
+            
+            string? downloadURL = client.GetDownloadOfAssetURL(tag, assetName);
 
-            l.Model.RegisterVersion(tag, downloadURL);
+            if (downloadURL != null)
+            {
+                l.Model.RegisterVersion(tag, downloadURL);    
+            }
         }
     }
 

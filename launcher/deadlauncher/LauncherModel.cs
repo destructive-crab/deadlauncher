@@ -6,13 +6,12 @@ public sealed class LauncherModel
     public const string MODE_POSTFIX  = "mode";
     
     public string RunningLineText = "";
-    public string CurrentVersionExecutablePath => ExecutablePath(selectedVersionID);
     
     private string selectedVersionID = NONE_SELECTED;
     public string SelectedVersionID
     {
         get { return selectedVersionID; }
-        set { if (IsVersionValid(value)) { selectedVersionID = value; } }
+        set { if (IsVersionValid(value)) { SetVersion(value); } }
     }
 
     public string[] Installed => installedIDs.ToArray();
@@ -27,15 +26,6 @@ public sealed class LauncherModel
     public event Action<string> OnVersionSelected;
     
     private Downloader logic => Application.Launcher.Downloader;
-
-    public string? ExecutablePath(string id)
-    {
-        if (!foldersWithExecutableMap.ContainsKey(id)) return null;
-        
-        string path = Path.Combine(foldersWithExecutableMap[id], "Deadays.exe");
-
-        return path;
-    }
     
     public async Task<string?> Changelog(string id)
     {
@@ -178,6 +168,5 @@ public sealed class LauncherModel
 
             return 0;
         }
-
     }
 }
