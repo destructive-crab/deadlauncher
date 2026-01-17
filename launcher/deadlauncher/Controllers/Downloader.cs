@@ -30,7 +30,8 @@ public class Downloader
                     }
                 }    
             }
-            if (!valid) return;
+            
+            if (!valid) continue;
 
             string assetName = "";
             

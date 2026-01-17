@@ -64,7 +64,7 @@ public class GithubClient
             
             tags.Add(tag);
         }
-
+        
         return tags.ToArray();
     }
 
