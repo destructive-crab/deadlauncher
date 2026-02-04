@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
+using boot;
 
 public class DeadLauncherBoot
 {
@@ -25,7 +26,8 @@ public class DeadLauncherBoot
     public static async Task Main()
     {
         Booter booter = new Booter();
-        
+
+        return;
         await booter.ValidateFolders();
         await booter.StartLauncher();
     }

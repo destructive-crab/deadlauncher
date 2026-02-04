@@ -143,6 +143,16 @@ public sealed class LauncherModel
 
         int Comparator(string a, string b)
         {
+            if (a.Contains(LauncherModel.MODE_POSTFIX))
+            {
+                a = a.Split("_")[0];
+            }
+            
+            if (b.Contains(LauncherModel.MODE_POSTFIX))
+            {
+                b = b.Split("_")[0];
+            }
+            
             a = a.Replace("v", "");
             a = a.Replace("hotfix", "1");
             a = a.Replace("_", ".");
