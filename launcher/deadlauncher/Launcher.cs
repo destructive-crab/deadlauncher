@@ -4,6 +4,8 @@ namespace deadlauncher;
 
 public sealed class Launcher
 {
+    public static readonly string VERSION = "4.0";
+    
     //M
     public readonly LauncherModel  Model;
     //V
