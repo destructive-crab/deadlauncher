@@ -10,6 +10,18 @@ public static class Application
 
     private static async Task Start()
     {
+        bool moveNext = await StartUpdater();
+        if(moveNext) await StartLauncher();
+    }
+
+    private static async Task<bool> StartUpdater()
+    {
+        LauncherInstaller installer = new();
+        return !(await installer.StartUpdater());
+    }
+
+    private static async Task StartLauncher()
+    {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             await Launcher.Downloader.PullVersions(["launcher", "linux"]);   

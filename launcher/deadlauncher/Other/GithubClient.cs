@@ -2,7 +2,7 @@ using System.Net;
 
 namespace deadlauncher;
 
-public class GithubClient
+public class GitHubClient
 {
     private readonly string userID;
     private readonly string repoID;
@@ -10,13 +10,13 @@ public class GithubClient
     public string RepoURL => $"https://github.com/{userID}/{repoID}";
     public string TagsPageURL => RepoURL + "/tags";
 
-    public GithubClient(string userId, string repoId)
+    public GitHubClient(string userId, string repoId)
     {
         userID = userId;
         repoID = repoId;
     }
 
-    public string? GetDownloadOfAssetURL(string tag, string asset)
+    public string? GetAssetDownloadURL(string tag, string asset)
     {
         var url = RepoURL + $"/releases/download/{tag}/{asset}";
 

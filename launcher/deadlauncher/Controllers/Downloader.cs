@@ -1,5 +1,4 @@
 using System.Net;
-using System.Runtime.InteropServices;
 
 namespace deadlauncher;
 
@@ -14,7 +13,7 @@ public class Downloader
 
     public async Task PullVersions(string[] ignoreTagsThatContains)
     {
-        GithubClient client = new("destructive-crab", "deadlauncher");
+        GitHubClient client = new("destructive-crab", "deadlauncher");
         
         string[] allReleases = await client.GetReleaseTags();
 
@@ -38,7 +37,7 @@ public class Downloader
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))   { assetName = "deadays_windows.zip"; }
             else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) { assetName = "deadays_linux.zip"; }
             
-            string? downloadURL = client.GetDownloadOfAssetURL(tag, assetName);
+            string? downloadURL = client.GetAssetDownloadURL(tag, assetName);
 
             if (downloadURL != null)
             {
@@ -53,7 +52,9 @@ public class Downloader
         Application.Launcher.FileManager.ValidateFolder(Application.Launcher.Model.DataFolder);
         Application.Launcher.FileManager.ValidateFolder(Application.Launcher.Model.VersionsFolder);
 
+        //todo
         string[] subdirs = Directory.GetDirectories(Application.Launcher.Model.VersionsFolder);
+        
         
         foreach (string s in subdirs)
         {
@@ -115,8 +116,8 @@ public class Downloader
 
     public async Task<string?> GetChangelog(string id)
     {
-        GithubClient client = new("destructive-crab", "deadlauncher");
-        string downloadURL = client.GetDownloadOfAssetURL(id, "changelog.txt");
+        GitHubClient client = new("destructive-crab", "deadlauncher");
+        string downloadURL = client.GetAssetDownloadURL(id, "changelog.txt");
         
         WebClient webClient = new();
 

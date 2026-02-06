@@ -10,6 +10,7 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier> 
 		<PublishSingleFile>true</PublishSingleFile> 
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,10 @@
 	  <EmbeddedResource Include="Assets\dd_label.png" />
 	  <EmbeddedResource Include="Assets\UI.ttf" />
 	  <EmbeddedResource Include="Assets\Line.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Updater\" />
     </ItemGroup>
 
 </Project>
