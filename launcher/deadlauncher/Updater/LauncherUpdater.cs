@@ -6,31 +6,11 @@ using SFML.Window;
 
 public class LauncherUpdater
 {
-    public struct InstallerContext
-    {
-        public enum InstallerResult
-        {
-            Install,
-            Update,
-            None
-        }
-
-        public readonly InstallerResult Result;
-        public readonly bool StartedFromDifferentDirectory;
-        public readonly string LauncherExecutablePath;
-
-        public InstallerContext(bool startedFromDifferentDirectory, InstallerResult result, string launcherExecutablePath)
-        {
-            StartedFromDifferentDirectory = startedFromDifferentDirectory;
-            Result = result;
-            LauncherExecutablePath = launcherExecutablePath;
-        }
-    }
-    
+    #region CONSTS
     public const string GithubUsername = "destructive-crab";
     public const string GithubRepositoryName = "deadlauncher";
     public const string GithubLauncherTag = "launcher";
-    private const string GithubLauncherVersionAssetName = "version";
+    public const string GithubLauncherVersionAssetName = "version";
     
     public static string AssetName()
     {
@@ -46,16 +26,49 @@ public class LauncherUpdater
     public static readonly string LauncherVersionPath = Path.Combine(DataFolderPath, "launcher_version");
 
     public static readonly string ConfigPath = Path.Combine(DataFolderPath, "config.json");
-    public string LauncherExecutablePath => Path.Combine(LauncherFolderPath, AssetName().Replace(".exe", $"_{GetActualLauncherVersion()}.exe"));
-    
-    //windows shortcuts
-    public static readonly string StartMenuShortcutFullPath = GetRoamingRelatedPath(Path.Combine("Microsoft", "Windows", "Start Menu", "Programs", "Dead Launcher.lnk"));
-    public static readonly string DesktopShortcutPath = (Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),"Microsoft/Windows/StartMenu/Programs"));
 
+    //windows shortcuts
+    public static readonly string StartMenuShortcutFullPath = FullPath(Path.Combine("Microsoft", "Windows", "Start Menu", "Programs", "Dead Launcher.lnk"));
+    #endregion
+    
+    public string LauncherExecutablePath
+    {
+        get
+        {
+            string assetName = AssetName();
+            string idAddition = $"_{GetActualLauncherVersion()}";
+
+            if (assetName.Contains(".exe"))
+            {
+                assetName = assetName.Replace(".exe", idAddition+".exe");
+            }
+            else
+            {
+                assetName = assetName += idAddition;
+            }
+
+            return Path.Combine(LauncherFolderPath, assetName);
+        }
+    }
+    
     public string LatestLauncherVersionID { get; private set; } = null;
     public string LocalLauncherVersionID { get; private set; } = null;
     
     private string? GetActualLauncherVersion() => LatestLauncherVersionID;
+
+    public static async Task<string?> PullLauncherVersionID()
+    {
+        WebClient webClient = new();
+        GitHubClient github = new GitHubClient(GithubUsername, GithubRepositoryName);
+
+        return await webClient.DownloadStringTaskAsync(new Uri(github.GetAssetDownloadURL(GithubLauncherTag, "version")));
+    }
+
+    public static string FullPath(string path)
+    {
+        string applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(applicationDataPath, path);
+    }
 
     public async Task<InstallerContext> StartUpdater()
     {
@@ -63,32 +76,18 @@ public class LauncherUpdater
         
         InstallerContext.InstallerResult result = await TryUpdate();
 
-        return new InstallerContext(Environment.ProcessPath != GetRoamingRelatedPath(LauncherFolderPath), result, GetRoamingRelatedPath(LauncherExecutablePath));
+        return new InstallerContext(result, FullPath(LauncherExecutablePath));
     }
 
     public async Task ValidateData()
     { 
-        Application.Launcher.FileManager.ValidateFolder(GetRoamingRelatedPath(LauncherFolderPath));
-        Application.Launcher.FileManager.ValidateFolder(GetRoamingRelatedPath(DataFolderPath));
+        Application.Launcher.FileManager.ValidateFolder(FullPath(LauncherFolderPath));
+        Application.Launcher.FileManager.ValidateFolder(FullPath(DataFolderPath));
         
-        LocalLauncherVersionID = Application.Launcher.FileManager.ReadFile(GetRoamingRelatedPath(LauncherVersionPath));
-        LatestLauncherVersionID = PullLauncherVersionID();
+        LocalLauncherVersionID = Application.Launcher.FileManager.ReadFile(FullPath(LauncherVersionPath));
+        LatestLauncherVersionID = await PullLauncherVersionID();
     }
 
-    public string? PullLauncherVersionID()
-    {
-        WebClient webClient = new();
-        GitHubClient github = new GitHubClient(GithubUsername, GithubRepositoryName);
-        
-        return webClient.DownloadString(new Uri(github.GetAssetDownloadURL(GithubLauncherTag, "version")));
-    }
-
-    public static string GetRoamingRelatedPath(string path)
-    {
-        string applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        return Path.Combine(applicationDataPath, path);
-    }
-    
     public ProgressWindow Window { get; private set; }
     
     public async Task<InstallerContext.InstallerResult> TryUpdate()
@@ -97,13 +96,13 @@ public class LauncherUpdater
         {
             InstallerContext.InstallerResult result;
 
-            bool isLatestLauncherInstalled = File.Exists(LauncherUpdater.GetRoamingRelatedPath(LauncherExecutablePath));
+            bool isLatestLauncherInstalled = File.Exists(LauncherUpdater.FullPath(LauncherExecutablePath));
         
-            string? latestVersionID = PullLauncherVersionID();
+            string? latestVersionID = await PullLauncherVersionID();
         
             if (!isLatestLauncherInstalled)
             {
-                Window = new();
+                Window = new ProgressWindow();
                 Window.CreateWindow();
                 if(LocalLauncherVersionID == null)
                 {
@@ -120,13 +119,13 @@ public class LauncherUpdater
             }
             else
             {
-                string[] allExecutables = Application.Launcher.FileManager.PullFiles(GetRoamingRelatedPath(LauncherFolderPath), "*.exe");
+                string[] allExecutables = Application.Launcher.FileManager.PullFiles(FullPath(LauncherFolderPath), "*.exe");
                 
                 if (allExecutables.Length > 1)
                 {
                     foreach (string executable in allExecutables)
                     {
-                        if (executable != GetRoamingRelatedPath(LauncherExecutablePath) || Environment.ProcessPath != executable)
+                        if (executable != FullPath(LauncherExecutablePath) || Environment.ProcessPath != executable)
                         {
                             Application.Launcher.FileManager.Delete(executable);
                         }
@@ -135,11 +134,11 @@ public class LauncherUpdater
                 result = LauncherUpdater.InstallerContext.InstallerResult.None;
             }
         
-            if (Application.ProcessDirectory != GetRoamingRelatedPath(LauncherFolderPath))
+            if (Application.ProcessDirectory != FullPath(LauncherFolderPath))
             {
                 if (Window == null)
                 {
-                    Window = new();
+                    Window = new ProgressWindow();
                     Window.CreateWindow();
                 }
                 Window.State = "Launcher Is Installed!\nNow you can start it from Start Menu\nThis executable can be deleted";
@@ -164,14 +163,14 @@ public class LauncherUpdater
 
     private async Task ReplaceLauncherWith(string versionID, ProgressWindow window)
     {
-        File.Create(LauncherUpdater.GetRoamingRelatedPath(LauncherUpdater.LauncherVersionPath)).Close();
-        await File.WriteAllTextAsync(LauncherUpdater.GetRoamingRelatedPath(LauncherUpdater.LauncherVersionPath), versionID);
+        File.Create(LauncherUpdater.FullPath(LauncherUpdater.LauncherVersionPath)).Close();
+        await File.WriteAllTextAsync(LauncherUpdater.FullPath(LauncherUpdater.LauncherVersionPath), versionID);
         
         GitHubClient client = new(LauncherUpdater.GithubUsername, LauncherUpdater.GithubRepositoryName);
         
-        if (File.Exists(LauncherUpdater.GetRoamingRelatedPath(LauncherExecutablePath)))
+        if (File.Exists(LauncherUpdater.FullPath(LauncherExecutablePath)))
         {
-            File.Delete(LauncherUpdater.GetRoamingRelatedPath(LauncherExecutablePath));
+            File.Delete(LauncherUpdater.FullPath(LauncherExecutablePath));
         }
 
         string downloadLink = client.GetAssetDownloadURL(LauncherUpdater.GithubLauncherTag, LauncherUpdater.AssetName());
@@ -179,12 +178,31 @@ public class LauncherUpdater
         WebClient webClient = new WebClient();
         
         window.BindProgressWindow(webClient);
-        await webClient.DownloadFileTaskAsync(downloadLink, LauncherUpdater.GetRoamingRelatedPath(LauncherExecutablePath));
+        await webClient.DownloadFileTaskAsync(downloadLink, LauncherUpdater.FullPath(LauncherExecutablePath));
         
         if (Application.Launcher.FileManager is WindowsFileManager windowsFileManager)
         {
             Application.Launcher.FileManager.Delete(LauncherUpdater.StartMenuShortcutFullPath);
-            windowsFileManager.CreateShortcut(LauncherUpdater.StartMenuShortcutFullPath, LauncherUpdater.GetRoamingRelatedPath(LauncherExecutablePath), "Deadays Launcher by destructive_crab");
+            windowsFileManager.CreateShortcut(LauncherUpdater.StartMenuShortcutFullPath, LauncherUpdater.FullPath(LauncherExecutablePath), "Deadays Launcher by destructive_crab");
+        }
+    }
+    
+    public struct InstallerContext
+    {
+        public enum InstallerResult
+        {
+            Install,
+            Update,
+            None
+        }
+
+        public readonly InstallerResult Result;
+        public readonly string LauncherExecutablePath;
+
+        public InstallerContext(InstallerResult result, string launcherExecutablePath)
+        {
+            Result = result;
+            LauncherExecutablePath = launcherExecutablePath;
         }
     }
 }
@@ -193,16 +211,33 @@ public class ProgressWindow
 {
     public string State = "Updating Launcher";
     public int Progress;
-    public Font Font;
+    
+    public readonly Font Font;
 
-    public ProgressWindow()
+    private WebClient boundWith;
+
+    public ProgressWindow() => Font = new(ResourcesHandler.Load("UI.ttf"));
+
+    ~ProgressWindow()
     {
-        Font = new(ResourcesHandler.Load("UI.ttf"));
+        Unbind();
     }
-
+    
     public void BindProgressWindow(WebClient webClient)
     {
+        boundWith = webClient;
+
+        Unbind();
+        
         webClient.DownloadProgressChanged += TrackProgress;
+    }
+
+    private void Unbind()
+    {
+        if (boundWith != null)
+        {
+            boundWith.DownloadProgressChanged -= TrackProgress;
+        }
     }
 
     private void TrackProgress(object sender, DownloadProgressChangedEventArgs e)
@@ -210,13 +245,13 @@ public class ProgressWindow
         Progress = e.ProgressPercentage;
     }
 
-    public bool WindowShouldClose = false;
     
     public void CreateWindow()
     {
         ThreadPool.QueueUserWorkItem(delegate { WindowLoop(); });
     }
 
+    public bool WindowShouldClose = false;
     private void WindowLoop()
     {
         RenderWindow window = new(new VideoMode(300, 100), "Launcher Updater", Styles.Close);
@@ -231,12 +266,12 @@ public class ProgressWindow
         
         RectangleShape progressBar = new();
 
-        progressBar.Position = new(20, 50);
+        progressBar.Position = new Vector2f(20, 50);
         progressBar.FillColor = Color.Blue;
         
         while (!WindowShouldClose)
         {
-            int width = (int)((Progress / 100f) * 260);
+            int width = (int)((Progress / 100f) * (window.Size.X-40));
             window.DispatchEvents();
             window.Clear(Color.White);
             {
