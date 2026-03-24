@@ -23,10 +23,10 @@ public sealed class LauncherModel
     public string[] Installed => installedIDs.ToArray();
     public string[] Available => availableOnServerIDs.ToArray();
 
-    private readonly List<string>               installedIDs = new();
+    private readonly List<string>                     installedIDs = new();
     private readonly Dictionary<string, string> foldersWithExecutableMap = new();
 
-    private readonly List<string>               availableOnServerIDs = new();
+    private readonly List<string>                     availableOnServerIDs = new();
     private readonly Dictionary<string, string> downloadLinkMap = new();
 
     public event Action<string> OnVersionSelected;

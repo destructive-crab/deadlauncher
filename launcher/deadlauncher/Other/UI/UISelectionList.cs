@@ -78,7 +78,7 @@ public sealed class UISelectionList : AUIBox
 
     public override void UpdateLayout()
     {
-        box.Rect = Rect;
+        box.SetRect(Rect);
     }
 
     public override void Draw(RenderTarget target)

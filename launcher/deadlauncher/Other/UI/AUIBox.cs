@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SFML.System;
 
 namespace leditor.UI;

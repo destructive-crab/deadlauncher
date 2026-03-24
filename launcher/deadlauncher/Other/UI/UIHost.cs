@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -49,7 +46,7 @@ public class UIHost
         View.Center = size / 2;
         Size = size;
         if (AssertRoot(out var root))
-            root.Rect = new FloatRect(new Vector2f(0,0), size);
+            root.SetRect(new FloatRect(new Vector2f(0,0), size));
     }
 
     internal Queue<Action> UpdateActionsQueue = [];

@@ -157,7 +157,7 @@ public class UITextBox : AUIElement
 
         linesCount = lines.Count;
         MinimalSize = minimalSize;
-        Rect = new FloatRect(Rect.Position, MinimalSize);
+        SetRect(new FloatRect(Rect.Position, MinimalSize));
         
         UpdatePositions();
     }

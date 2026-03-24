@@ -25,9 +25,17 @@ public class ChangelogMenu : Menu
         textBox = new UITextBox(host, text);
         
         Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
-        AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
-        
-        var root = new UIOutlineBox(host, new StackBox(host, [new ScrollBox(host, textBox), backButton]));
+        AnchorBox backButtonAnchorBox = new AnchorBox(host);
+        backButtonAnchorBox.SetInheritRect(true);
+        backButtonAnchorBox.AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
+
+        UIOutlineBox root = new UIOutlineBox(host, 
+                                new StackBox(host, 
+                                    [
+                                        new ScrollBox(host, textBox).SetInheritRect(true), 
+                                        backButtonAnchorBox         
+                                    ]).SetInheritRect(true));
+        root.SetInheritRect(true);
 
         DisplayChangelog();
         

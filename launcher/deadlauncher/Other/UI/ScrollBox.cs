@@ -95,7 +95,7 @@ public class ScrollBox : AUIBox
     {
         Child = child;
         if (_child != null)
-            _child.Parent = this;
+            _child.SetParent(this);
 
         _scrollerX = new Scroller(host, OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
         _scrollerY = new Scroller(host, OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
@@ -138,12 +138,12 @@ public class ScrollBox : AUIBox
         );
 
         if (Child != null)
-            Child.Rect = new FloatRect (
-            Rect.Left - _scroll.X * _difference.X , 
-            Rect.Top - _scroll.Y * _difference.Y,
-            Rect.Width - Host.Style.ScrollerThickness - 20,
-            Rect.Height - Host.Style.ScrollerThickness
-        );
+            Child.SetRect(new FloatRect (
+                Rect.Left - _scroll.X * _difference.X , 
+                Rect.Top - _scroll.Y * _difference.Y,
+                Rect.Width - Host.Style.ScrollerThickness - 20,
+                Rect.Height - Host.Style.ScrollerThickness
+            ));
     }
     
     public AUIElement? Child
@@ -154,8 +154,8 @@ public class ScrollBox : AUIBox
             _child = value;
             if (_child == null) return;
 
-            _child.Parent = this;
-            _child.Rect = Rect;
+            _child.SetParent(this);
+            _child.SetRect(Rect);
         }
     }
 
@@ -166,7 +166,7 @@ public class ScrollBox : AUIBox
     {
         if (_child == child)
         {
-            _child.Parent = null;
+            _child.SetParent(null);
             _child = null;
         }
     }
@@ -180,11 +180,11 @@ public class ScrollBox : AUIBox
         if (_child == null) return;
 
         var size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness - 20, Rect.Height - Host.Style.ScrollerThickness);
-        _child.Rect = new FloatRect (
+        _child.SetRect(new FloatRect (
             Rect.Left - _scroll.X * _difference.X, 
             Rect.Top - _scroll.Y * _difference.Y,
             size.X, size.Y
-        );
+        ));
         
         _difference = new Vector2f(
             float.Max(0, _child.Rect.Width - size.X),

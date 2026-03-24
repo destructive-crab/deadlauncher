@@ -19,7 +19,7 @@ public class UIStyle()
     public readonly uint FontSize = 24;
     
     // Rect
-    public static readonly Color RectDefault = new(0x00363cFF);
+    public static readonly Color RectDefault = FirstBackgroundColor;
     
     // Label
     public static readonly Color LabelColor = new(0xbbdde1FF);

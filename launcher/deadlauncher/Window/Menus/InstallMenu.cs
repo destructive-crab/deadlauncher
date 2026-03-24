@@ -44,7 +44,7 @@ public class InstallMenu : Menu
         textBackground.Size      = new Vector2f(progressBarText.GetGlobalBounds().Size.X + 6, progressBar.GetGlobalBounds().Size.Y - 6);
         textBackground.Position  = new Vector2f(progressBar.Position.X + GetBarMaxWidth(rect)/2 - textBackground.Size.X/2 - 3,progressBar.Position.Y+3);
 
-        return new UIOutlineBox(host, new StackBox(host, [new UITextBox(host, "installing!!!!   installing!!!!", true)]));
+        return new UIOutlineBox(host, new StackBox(host, [new UITextBox(host, "installing!!!!   installing!!!!").SetStretchLines(true)]));
     }
 
     private int progress;
@@ -73,8 +73,8 @@ public class InstallMenu : Menu
 
     private async void Switch()
     {
-        progressBar.FillColor = UIStyle.ButtonBottom;
-        textBackground.FillColor = UIStyle.ButtonTop;
+        progressBar    .FillColor = UIStyle.ButtonBottom;
+        textBackground .FillColor= UIStyle.ButtonTop;
         progressBarText.FillColor = UIStyle.RectDefault;
         
         await Task.Delay(1000);
@@ -90,7 +90,7 @@ public class InstallMenu : Menu
         if (text.Length == 2) text = $" {text}";
         
         progressBarText.DisplayedString = text;
-        Application.Launcher.Model.RunningLineText = text+" %";
+        Application.Launcher.Model.RunningLineText = text + " %";
         
         window.Draw(progressBar);
         window.Draw(textBackground);

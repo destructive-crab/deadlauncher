@@ -1,11 +1,13 @@
 using System.Diagnostics;
+using SFML.Graphics;
+using SFML.Window;
 
 namespace deadlauncher;
 
 public static class Application
 {
     public static string ProcessDirectory => Path.GetDirectoryName(Environment.ProcessPath);
-    public static string ProcessPath      => Environment.ProcessPath;
+    public static string ProcessPath        => Environment.ProcessPath;
     
     public static readonly Launcher Launcher = new();
     
@@ -19,10 +21,14 @@ public static class Application
         return context.LauncherExecutablePath == ProcessPath;
     }
     
-    public static async Task Main() => await Start();
+    public static async Task Main() => await Start(); 
 
     private static async Task Start()
     {
+        await StartLauncher();
+
+        return;
+        
         LauncherUpdater.InstallerContext context = await StartUpdater();
         
         if(WasExecutableChanged(context))
@@ -50,6 +56,10 @@ public static class Application
 
     private static async Task StartLauncher()
     {
+        Launcher.Downloader.LoadLocalData();
+        
+        await Launcher.Window.Prepare();
+        
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             await Launcher.Downloader.PullVersions(["launcher", "linux"]);   
@@ -59,10 +69,11 @@ public static class Application
             await Launcher.Downloader.PullVersions(["launcher", "windows"]);
         }
         
-        Launcher.Downloader.LoadLocalData();
-        
-        await Launcher.Window.Prepare();
-        
         Launcher.Window.Loop();
+    }
+
+    public static void Quit()
+    {
+        
     }
 }

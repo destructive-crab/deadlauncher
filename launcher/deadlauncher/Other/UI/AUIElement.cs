@@ -6,7 +6,7 @@ namespace leditor.UI;
 
 public abstract class AUIElement(UIHost host, Vector2f minimalSize)
 {
-    public AUIBox? Parent;
+    private AUIBox? parent;
 
     protected readonly UIHost Host = host;
     
@@ -19,30 +19,63 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         {
             _minimalSize = value;
             
-            if (Parent != null)
+            if (GetParent() != null)
             {
-                Host.UpdateActionsQueue.Enqueue(Parent.OnChildUpdate);
+                Host.UpdateActionsQueue.Enqueue(GetParent().OnChildUpdate);
             }
         }
     }
 
-    private FloatRect _rect;
+    public  bool      InheritRect { get; private set; }
+    private FloatRect rect;
+
     public FloatRect Rect
     {
-        get => _rect; 
-        set
+        get
         {
-            if (_rect == value) return;
-            
-            _rect = new FloatRect(
-                value.Left, value.Top,
-                float.Max(MinimalSize.X, value.Width),
-                float.Max(MinimalSize.Y, value.Height)
-            );
-            
-            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
+            if (InheritRect && parent != null)
+            {
+                return parent.Rect;
+            }
+
+            return rect;
         }
-    } 
+        protected set => rect = value;
+    }
+
+    public AUIBox? GetParent() => parent;
+
+    public void SetParent(AUIBox? value)
+    {
+        if (parent == value) return;
+        
+        parent = value;
+        UpdateLayout();
+    }
+
+    public virtual AUIElement SetRect(FloatRect value)
+    {
+        if (Rect == value) return this;
+
+        Rect = new FloatRect(
+            value.Left, value.Top,
+            float.Max(MinimalSize.X, value.Width),
+            float.Max(MinimalSize.Y, value.Height)
+        );
+
+        Host.UpdateActionsQueue.Enqueue(UpdateLayout);
+        return this;
+    }
+
+    public AUIElement SetInheritRect(bool value)
+    {
+        if (InheritRect == value) return this;
+        
+        InheritRect = value;
+        UpdateLayout();
+
+        return this;
+    }
 
     public abstract void UpdateLayout();
 
@@ -52,8 +85,8 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     
     public void Destroy()
     {
-        Parent?.RemoveChild(this);
-        Parent = null;
+        GetParent()?.RemoveChild(this);
+        SetParent(null);
     }
 
     public virtual void Deactivate() {}

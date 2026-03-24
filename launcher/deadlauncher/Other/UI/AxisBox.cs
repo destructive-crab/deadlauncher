@@ -47,7 +47,7 @@ public class AxisBox : AUIBox
         FitRect = fitRect;
         foreach (var child in children)
         {
-            child.Parent = this;
+            child.SetParent(this);
         }
 
         _axis = axis;
@@ -59,14 +59,14 @@ public class AxisBox : AUIBox
 
     public override void RemoveChild(AUIElement child)
     {
-        child.Parent = null;
+        child.SetParent(null);
         _children.Remove(child);
         UpdateMinimalSize();
     }
 
     public AUIElement AddChild(AUIElement child)
     {
-        child.Parent = this;
+        child.SetParent(this);
         _children.Add(child);
         UpdateMinimalSize();
         return child;
@@ -85,10 +85,10 @@ public class AxisBox : AUIBox
                 if (_children.Count == 1)
                 {
                     AUIElement child = _children[0]; 
-                    child.Rect = new FloatRect(
+                    child.SetRect(new FloatRect(
                         default, default,
                         w, Rect.Height
-                    );
+                    ));
                 }
                 else
                 {
@@ -103,7 +103,7 @@ public class AxisBox : AUIBox
                         {
                             w = (int)(Rect.Width - child.MinimalSize.X);
                             doNotFit.Add(i);
-                            child.Rect = new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height));
+                            child.SetRect(new FloatRect(default, new Vector2f(child.MinimalSize.X, Rect.Height)));
 
                             if (doNotFit.Count == _children.Count) break;
                         
@@ -112,7 +112,7 @@ public class AxisBox : AUIBox
                         }
                         else
                         {
-                            child.Rect = new FloatRect(default, new Vector2f(optimalWidth, Rect.Height));
+                            child.SetRect(new FloatRect(default, new Vector2f(optimalWidth, Rect.Height)));
                         }
                     }   
                 }
@@ -121,16 +121,16 @@ public class AxisBox : AUIBox
             {
                 foreach (AUIElement child in _children)
                 {
-                    child.Rect = new FloatRect(
+                    child.SetRect(new FloatRect(
                         default, default,
                         child.MinimalSize.X, Rect.Height
-                    );
+                    ));
                 }
             }
 
             foreach (AUIElement child in _children)
             {
-                child.Rect = new FloatRect(position, child.Rect.Size);
+                child.SetRect(new FloatRect(position, child.Rect.Size));
                 position.X += child.Rect.Size.X + Host.Style.AxisBoxSpace;
             }
         }
@@ -139,10 +139,10 @@ public class AxisBox : AUIBox
             //todo fitrect
             foreach (AUIElement child in _children.ToArray())
             {
-                child.Rect = new FloatRect(
+                child.SetRect(new FloatRect(
                     position.X, position.Y,
                     Rect.Width, child.MinimalSize.Y
-                );
+                ));
                 
                 position.Y += child.MinimalSize.Y + Host.Style.AxisBoxSpace;
             }

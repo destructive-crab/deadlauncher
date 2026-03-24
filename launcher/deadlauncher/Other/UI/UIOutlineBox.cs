@@ -35,7 +35,6 @@ public sealed class UIOutlineBox : AUIBox
         target.Draw(line);
         
         //vertical
-        
         line.Position = Rect.Position - new Vector2f(outline, outline);
         line.Size     = new Vector2f(outline, Rect.Size.Y + outline * 2);
 
@@ -44,6 +43,8 @@ public sealed class UIOutlineBox : AUIBox
         line.Position += new Vector2f(Rect.Size.X + outline, 0);
         
         target.Draw(line);
+        
+        //Console.WriteLine($"RECT: {Rect}");
     }
 
     public override IEnumerable<AUIElement> GetChildren()
@@ -55,7 +56,7 @@ public sealed class UIOutlineBox : AUIBox
     {
         if (Child == null) return;
         
-        Child.Rect = Rect;
+        Child.SetRect(Rect);
     }
 
     public override void RemoveChild(AUIElement child)

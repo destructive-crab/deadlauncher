@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SFML.Graphics;
 namespace leditor.UI;
 
@@ -12,11 +11,11 @@ public class SingleBox : AUIBox
         set {
             if (value != null)
             {
-                value.Parent = this;
+                value.SetParent(this);
             }
             else if (_child != null)
             {
-                _child.Parent = null;
+                _child.SetParent(null);
             }
 
             _child = value;
@@ -36,14 +35,24 @@ public class SingleBox : AUIBox
         }
     }
 
-    public SingleBox(UIHost host, AUIElement? child = null, bool hide = false) : base(host, child?.MinimalSize ?? default)
+    public SingleBox(UIHost host, AUIElement? child = null, bool hide = false) 
+        : base(host, child?.MinimalSize ?? default)
     {
         _hide = hide;
         _child = child;
         if (_child != null)
-            _child.Parent = this;
+            _child.SetParent(this);
     }
-    
+
+    public override AUIElement SetRect(FloatRect value)
+    {
+        Rect = value;
+        Child?.SetRect(value);
+        
+        Console.WriteLine($"RECT SET IN SB: {value}");
+        return this;
+    }
+
     public override IEnumerable<AUIElement> GetChildren()
         => _child == null ? [] : [_child];
 
@@ -51,7 +60,7 @@ public class SingleBox : AUIBox
     {
         if (_child == child)
         {
-            child.Parent = null;
+            child.SetParent(null);
             Child = null;
         }
     }
@@ -59,7 +68,9 @@ public class SingleBox : AUIBox
     public override void UpdateLayout()
     {
         if (_child != null && !_hide)
-            _child.Rect = Rect;
+        {
+            _child.SetRect(Rect);
+        }
     }
 
     protected override void UpdateMinimalSize()

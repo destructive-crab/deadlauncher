@@ -8,34 +8,44 @@ namespace deadlauncher;
 public class LauncherWindow
 {
     public RenderWindow RenderWindow { get; private set; }
-    private UIHost host;
+    public UIHost       UIHost       { get; private set; }
 
+    private StackBox  rootElement;
+    
+    private SingleBox menuLayer;
+    private SingleBox popupLayer;
+    
     private Menu previousMenu;
     private Menu currentMenu;
 
+    private MessageBox? messageBox;
+    
     private WindowBackgroundGraphics backgroundGraphics;
 
     //CONSTS
-    public const string WindowLabel       = "Deadays Launcher";
-    public const int    WindowWidth       = 800;
-    public const int    WindowHeight      = 500;
+    public const string WindowLabel  = "Deadays Launcher";
+    public const int    WindowWidth  = 800;
+    public const int    WindowHeight = 500;
 
-    public readonly FloatRect MenuRect    = new(25, 124, WindowWidth - 50, WindowHeight - 200); 
+    public readonly FloatRect MenuRect = new(25, 124, WindowWidth - 50, WindowHeight - 200); 
     
     public async Task Prepare()
     {
-        RenderWindow = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), WindowLabel, Styles.Titlebar | Styles.Close);
-        
-        host = new UIHost(new UIStyle(), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y));
-
         backgroundGraphics = new WindowBackgroundGraphics(WindowWidth, WindowHeight);
         
-        RenderWindow.Closed  += RenderWindowOnClosed;
-        RenderWindow.Resized += RenderWindowOnResized;
+        UIHost = new UIHost(new UIStyle(), new Vector2f(WindowWidth, WindowHeight));
+        
+        menuLayer  = new SingleBox(UIHost);
+        popupLayer = new SingleBox(UIHost);
+
+        menuLayer.SetRect(MenuRect);
+        popupLayer.SetInheritRect(true);
+        
+        rootElement = new StackBox(UIHost, [menuLayer, popupLayer]);
+        
+        UIHost.SetRoot(rootElement);
         
         Application.Launcher.Model.OnVersionSelected += OnVersionSelected;
-        
-        OpenHomeMenu();
     }
 
     private void OnVersionSelected(string obj)
@@ -43,26 +53,34 @@ public class LauncherWindow
         Application.Launcher.Model.RunningLineText = obj;
     }
 
-    private void RenderWindowOnResized(object? sender, SizeEventArgs e) => host.SetSize(new Vector2f(e.Width, e.Height));
+    private void RenderWindowOnResized(object? sender, SizeEventArgs e) => UIHost.SetSize(new Vector2f(e.Width, e.Height));
     private void RenderWindowOnClosed(object? sender, EventArgs e) => Shutdown();
 
     public void Loop()
     {
-        while (RenderWindow.IsOpen )
+        RenderWindow = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), WindowLabel, Styles.Titlebar | Styles.Close);
+
+        RenderWindow.Closed  += RenderWindowOnClosed;
+        RenderWindow.Resized += RenderWindowOnResized;
+        
+        OpenCreditsMenu();
+        
+        while (RenderWindow.IsOpen)
         {
             RenderWindow.DispatchEvents();
+            
             if(!RenderWindow.HasFocus())
             {
                 continue;
             }
             
-            host.Update(RenderWindow);
+            UIHost.Update(RenderWindow);
             
             RenderWindow.Clear(UIStyle.SecondBackgroundColor);
             {
                 backgroundGraphics.Draw(RenderWindow);
-                currentMenu?.Update(RenderWindow, MenuRect);
-                host.Draw(RenderWindow);
+                currentMenu       ?.Update(RenderWindow, MenuRect);
+                UIHost            .Draw(RenderWindow);
             }            
             RenderWindow.Display();
         }
@@ -73,28 +91,28 @@ public class LauncherWindow
         RenderWindow.Close();
     }
 
-    public void OpenHomeMenu()
+    public void OpenMessageBox(string message, params Tuple<string, Action>[] buttons)
     {
-        previousMenu = currentMenu;
-        currentMenu = new HomeMenu(host);
-        host.SetRoot(currentMenu.GetRoot(MenuRect));
+        popupLayer.Child = new MessageBox(message, buttons);
     }
 
     public void OpenInstallMenu(string id)
     {
-        InstallMenu menu = new InstallMenu(host);
+        InstallMenu menu = new InstallMenu(UIHost);
         SwitchTo(menu);
         Application.Launcher.Downloader.DownloadVersion(id, menu.ProgressCallback);
     }
 
-    public void OpenVersionsMenu() => SwitchTo(new VersionMenu(host));
-    public void OpenCreditsMenu() => SwitchTo(new CreditsMenu(host));
-    public void OpenChangelogMenu() => SwitchTo(new ChangelogMenu(host, Application.Launcher.Model.SelectedVersionID));
+    public void OpenHomeMenu()      => SwitchTo(new HomeMenu(UIHost));
+    public void OpenVersionsMenu()  => SwitchTo(new VersionMenu(UIHost));
+    public void OpenCreditsMenu()   => SwitchTo(new CreditsMenu(UIHost));
+    public void OpenChangelogMenu() => SwitchTo(new ChangelogMenu(UIHost, Application.Launcher.Model.SelectedVersionID));
 
     private void SwitchTo(Menu menu)
     {
         previousMenu = currentMenu;
         currentMenu = menu;
+        
         SetRoot(currentMenu.GetRoot(MenuRect));
     }
 
@@ -102,14 +120,7 @@ public class LauncherWindow
 
     private void SetRoot(AUIElement menu)
     {
-        Anchor anchor = new Anchor(
-            MenuRect,
-            new FloatRect(0, 0, 0, 0));
-        
-        AnchorBox anchorBox = new AnchorBox(host);
-        anchorBox.AddChild(anchor, menu);
-        
-        host.SetRoot(anchorBox);
+        menuLayer.Child = menu;
     }
 
     class WindowBackgroundGraphics

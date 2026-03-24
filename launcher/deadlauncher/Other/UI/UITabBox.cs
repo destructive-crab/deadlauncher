@@ -131,9 +131,9 @@ public class UITabBox : AUIBox
 
         if(activeElement != null)
         {
-            activeElement.Rect = new FloatRect(
+            activeElement.SetRect(new FloatRect(
                 Rect.Position.X + outline, Rect.Position.Y + Host.Style.TabLineHeight + outline, 
-                Rect.Size.X - outline * 2, Rect.Size.Y - Host.Style.TabLineHeight);
+                Rect.Size.X - outline * 2, Rect.Size.Y - Host.Style.TabLineHeight));
         }
     }
 

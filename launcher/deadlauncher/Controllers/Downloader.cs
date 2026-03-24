@@ -4,8 +4,9 @@ namespace deadlauncher;
 
 public class Downloader
 {
-    private Launcher l;
-
+    private readonly Launcher l;
+    private const string SERVER_URL = "http://5.42.115.138:5208";
+    
     public Downloader(Launcher l)
     {
         this.l = l;
@@ -13,36 +14,42 @@ public class Downloader
 
     public async Task PullVersions(string[] ignoreTagsThatContains)
     {
-        GitHubClient client = new("destructive-crab", "deadlauncher");
-        
-        string[] allReleases = await client.GetReleaseTags();
-
-        foreach (var tag in allReleases)
+        try
         {
-            bool valid = true;
+            HttpClient client = new()
             {
-                foreach (string ignore in ignoreTagsThatContains)
+                BaseAddress = new Uri(SERVER_URL)
+            };
+        
+            var response = await client.GetAsync("api/versions/all");
+
+            response.EnsureSuccessStatusCode();
+    
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+        
+            VersionInfo[] infos = Newtonsoft.Json.JsonConvert.DeserializeObject<VersionInfo[]>(jsonResponse);
+
+            foreach (var info in infos)
+            {
+                Console.WriteLine(info.ID + " " + info.Tag);
+                l.Model.RegisterVersion(info.ID, SERVER_URL+$"/api/versions/download/{info.ID}");
+                Console.WriteLine(SERVER_URL+$"api/download/{info.ID}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            
+            Application.Launcher.Window.OpenMessageBox("Server Error", 
+                new("Retry", () =>
                 {
-                    if (tag.Contains(ignore))
-                    {
-                        valid = false;
-                    }
-                }    
-            }
+                    PullVersions(ignoreTagsThatContains);
+                }),
+                new("Quit", () =>
+                {
+                    Application.Quit();
+                }));
             
-            if (!valid) continue;
-
-            string assetName = "";
-            
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))   { assetName = "deadays_windows.zip"; }
-            else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) { assetName = "deadays_linux.zip"; }
-            
-            string? downloadURL = client.GetAssetDownloadURL(tag, assetName);
-
-            if (downloadURL != null)
-            {
-                l.Model.RegisterVersion(tag, downloadURL);    
-            }
         }
     }
 
@@ -67,7 +74,7 @@ public class Downloader
         
         if (!string.IsNullOrEmpty(version))
         {
-            if (!l.Model.SetVersion(version))
+            if (!l.Model.SetVersion(version) && l.Model.Available.Length > 0)
             {
                 l.Model.SetVersion(l.Model.Available[0]);
             }
@@ -130,5 +137,15 @@ public class Downloader
         {
             return null;
         }
+    }
+
+    sealed class VersionInfo
+    {
+        public string ID;
+        public string Path;
+        public string Name;
+        public string Tag;
+        public string Changelog;
+        public string ReleaseDate;
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
@@ -29,7 +27,7 @@ public class StackBox : AUIBox
 
     public override void RemoveChild(AUIElement child)
     {
-        child.Parent = null;
+        child.SetParent(null);
         _children.Remove(child);
     }
 
@@ -38,7 +36,7 @@ public class StackBox : AUIBox
     
     public void AddChild(AUIElement child)
     {
-        child.Parent = this;
+        child.SetParent(this);
         
         _children.Add(child);
         MinimalSize = new Vector2f(
@@ -57,7 +55,7 @@ public class StackBox : AUIBox
         _padding = padding;
 
         foreach (var child in _children)
-            child.Parent = this;
+            child.SetParent(this);
     }
 
     public UIPadding Padding
@@ -75,10 +73,17 @@ public class StackBox : AUIBox
     
     public override void UpdateLayout()
     {
+        foreach (AUIElement element in _children)
+        {
+            element.UpdateLayout();
+        }
+        
+        //TODO REFACTOR STACK BOX
+        return;
         var baseRect = new FloatRect(
-            Rect.Left + Padding.Left, 
-            Rect.Top + Padding.Top,
-            Rect.Width - Padding.Left - Padding.Right, 
+            Rect.Left   + Padding.Left, 
+            Rect.Top    + Padding.Top,
+            Rect.Width  - Padding.Left - Padding.Right, 
             Rect.Height - Padding.Bottom - Padding.Top
         );
 
@@ -92,12 +97,12 @@ public class StackBox : AUIBox
             if (_centerY)
                 baseRect.Height = child.MinimalSize.Y;
 
-            child.Rect = new FloatRect(
+            child.SetRect(new FloatRect(
                 baseRect.Left - baseRect.Width / 2,
                 baseRect.Top - baseRect.Height / 2,
                 baseRect.Width,
                 baseRect.Height
-            );
+            ));
         }
     }
 

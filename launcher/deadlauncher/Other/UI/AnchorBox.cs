@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
@@ -19,12 +17,16 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
     {
         foreach (var (anchor, child) in _children)
         {
-            var rect = anchor.BaseRect;
-            rect.Left += Rect.Left + anchor.Relative.Left * Rect.Width;
-            rect.Top += Rect.Top + anchor.Relative.Top * Rect.Height;
-            rect.Width += anchor.Relative.Width * Rect.Width;
+            Console.WriteLine(child.GetType().Name + $" UPDATING LAYOUT: {InheritRect} {Rect}");
+            FloatRect rect = anchor.BaseRect;
+            
+            rect.Left   += Rect.Left + anchor.Relative.Left * Rect.Width;
+            rect.Top    += Rect.Top  + anchor.Relative.Top  * Rect.Height;
+            
+            rect.Width  += anchor.Relative.Width  * Rect.Width;
             rect.Height += anchor.Relative.Height * Rect.Height;
-            child.Rect = rect;
+            
+            child.SetRect(rect);
         }
     }
     
@@ -35,7 +37,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
 
     public override void RemoveChild(AUIElement child)
     {
-        child.Parent = null;
+        child.SetParent(null);
         (Anchor, AUIElement) match = _children.FirstOrDefault(tuple => tuple.Item2 == child);
         if (match.Item2 != null)
         {
@@ -46,7 +48,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
 
     public AnchorBox AddChild(Anchor anchor, AUIElement child)
     {
-        child.Parent = this;
+        child.SetParent(this);
         _children.Add((anchor, child));
         
         UpdateLayout();

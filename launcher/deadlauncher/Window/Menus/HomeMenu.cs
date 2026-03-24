@@ -21,18 +21,18 @@ public sealed class HomeMenu : Menu
         
         AnchorBox anchor = new AnchorBox(host);
             
-        UIButton versionButton = new UIButton(host, "version! version!", new Vector2f(320, 50), VersionButton);
-        UIButton changelogButton = new UIButton(host, "changelog!", new Vector2f(320, 50), ChangelogButton);
-        UIButton creditsButton = new UIButton(host, "credits! credits!", new Vector2f(320, 50), CreditsButton);
+        UIButton versionButton   = new UIButton(host, "version! version!", new Vector2f(320, 50), VersionButton);
+        UIButton changelogButton = new UIButton(host, "changelog!",        new Vector2f(320, 50), ChangelogButton);
+        UIButton creditsButton   = new UIButton(host, "credits! credits!", new Vector2f(320, 50), CreditsButton);
 
         Anchor bottomAnchor = new Anchor(new FloatRect(-160, 0, window.Size.X, 0), new FloatRect(0.5f, 0.4f, 0, 0));
             
         anchor.AddChild(bottomAnchor,
             new AxisBox(host, UIAxis.Vertical,
                 new AxisBox(host, UIAxis.Horizontal, firstButtonPlace, new UILabel(host)),
-                new AxisBox(host, UIAxis.Horizontal, versionButton, new UILabel(host)),
-                new AxisBox(host, UIAxis.Horizontal, changelogButton, new UILabel(host)),
-                new AxisBox(host, UIAxis.Horizontal, creditsButton, new UILabel(host))));
+                new AxisBox(host, UIAxis.Horizontal, versionButton,    new UILabel(host)),
+                new AxisBox(host, UIAxis.Horizontal, changelogButton,  new UILabel(host)),
+                new AxisBox(host, UIAxis.Horizontal, creditsButton,    new UILabel(host))));
         
         if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
         {
@@ -44,7 +44,10 @@ public sealed class HomeMenu : Menu
         }
         
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
-        return new StackBox(host, [anchor]);
+
+        var a = new UIOutlineBox(host, anchor);
+        a.SetRect(rect);
+        return a;
     }
 
     private void CreditsButton() => Application.Launcher.Window.OpenCreditsMenu();
