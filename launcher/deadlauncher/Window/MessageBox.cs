@@ -7,6 +7,8 @@ namespace deadlauncher;
 public sealed class MessageBox : AUIElement
 {
     private readonly UIButton[] buttons;
+
+    private readonly UIRect     background;
     private readonly StackBox   stackBox;
     
     public MessageBox(string message, Tuple<string, Action>[] tuples) 
@@ -28,8 +30,10 @@ public sealed class MessageBox : AUIElement
             new AnchorBox(h).AddChild(new Anchor(new FloatRect(20, -50, -40, 0), new FloatRect(0, 1, 1, 0)), 
                 new AxisBox  (h, UIAxis.Horizontal, true, buttons)).SetInheritRect(true),
         ]);
-        stackBox.SetInheritRect(true);
 
+        var originalColor = new Color(0x00000080);
+        background = new UIRect(h, originalColor).BlockClicks();
+        
         SetInheritRect(true);
     }
 
@@ -41,14 +45,18 @@ public sealed class MessageBox : AUIElement
 
     public override void UpdateLayout()
     {
-        var boxPosition = Rect.Position + Rect.Size/2f - stackBox.Rect.Size/2f;
+        Vector2f boxPosition = Rect.Position + Rect.Size/2f - stackBox.Rect.Size/2f;
         
         stackBox.SetRect(new FloatRect(boxPosition,  MinimalSize));
+        background.SetRect(Rect);
+        
+        background.UpdateLayout();
         stackBox.UpdateLayout();
     }
 
     public override void Draw(RenderTarget target)
     {
+        background.Draw(target);
         stackBox.Draw(target);
     }
 }

@@ -29,11 +29,7 @@ public class VersionMenu : Menu
             new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
             new KeyValuePair<AUIElement, string>(BuildModsTab(),     "Mods"));
         
-        Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
-        AnchorBox backButton = new AnchorBox(host).AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
-        
-        StackBox root = new StackBox(host, [uiTabs, backButton]);
-        return root;
+        return uiTabs;
     }
 
     private void InstallVersion(string id) => Application.Launcher.Window.OpenInstallMenu(id);

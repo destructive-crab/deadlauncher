@@ -58,7 +58,7 @@ public class UIRect : AUIElement
 
     public override void Draw(RenderTarget target)
     {
-        target.Draw(outlineShape);
+        if(outline.X != 0 || outline.Y != 0) target.Draw(outlineShape);
         target.Draw(shape);
     }
 }

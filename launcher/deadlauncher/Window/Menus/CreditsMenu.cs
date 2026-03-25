@@ -22,23 +22,20 @@ public sealed class CreditsMenu : Menu
         
     public override AUIElement GetRoot(FloatRect rect)
     {
-        return new UIOutlineBox(host, 
-            new AxisBox(host, UIAxis.Vertical,
+        return new AxisBox(host, UIAxis.Vertical,
                 new UILabel(host, "~    credits!      credits!      credits!    ~"),
                 new UILabel(host, "~                                            ~"),
-                
-                new AxisBox(host, UIAxis.Horizontal, true, 
+
+                new AxisBox(host, UIAxis.Horizontal, true,
                     new UILabel(host, " OKNO        "), new UIButton(host, "   TG Channel   ", () => OpenLink(OKNO))),
-                new AxisBox(host, UIAxis.Horizontal, true, 
+                new AxisBox(host, UIAxis.Horizontal, true,
                     new UILabel(host, " Deadays     "), new UIButton(host, "     Itch.io    ", () => OpenLink(DDYS))),
-                new AxisBox(host, UIAxis.Horizontal, true, 
+                new AxisBox(host, UIAxis.Horizontal, true,
                     new UILabel(host, " launcher by "), new UIButton(host, "destructive_crab", () => OpenLink(YOSH))),
-                new AxisBox(host, UIAxis.Horizontal, true, 
+                new AxisBox(host, UIAxis.Horizontal, true,
                     new UILabel(host, " ui lib   by "), new UIButton(host, "   stop_mind    ", () => OpenLink(STMP))),
-                
-                new UILabel(host, "~                                            ~"),
-                new UILabel(host, "\n"),
-                new UIButton(host, "\u2190", new Vector2f(10, 30), BackButton)));
+
+                new UILabel(host, "~                                            ~"));
     }
 
     private void BackButton()

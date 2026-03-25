@@ -1,3 +1,4 @@
+using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -12,8 +13,10 @@ public class LauncherWindow
 
     private StackBox  rootElement;
     
-    private SingleBox menuLayer;
-    private SingleBox popupLayer;
+    private UIOutlineBox menuLayer;
+    private SingleBox    returnButton;
+    
+    private SingleBox    popupLayer;
     
     private Menu previousMenu;
     private Menu currentMenu;
@@ -35,13 +38,19 @@ public class LauncherWindow
         
         UIHost = new UIHost(new UIStyle(), new Vector2f(WindowWidth, WindowHeight));
         
-        menuLayer  = new SingleBox(UIHost);
+        menuLayer  = new UIOutlineBox(UIHost, null, MenuRect);
         popupLayer = new SingleBox(UIHost);
 
-        menuLayer.SetRect(MenuRect);
         popupLayer.SetInheritRect(true);
         
-        rootElement = new StackBox(UIHost, [menuLayer, popupLayer]);
+        rootElement = new StackBox(UIHost, 
+        [
+            new AxisBox(UIHost, UIAxis.Vertical, 
+                menuLayer,
+                new SingleBox(UIHost, new UIButton(UIHost, "Back", BackToPrevious))).SetRect(MenuRect),
+            
+            popupLayer
+        ]);
         
         UIHost.SetRoot(rootElement);
         
@@ -63,7 +72,7 @@ public class LauncherWindow
         RenderWindow.Closed  += RenderWindowOnClosed;
         RenderWindow.Resized += RenderWindowOnResized;
         
-        OpenCreditsMenu();
+        OpenHomeMenu();
         
         while (RenderWindow.IsOpen)
         {
@@ -93,6 +102,7 @@ public class LauncherWindow
 
     public void OpenMessageBox(string message, params Tuple<string, Action>[] buttons)
     {
+        return;
         popupLayer.Child = new MessageBox(message, buttons);
     }
 
@@ -110,17 +120,19 @@ public class LauncherWindow
 
     private void SwitchTo(Menu menu)
     {
+        if (menu == null) return;
+        
         previousMenu = currentMenu;
         currentMenu = menu;
         
-        SetRoot(currentMenu.GetRoot(MenuRect));
+        SetMenuElement(currentMenu.GetRoot(MenuRect));
     }
 
     public void BackToPrevious() => SwitchTo(previousMenu);
 
-    private void SetRoot(AUIElement menu)
+    private void SetMenuElement(AUIElement menu)
     {
-        menuLayer.Child = menu;
+        menuLayer.SetChild(menu);
     }
 
     class WindowBackgroundGraphics

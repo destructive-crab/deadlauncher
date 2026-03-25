@@ -20,8 +20,10 @@ public class Downloader
             {
                 BaseAddress = new Uri(SERVER_URL)
             };
-        
-            var response = await client.GetAsync("api/versions/all");
+            
+            client.Timeout = new TimeSpan(0, 0, 0, 5);
+            
+            HttpResponseMessage response = await client.GetAsync("api/versions/all");
 
             response.EnsureSuccessStatusCode();
     

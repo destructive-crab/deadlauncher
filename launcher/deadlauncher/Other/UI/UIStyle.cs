@@ -28,15 +28,15 @@ public class UIStyle()
     public readonly int AxisBoxSpace = 5;
     
     // SplitBox
-    public readonly int SplitSeparatorThickness = 2;
+    public readonly int   SplitSeparatorThickness = 2;
     public readonly Color SplitSeparatorColor = new(0xeadb94FF);
     
     // UI Entry
     public readonly Color EntryBackgroundColor = new(0x240e1dFF);
     public readonly Color CursorColor = new(0xeadb94FF);
-    public readonly int CursorWidth = 4;
-    public readonly int BoxSizeX = 4;
-    public readonly int BoxSizeY = 12;
+    public readonly int   CursorWidth = 4;
+    public readonly int   BoxSizeX = 4;
+    public readonly int   BoxSizeY = 12;
     
     // Button
     public readonly Vector2f ButtonSpace = new(8, 8);
@@ -44,49 +44,45 @@ public class UIStyle()
     public static Color ButtonTop = new Color(0xbbdde1FF);
     public static Color ButtonBottom = new Color(0xdc82bbFF);
     
+    public static Color ButtonPressed = new Color(0x516276FF);
+    public static Color ButtonHovered = new Color(0x778e97FF);
+    
     public readonly ButtonStateStyle NormalButton = new()
     {
-        ContentOffset = new Vector2f(0, 4),
+        ContentOffset = new Vector2f(0, 0),
         
         TextColor     = RectDefault,
         
         TopColor      = ButtonTop,
         BottomColor   = ButtonBottom,
         
-        Outline       = 2,
+        Outline       = 0,
         
-        BottomHeight  = 10
+        BottomHeight  = 0
     };
 
     public readonly ButtonStateStyle HoveredButton = new()
     {
-        ContentOffset = new Vector2f(0, 4),
+        ContentOffset = new Vector2f(0, 0),
         
-        TextColor     = RectDefault,
+        TextColor     = ButtonTop,
         
-        TopColor      = ButtonTop,
+        TopColor      = ButtonHovered,
         BottomColor   = ButtonBottom,
         
-        OutlineColor  = new Color(0xfdea70FF),
-        Outline       = 2,
-        
-        BottomHeight  = 10
-
+        BottomHeight  = 0
     };
 
     public readonly ButtonStateStyle PressedButton = new()
     {
-        ContentOffset = new Vector2f(0, 4),
+        ContentOffset = new Vector2f(0, 0),
         
-        TextColor     = RectDefault,
+        TextColor     = ButtonTop,
         
-        TopColor      = ButtonTop,
+        TopColor      = ButtonPressed,
         BottomColor   = ButtonBottom,
         
-        BottomHeight  = 2,
-        
-        Outline       = 2,
-        OutlineColor =  new Color(0xfdea70FF),
+        BottomHeight  = 0,
     };
 
     //ScrollBox

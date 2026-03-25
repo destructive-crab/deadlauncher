@@ -10,10 +10,11 @@ public sealed class UIOutlineBox : AUIBox
 
     private readonly RectangleShape line = new RectangleShape();
 
-    public UIOutlineBox(UIHost host, AUIElement child) : base(host, default)
+    public UIOutlineBox(UIHost host, AUIElement child, FloatRect rect = default) : base(host, rect.Size + new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline) * 2)
     {
         line.FillColor = UIStyle.OutlineColor;
         Child = child;
+        SetRect(rect);
     }
 
     public override void Draw(RenderTarget target)
@@ -43,8 +44,6 @@ public sealed class UIOutlineBox : AUIBox
         line.Position += new Vector2f(Rect.Size.X + outline, 0);
         
         target.Draw(line);
-        
-        //Console.WriteLine($"RECT: {Rect}");
     }
 
     public override IEnumerable<AUIElement> GetChildren()
@@ -59,12 +58,33 @@ public sealed class UIOutlineBox : AUIBox
         Child.SetRect(Rect);
     }
 
+    public override AUIElement SetRect(FloatRect value)
+    {
+        Rect = new FloatRect(value.Position - new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline), value.Size + new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline));
+        return this;
+    }
+
     public override void RemoveChild(AUIElement child)
     {
         if (Child == child)
         {
             Child = null;
         }
+    }
+
+    public void SetChild(AUIElement child)
+    {
+        if (Child == child) return;
+
+        if (Child != null)
+        {
+            Child.SetParent(null);
+        }
+
+        Child = child;
+        child.SetParent(this);
+        
+        UpdateLayout();
     }
 
     protected override void UpdateMinimalSize() { }
