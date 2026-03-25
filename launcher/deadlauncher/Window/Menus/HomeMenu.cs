@@ -1,5 +1,5 @@
 using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
 using SFML.System;
 
@@ -14,10 +14,12 @@ public sealed class HomeMenu : Menu
         this.host = host;
     }
 
+    public override bool HasBackButton() => false;
+
     public override AUIElement GetRoot(FloatRect rect)
     {
         RenderWindow window = Application.Launcher.Window.RenderWindow;
-        SingleBox firstButtonPlace = new SingleBox(host);
+        UISocketBox firstButtonPlace = new UISocketBox(host);
         
         AnchorBox anchorBox = new AnchorBox(host);
             
@@ -36,11 +38,11 @@ public sealed class HomeMenu : Menu
         
         if (Application.Launcher.Model.IsInstalled(Application.Launcher.Model.SelectedVersionID))
         {
-            firstButtonPlace.Child = new UIButton(host, "play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion);
+            firstButtonPlace.SetChild(new UIButton(host, "play! play! play!", new Vector2f(320, 50), LaunchSelectedVersion));
         }
         else
         {
-            firstButtonPlace.Child = new UIButton(host, "install! install!", new Vector2f(320, 50), InstallSelectedVersion);
+            firstButtonPlace.SetChild(new UIButton(host, "install! install!", new Vector2f(320, 50), InstallSelectedVersion));
         }
         
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;

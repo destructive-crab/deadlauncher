@@ -1,8 +1,9 @@
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
-public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
+public abstract class AUIBox(UIHost host, Vector2f minimalSize)
+    : AUIElement(host, minimalSize)
 {
     public abstract IEnumerable<AUIElement> GetChildren();
 

@@ -1,5 +1,5 @@
 using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
 using SFML.System;
 
@@ -8,7 +8,7 @@ namespace deadlauncher;
 public class VersionMenu : Menu
 {
     private UIHost host;
-    private Dictionary<string, SingleBox> actionButtonPlaces = new();
+    private Dictionary<string, UISocketBox> actionButtonPlaces = new();
 
     private const int VERSION_BUTTON_WIDTH = 300;
     private const int VERSION_CONTEXT_ACTIONS_WIDTH = 300;
@@ -17,6 +17,8 @@ public class VersionMenu : Menu
     {
         this.host = host;
     }
+
+    public override bool HasBackButton() => true;
 
     public override AUIElement GetRoot(FloatRect rect)
     {
@@ -71,7 +73,7 @@ public class VersionMenu : Menu
     private void DeleteButton(string id)
     {
         Application.Launcher.Downloader.DeleteVersion(id);
-        actionButtonPlaces[id].Child = BuildActionButtons(id);
+        actionButtonPlaces[id].SetChild(BuildActionButtons(id));
     }
 
     private AUIElement BuildVersionsList(string[] includeOnly, string[] excludeOnly)
@@ -96,12 +98,12 @@ public class VersionMenu : Menu
             }
             if(!valid) continue;
             
-            SingleBox actionButtonsPlace = new(host);
+            UISocketBox actionButtonsPlace = new(host);
             
             versionList.AddChild(new UIOption(host, GetButtonNameByVersionID(id), new Vector2f(100, 45), () => VersionSelectButton(id), Application.Launcher.Model.IsSelected(id)));
 
             actionButtonsList.AddChild(actionButtonsPlace);
-            actionButtonsPlace.Child = BuildActionButtons(id);
+            actionButtonsPlace.SetChild(BuildActionButtons(id));
             actionButtonPlaces.Add(id, actionButtonsPlace);
         }
 

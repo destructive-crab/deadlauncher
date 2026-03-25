@@ -1,7 +1,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public class UIClickArea(UIHost host, ClickArea area, Vector2f minimalSize = default) : AUIElement(host, minimalSize)
 {

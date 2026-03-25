@@ -1,4 +1,4 @@
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
 using SFML.System;
 

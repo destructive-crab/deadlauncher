@@ -1,4 +1,4 @@
-namespace leditor.UI;
+namespace deUI;
 
 public struct UIPadding(float left, float right, float top, float bottom)
 {

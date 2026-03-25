@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace leditor.root;
+namespace deUI.root;
 
 public static class UTLS
 {

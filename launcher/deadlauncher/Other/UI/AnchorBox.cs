@@ -1,7 +1,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public struct Anchor(FloatRect baseRect, FloatRect relative)
 {

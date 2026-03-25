@@ -1,7 +1,6 @@
 using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
-using SFML.System;
 
 namespace deadlauncher;
 
@@ -17,6 +16,8 @@ public class ChangelogMenu : Menu
         this.host = host;
         this.versionID = versionID;
     }
+
+    public override bool HasBackButton() => true;
 
     public override AUIElement GetRoot(FloatRect rect)
     {

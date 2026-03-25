@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 class Scroller
 {

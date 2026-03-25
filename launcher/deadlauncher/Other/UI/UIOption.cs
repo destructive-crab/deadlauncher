@@ -1,6 +1,6 @@
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public sealed class UIOption : UIButton
 {

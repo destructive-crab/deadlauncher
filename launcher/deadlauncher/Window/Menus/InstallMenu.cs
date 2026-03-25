@@ -1,5 +1,5 @@
 using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
 using SFML.System;
 
@@ -21,6 +21,8 @@ public class InstallMenu : Menu
         window = Application.Launcher.Window.RenderWindow;
         this.host = host;
     }
+
+    public override bool HasBackButton() => false;
 
     public override AUIElement GetRoot(FloatRect rect)
     {

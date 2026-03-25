@@ -2,7 +2,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace leditor.UI;
+namespace deUI;
 
 public abstract class AUIElement(UIHost host, Vector2f minimalSize)
 {

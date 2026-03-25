@@ -1,7 +1,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public sealed class UISpace(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
 {

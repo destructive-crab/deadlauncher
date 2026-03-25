@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
-using SFML.System;
 
 namespace deadlauncher;
 
@@ -19,7 +17,9 @@ public sealed class CreditsMenu : Menu
     private const string DDYS = "https://oknogmdv.itch.io/deadays";
     private const string YOSH = "https://github.com/destructive-crab";
     private const string STMP = "https://github.com/stopmind";
-        
+
+    public override bool HasBackButton() => true;
+
     public override AUIElement GetRoot(FloatRect rect)
     {
         return new AxisBox(host, UIAxis.Vertical,

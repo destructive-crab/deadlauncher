@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace leditor.root;
+namespace deUI.root;
 
 public static class Logger
 {

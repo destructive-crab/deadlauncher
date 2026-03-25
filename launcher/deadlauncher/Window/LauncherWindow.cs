@@ -1,5 +1,5 @@
 using deadlauncher.Other.UI;
-using leditor.UI;
+using deUI;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -14,9 +14,9 @@ public class LauncherWindow
     private StackBox  rootElement;
     
     private UIOutlineBox menuLayer;
-    private SingleBox    returnButton;
+    private UISocketBox    returnButton;
     
-    private SingleBox    popupLayer;
+    private UISocketBox    popupLayer;
     
     private Menu previousMenu;
     private Menu currentMenu;
@@ -39,7 +39,7 @@ public class LauncherWindow
         UIHost = new UIHost(new UIStyle(), new Vector2f(WindowWidth, WindowHeight));
         
         menuLayer  = new UIOutlineBox(UIHost, null, MenuRect);
-        popupLayer = new SingleBox(UIHost);
+        popupLayer = new UISocketBox(UIHost);
 
         popupLayer.SetInheritRect(true);
         
@@ -47,7 +47,7 @@ public class LauncherWindow
         [
             new AxisBox(UIHost, UIAxis.Vertical, 
                 menuLayer,
-                new SingleBox(UIHost, new UIButton(UIHost, "Back", BackToPrevious))).SetRect(MenuRect),
+                new UISocketBox(UIHost, new UIButton(UIHost, "Back", BackToPrevious))).SetRect(MenuRect),
             
             popupLayer
         ]);
@@ -103,7 +103,7 @@ public class LauncherWindow
     public void OpenMessageBox(string message, params Tuple<string, Action>[] buttons)
     {
         return;
-        popupLayer.Child = new MessageBox(message, buttons);
+        popupLayer.SetChild(new MessageBox(message, buttons));
     }
 
     public void OpenInstallMenu(string id)
@@ -133,6 +133,7 @@ public class LauncherWindow
     private void SetMenuElement(AUIElement menu)
     {
         menuLayer.SetChild(menu);
+        
     }
 
     class WindowBackgroundGraphics

@@ -4,7 +4,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace leditor.UI;
+namespace deUI;
 
 public delegate void MoveAction(Vector2f oldPosition, Vector2f newPosition);
 public class ClickArea(FloatRect rect, bool overlay = true)

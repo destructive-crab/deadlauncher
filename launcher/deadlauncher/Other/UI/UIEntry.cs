@@ -3,7 +3,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace leditor.UI;
+namespace deUI;
 
 public class UIEntry : AUIElement
 {

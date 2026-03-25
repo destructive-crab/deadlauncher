@@ -1,6 +1,6 @@
 using System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public class UIVar<T>
 {

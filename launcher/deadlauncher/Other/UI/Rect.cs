@@ -1,7 +1,7 @@
 using System;
 using SFML.Graphics;
 
-namespace leditor.root;
+namespace deUI.root;
 
 public struct Rect
 {

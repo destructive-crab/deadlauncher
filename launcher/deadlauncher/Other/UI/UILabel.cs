@@ -1,6 +1,6 @@
 using SFML.Graphics;
 
-namespace leditor.UI;
+namespace deUI;
 
 public class UILabel : AUIElement
 {

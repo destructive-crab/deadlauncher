@@ -1,7 +1,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public enum UIAxis
 {

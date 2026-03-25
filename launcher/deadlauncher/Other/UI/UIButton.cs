@@ -2,7 +2,7 @@ using System;
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public struct ButtonStateStyle
 {

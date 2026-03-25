@@ -1,7 +1,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace leditor.UI;
+namespace deUI;
 
 public class UILimit(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
 {
