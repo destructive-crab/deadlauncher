@@ -12,10 +12,9 @@ public sealed class UISelectionList : AUIBox
     private readonly List<UIOption> options = new();
     private AxisBox box;
 
-    public UISelectionList(UIHost host, UIOption[] options = null, Vector2f minimalSize = default) 
-        : base(host, minimalSize)
+    public UISelectionList(UIHost host, IUIFactory factory) : base(host)
     {
-        box = new AxisBox(host, UIAxis.Vertical);
+        box = factory.New<AxisBox>().WithAxis(UIAxis.Vertical);
 
         if(options==null) return;
         
@@ -76,7 +75,7 @@ public sealed class UISelectionList : AUIBox
     
     protected override void UpdateMinimalSize() { }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         box.SetRect(Rect);
     }

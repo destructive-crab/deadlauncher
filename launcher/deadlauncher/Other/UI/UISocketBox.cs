@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using SFML.Graphics;
 
 namespace deUI;
@@ -7,14 +8,12 @@ public class UISocketBox : AUIBox
     public AUIElement? Child { get; private set; }
     public bool Hidden { get; private set; }
 
-    public UISocketBox(UIHost host, AUIElement? child = null, bool hidden = false) 
-        : base(host, child?.MinimalSize ?? default)
-    {
-        SetChild(child);
-        SetHidden(hidden);
-    }
+    public UISocketBox(UIHost host) : base(host) { }
 
-    public override AUIElement SetRect(FloatRect value)
+    public override AUIElement SetRect(FloatRect value ,
+        [CallerFilePath] string file = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0)
     {
         Rect = value;
         Child?.SetRect(value);
@@ -35,7 +34,7 @@ public class UISocketBox : AUIBox
     
     public override IEnumerable<AUIElement> GetChildren() => Child == null ? [] : [Child];
     
-    public void SetChild(AUIElement? value)
+    public UISocketBox WithChild(AUIElement? value)
     {
         Child?.SetParent(null);
         
@@ -45,6 +44,7 @@ public class UISocketBox : AUIBox
         
         UpdateMinimalSize();
         UpdateLayout();
+        return this;
     }
     
     public override void RemoveChild(AUIElement child)
@@ -52,11 +52,11 @@ public class UISocketBox : AUIBox
         if (Child == child)
         {
             child.SetParent(null);
-            SetChild(null);
+            WithChild(null);
         }
     }
     
-    public override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         if (Child != null && !Hidden)
         {
@@ -73,7 +73,7 @@ public class UISocketBox : AUIBox
     {
         if (Child != null && !Hidden)
         {
-            Host.DrawStack.Push(Child.Draw);
+            Host.Renderer.PushDrawCall(Child.Draw);
         }
     }
 
@@ -81,7 +81,7 @@ public class UISocketBox : AUIBox
     {
         if (Child != null && !Hidden)
         {
-            Host.ClickHandlersStack.Push(Child.ProcessClicks);
+            Host.InputsHandler.PushClickProcessor(Child.ProcessClicks);
         }
     }
 }

@@ -1,5 +1,4 @@
 using SFML.Graphics;
-using SFML.System;
 
 namespace deUI;
 
@@ -9,23 +8,21 @@ public struct Anchor(FloatRect baseRect, FloatRect relative)
     public FloatRect Relative = relative;
 }
 
-public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
+public class AnchorBox : AUIBox
 {
     private readonly List<(Anchor, AUIElement)> _children = [];
-    
-    public override void UpdateLayout()
+
+    public AnchorBox(UIHost host) : base(host) { }
+
+    protected override void UpdateLayoutIm()
     {
         foreach (var (anchor, child) in _children)
         {
-            Console.WriteLine(child.GetType().Name + $" UPDATING LAYOUT: {InheritRect} {Rect}");
-            FloatRect rect = anchor.BaseRect;
-            
-            rect.Left   += Rect.Left + anchor.Relative.Left * Rect.Width;
-            rect.Top    += Rect.Top  + anchor.Relative.Top  * Rect.Height;
-            
-            rect.Width  += anchor.Relative.Width  * Rect.Width;
+            var rect = anchor.BaseRect;
+            rect.Left += Rect.Left + anchor.Relative.Left * Rect.Width;
+            rect.Top += Rect.Top + anchor.Relative.Top * Rect.Height;
+            rect.Width += anchor.Relative.Width * Rect.Width;
             rect.Height += anchor.Relative.Height * Rect.Height;
-            
             child.SetRect(rect);
         }
     }
@@ -35,6 +32,15 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
             .Select(tuple => tuple.Item2)
             .AsEnumerable();
 
+    public AnchorBox WithChild(Anchor anchor, AUIElement child)
+    {
+        child.SetParent(this);
+        _children.Add((anchor, child));
+        
+        UpdateLayout();
+        return this;
+    }
+
     public override void RemoveChild(AUIElement child)
     {
         child.SetParent(null);
@@ -43,16 +49,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
         {
             _children.Remove(match);
         }
-        UpdateLayout();
-    }
-
-    public AnchorBox AddChild(Anchor anchor, AUIElement child)
-    {
-        child.SetParent(this);
-        _children.Add((anchor, child));
-        
-        UpdateLayout();
-        return this;
+        UpdateLayoutIm();
     }
 
     protected override void UpdateMinimalSize() { }

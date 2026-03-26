@@ -10,11 +10,11 @@ public class LauncherWindow
 {
     public RenderWindow RenderWindow { get; private set; }
     public UIHost       UIHost       { get; private set; }
-
-    private StackBox  rootElement;
+ 
+    private StackBox     rootElement;
     
     private UIOutlineBox menuLayer;
-    private UISocketBox    returnButton;
+    private UISocketBox  returnButton;
     
     private UISocketBox    popupLayer;
     
@@ -38,21 +38,23 @@ public class LauncherWindow
         
         UIHost = new UIHost(new UIStyle(), new Vector2f(WindowWidth, WindowHeight));
         
-        menuLayer  = new UIOutlineBox(UIHost, null, MenuRect);
-        popupLayer = new UISocketBox(UIHost);
-
+        menuLayer = UIHost.New<UIOutlineBox>();
+        
+        popupLayer = UIHost.New<UISocketBox>();
         popupLayer.SetInheritRect(true);
-        
-        rootElement = new StackBox(UIHost, 
-        [
-            new AxisBox(UIHost, UIAxis.Vertical, 
-                menuLayer,
-                new UISocketBox(UIHost, new UIButton(UIHost, "Back", BackToPrevious))).SetRect(MenuRect),
-            
-            popupLayer
-        ]);
-        
-        UIHost.SetRoot(rootElement);
+
+        returnButton = UIHost.New<UISocketBox>().WithChild(UIHost.New<UIButton>().WithText("Back").OnClick(BackToPrevious));
+
+        rootElement = UIHost.New<StackBox>().WithChildren(
+                            UIHost.New<AxisBox>().WithAxis(UIAxis.Vertical)
+                                .WithChildren
+                                (
+                                    menuLayer.SetInheritRect(true),
+                                    returnButton
+                                )
+                                .SetRect(MenuRect));
+
+        UIHost.Tree.SetRoot(rootElement);
         
         Application.Launcher.Model.OnVersionSelected += OnVersionSelected;
     }
@@ -62,7 +64,7 @@ public class LauncherWindow
         Application.Launcher.Model.RunningLineText = obj;
     }
 
-    private void RenderWindowOnResized(object? sender, SizeEventArgs e) => UIHost.SetSize(new Vector2f(e.Width, e.Height));
+    private void RenderWindowOnResized(object? sender, SizeEventArgs e) => UIHost.Renderer.SetSize(new Vector2f(e.Width, e.Height));
     private void RenderWindowOnClosed(object? sender, EventArgs e) => Shutdown();
 
     public void Loop()
@@ -71,6 +73,8 @@ public class LauncherWindow
 
         RenderWindow.Closed  += RenderWindowOnClosed;
         RenderWindow.Resized += RenderWindowOnResized;
+        
+        UIHost.InputsHandler.ListenTo(RenderWindow);
         
         OpenHomeMenu();
         
@@ -83,13 +87,13 @@ public class LauncherWindow
                 continue;
             }
             
-            UIHost.Update(RenderWindow);
+            UIHost.Update();
             
             RenderWindow.Clear(UIStyle.SecondBackgroundColor);
             {
-                backgroundGraphics.Draw(RenderWindow);
-                currentMenu       ?.Update(RenderWindow, MenuRect);
-                UIHost            .Draw(RenderWindow);
+                backgroundGraphics .Draw   (RenderWindow);
+                currentMenu       ?.Update (RenderWindow, MenuRect);
+                UIHost.Renderer    .Draw   (RenderWindow);
             }            
             RenderWindow.Display();
         }
@@ -102,8 +106,7 @@ public class LauncherWindow
 
     public void OpenMessageBox(string message, params Tuple<string, Action>[] buttons)
     {
-        return;
-        popupLayer.SetChild(new MessageBox(message, buttons));
+        popupLayer.WithChild(UIHost.New<MessageBox>().WithMessage(message).WithButtons(buttons).FinishConfiguration());
     }
 
     public void OpenInstallMenu(string id)
@@ -124,6 +127,8 @@ public class LauncherWindow
         
         previousMenu = currentMenu;
         currentMenu = menu;
+
+        returnButton.SetHidden(!currentMenu.HasBackButton());
         
         SetMenuElement(currentMenu.GetRoot(MenuRect));
     }
@@ -133,7 +138,6 @@ public class LauncherWindow
     private void SetMenuElement(AUIElement menu)
     {
         menuLayer.SetChild(menu);
-        
     }
 
     class WindowBackgroundGraphics
@@ -162,7 +166,7 @@ public class LauncherWindow
             menuOutline.Size     = new Vector2f(windowWidth - 80, windowHeight - 180);
             menuOutline.Position = new Vector2f(40, 120);
     
-            menuOutline.FillColor = new UIStyle().ScrollerColor;
+            menuOutline.FillColor = UIStyle.ScrollerColor;
             
             RectangleShape menuBackground = new RectangleShape();
             menuBackground.Size     = new Vector2f(windowWidth - 88, windowHeight - 188);

@@ -22,20 +22,21 @@ public sealed class CreditsMenu : Menu
 
     public override AUIElement GetRoot(FloatRect rect)
     {
-        return new AxisBox(host, UIAxis.Vertical,
-                new UILabel(host, "~    credits!      credits!      credits!    ~"),
-                new UILabel(host, "~                                            ~"),
+        IUIFactory f = host.Factory;
 
-                new AxisBox(host, UIAxis.Horizontal, true,
-                    new UILabel(host, " OKNO        "), new UIButton(host, "   TG Channel   ", () => OpenLink(OKNO))),
-                new AxisBox(host, UIAxis.Horizontal, true,
-                    new UILabel(host, " Deadays     "), new UIButton(host, "     Itch.io    ", () => OpenLink(DDYS))),
-                new AxisBox(host, UIAxis.Horizontal, true,
-                    new UILabel(host, " launcher by "), new UIButton(host, "destructive_crab", () => OpenLink(YOSH))),
-                new AxisBox(host, UIAxis.Horizontal, true,
-                    new UILabel(host, " ui lib   by "), new UIButton(host, "   stop_mind    ", () => OpenLink(STMP))),
-
-                new UILabel(host, "~                                            ~"));
+        return f.New<AxisBox>().WithAxis(UIAxis.Vertical).WithChildren(
+            f.New<UILabel>().WithText("~    credits!      credits!      credits!    ~"),
+            f.New<UILabel>().WithText("~                                            ~"),
+            f.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(
+                f.New<UILabel>().WithText(" OKNO        "), f.New<UIButton>().WithText("   TG Channel   ").OnClick(() => OpenLink(OKNO))),
+            f.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(
+                f.New<UILabel>().WithText(" Deadays     "), f.New<UIButton>().WithText("     Itch.io    ").OnClick(() => OpenLink(DDYS))),
+            f.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(
+                f.New<UILabel>().WithText(" launcher by "), f.New<UIButton>().WithText("destructive_crab").OnClick(() => OpenLink(YOSH))),
+            f.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(
+                f.New<UILabel>().WithText(" ui lib   by "), f.New<UIButton>().WithText("   stop_mind    ").OnClick(() => OpenLink(STMP))),
+            f.New<UILabel>().WithText("~                                            ~"))
+        ;
     }
 
     private void BackButton()

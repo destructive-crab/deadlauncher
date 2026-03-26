@@ -1,5 +1,3 @@
-using SFML.System;
-
 namespace deUI;
 
 public sealed class UIOption : UIButton
@@ -32,20 +30,17 @@ public sealed class UIOption : UIButton
 
     public bool IsLocked;
     
-    public UIOption(UIHost host, string text, Action? action = null, bool startState = false) 
-        : base(host, text, action)
+    public UIOption(UIHost host) : base(host)
     {
         ApplyStyle(host.Style.NormalButton);
-        IsSelected = startState;
-    }
-    
-    public UIOption(UIHost host, string text, Vector2f minimalSize, Action? action = null, bool startState = false) 
-        : base(host, text, minimalSize, action)
-    {
-        ApplyStyle(host.Style.NormalButton);
-        IsSelected = startState;
     }
 
+    public UIOption SetState(bool state)
+    {
+        IsSelected = state;
+        return this;
+    }
+    
     protected override void OnReleased()
     {
         if(IsLocked) return;

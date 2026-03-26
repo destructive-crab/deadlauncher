@@ -4,30 +4,38 @@ namespace deUI;
 
 public class UILabel : AUIElement
 {
-    public UILabel(UIHost host, string text = "") : 
-        base(host, host.Fabric.MakeTextOut(text, out var textObj))
+    public UILabel(UIHost host) : base(host)
     {
-        _textObj = textObj;
+        textObject = Host.Fabric.MakeText("X");
     }
 
-    private Text _textObj;
+    public UILabel WithText(string text)
+    {
+        Text = text;
+        return this;
+    }
+    
+    private Text textObject;
     public string Text
     {
-        get => _textObj.DisplayedString;
+        get => textObject.DisplayedString;
         set
         {
-            _textObj.DisplayedString = value;
-            MinimalSize = Utils.TextSize(_textObj);
+            textObject.DisplayedString = value;
+            MinimalSize = Utils.TextSize(textObject);
         }
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
-        _textObj.Position = Rect.Position;
+        textObject.Position = Rect.Position;
     }
 
     public override void Draw(RenderTarget target)
     {
-        target.Draw(_textObj);
+        if(textObject != null)
+        {
+            target.Draw(textObject);
+        }
     }
 }

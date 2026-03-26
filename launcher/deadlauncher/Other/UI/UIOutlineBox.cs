@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using deUI;
 using SFML.Graphics;
 using SFML.System;
@@ -10,66 +11,15 @@ public sealed class UIOutlineBox : AUIBox
 
     private readonly RectangleShape line = new RectangleShape();
 
-    public UIOutlineBox(UIHost host, AUIElement child, FloatRect rect = default) : base(host, rect.Size + new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline) * 2)
+    public UIOutlineBox(UIHost host) : base(host)
     {
-        line.FillColor = UIStyle.OutlineColor;
-        Child = child;
-        SetRect(rect);
+        line.FillColor = Host.Style.OutlineColor;
     }
 
-    public override void Draw(RenderTarget target)
+    public UIOutlineBox WithChild(AUIElement child)
     {
-        if (Child == null) return;
-        
-        Child.Draw(target);
-        
-        var outline = UIStyle.BaseOutline;
-
-        //horizontal
-        line.Position = Rect.Position - new Vector2f(outline, outline);
-        line.Size     = new Vector2f(Rect.Size.X + outline * 2, outline);
-       
-        target.Draw(line);
-
-        line.Position += new Vector2f(0, Rect.Size.Y + outline);
-        
-        target.Draw(line);
-        
-        //vertical
-        line.Position = Rect.Position - new Vector2f(outline, outline);
-        line.Size     = new Vector2f(outline, Rect.Size.Y + outline * 2);
-
-        target.Draw(line);
-
-        line.Position += new Vector2f(Rect.Size.X + outline, 0);
-        
-        target.Draw(line);
-    }
-
-    public override IEnumerable<AUIElement> GetChildren()
-    {
-        return [Child];
-    }
-
-    public override void UpdateLayout()
-    {
-        if (Child == null) return;
-        
-        Child.SetRect(Rect);
-    }
-
-    public override AUIElement SetRect(FloatRect value)
-    {
-        Rect = new FloatRect(value.Position - new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline), value.Size + new Vector2f(UIStyle.BaseOutline, UIStyle.BaseOutline));
+        SetChild(child);
         return this;
-    }
-
-    public override void RemoveChild(AUIElement child)
-    {
-        if (Child == child)
-        {
-            Child = null;
-        }
     }
 
     public void SetChild(AUIElement child)
@@ -87,5 +37,64 @@ public sealed class UIOutlineBox : AUIBox
         UpdateLayout();
     }
 
+    public override IEnumerable<AUIElement> GetChildren()
+    {
+        return [Child];
+    }
+
+    public override void RemoveChild(AUIElement child)
+    {
+        if (Child == child)
+        {
+            Child = null;
+        }
+    }
+
+    public override AUIElement SetRect(FloatRect value,
+        [CallerFilePath] string file = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0)
+    {
+        Console.WriteLine($"GOT RECT {value} {file} {member} {line}");
+        return base.SetRect(value);
+    }
+
     protected override void UpdateMinimalSize() { }
+
+    protected override void UpdateLayoutIm()
+    {
+        if (Child == null) return;
+        
+        Child.SetRect(Rect);
+    }
+
+    public override void Draw(RenderTarget target)
+    {
+        if (Child == null) return;
+        
+        Child.Draw(target);
+        
+        var outline = Host.Style.BaseOutline;
+
+        //horizontal
+        line.Position = Rect.Position - new Vector2f(outline, outline);
+        line.Size     = new Vector2f(Rect.Size.X + outline * 2, outline);
+       
+        target.Draw(line);
+
+        line.Position += new Vector2f(0, Rect.Size.Y + outline);
+        
+        target.Draw(line);
+        
+        //vertical
+        
+        line.Position = Rect.Position - new Vector2f(outline, outline);
+        line.Size     = new Vector2f(outline, Rect.Size.Y + outline * 2);
+
+        target.Draw(line);
+
+        line.Position += new Vector2f(Rect.Size.X + outline, 0);
+        
+        target.Draw(line);
+    }
 }

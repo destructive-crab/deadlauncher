@@ -20,43 +20,9 @@ public class StackBox : AUIBox
         return size;
     }
 
-    private readonly List<AUIElement> _children;
-
-    public override IEnumerable<AUIElement> GetChildren()
-        => _children;
-
-    public override void RemoveChild(AUIElement child)
-    {
-        child.SetParent(null);
-        _children.Remove(child);
-    }
-
-    protected override void UpdateMinimalSize()
-        => MinimalSize = GetMinSize(_children, _padding);
-    
-    public void AddChild(AUIElement child)
-    {
-        child.SetParent(this);
-        
-        _children.Add(child);
-        MinimalSize = new Vector2f(
-            float.Max(MinimalSize.X, child.MinimalSize.X),
-            float.Max(MinimalSize.Y, child.MinimalSize.Y)
-        );
-    }
+    private readonly List<AUIElement> _children = new();
 
     private UIPadding _padding;
-
-    public StackBox(UIHost host, AUIElement[] children, UIPadding padding = default, bool centerX = false, bool centerY = false) : base(host, GetMinSize(children.AsEnumerable(), padding))
-    {
-        _centerX = centerX;
-        _centerY = centerY;
-        _children = new List<AUIElement>(children);
-        _padding = padding;
-
-        foreach (var child in _children)
-            child.SetParent(this);
-    }
 
     public UIPadding Padding
     {
@@ -70,8 +36,52 @@ public class StackBox : AUIBox
             );
         }
     }
+
+    public StackBox(UIHost host) : base(host) { }
+
+    public StackBox WithChildren(params AUIElement[] elements)
+    {
+        _children.Clear();
+        AddChildren(elements);
+        
+        return this;
+    }
     
-    public override void UpdateLayout()
+    public override IEnumerable<AUIElement> GetChildren()
+        => _children;
+
+    public override void RemoveChild(AUIElement child)
+    {
+        child.SetParent(null);
+        _children.Remove(child);
+    }
+
+    public StackBox AddChildren(AUIElement[] children)
+    {
+        foreach (AUIElement element in children)
+        {
+            AddChild(element);
+        }
+
+        return this;
+    }
+    
+    public void AddChild(AUIElement child)
+    {
+        child.SetParent(this);
+        
+        _children.Add(child);
+        
+        MinimalSize = new Vector2f(
+            float.Max(MinimalSize.X, child.MinimalSize.X),
+            float.Max(MinimalSize.Y, child.MinimalSize.Y)
+        );
+    }
+    
+    protected override void UpdateMinimalSize()
+        => MinimalSize = GetMinSize(_children, _padding);
+
+    protected override void UpdateLayoutIm()
     {
         foreach (AUIElement element in _children)
         {
@@ -109,7 +119,7 @@ public class StackBox : AUIBox
     public override void Draw(RenderTarget target)
     {
         foreach (var child in _children.AsEnumerable().Reverse())
-            Host.DrawStack.Push(child.Draw);
+            Host.Renderer.PushDrawCall(child.Draw);
     }
 
     private bool _centerX;

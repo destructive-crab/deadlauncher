@@ -7,23 +7,10 @@ public class UIRect : AUIElement
 {
     private readonly RectangleShape shape;
     private readonly RectangleShape outlineShape;
-
-    private          Vector2f       outline;
     
     private          ClickArea      area;
     
-    public UIRect(UIHost host, Color? color = null, Vector2f outline = default) : base(host, default)
-    {
-        shape = new RectangleShape
-        {
-            FillColor = color ?? UIStyle.RectDefault
-        };
-        
-        this.outline = outline;
-        
-        outlineShape = new RectangleShape();
-        outlineShape.FillColor = UIStyle.OutlineColor;
-    }
+    private          Vector2f       outline;
 
     public Color Color
     {
@@ -31,28 +18,58 @@ public class UIRect : AUIElement
         set => shape.FillColor = value;
     }
 
-    public UIRect BlockClicks()
+    public UIRect(UIHost host) : base(host)
     {
-        area = new ClickArea(Rect, true);
+        shape = new RectangleShape
+        {
+            FillColor = UIStyle.RectDefault
+        };
+        
+        outlineShape = new RectangleShape();
+        outlineShape.FillColor = UIStyle.RectDefault;
+    }
+
+    public UIRect WithColor(Color color)
+    {
+        Color = color;
         return this;
     }
 
+    public UIRect WithOutline(int value)
+    {
+        return WithOutline(new Vector2f(value, value));
+    }
+    
+    public UIRect WithOutline(Vector2f value)
+    {
+        outline = value;
+        UpdateLayoutIm();
+        return this;
+    }
+
+    public UIRect WithBlockClicks(bool value)
+    {
+        
+        area = new ClickArea(Rect, true);
+        return this;
+    }
+    
     public override void ProcessClicks()
     {
         if (area == null) return;
         
         base.ProcessClicks();
-        Host.Areas.Process(area);
+        Host.InputsHandler.Areas.Process(area);
     }
-
-    public override void UpdateLayout()
+    
+    protected override void UpdateLayoutIm()
     {
         outlineShape.Position = Rect.Position;
         outlineShape.Size = Rect.Size + 2 * outline;
         
         shape.Position = Rect.Position + outline;
         shape.Size = Rect.Size;
-
+        
         if(area != null) area.Rect = Rect;
     }
 

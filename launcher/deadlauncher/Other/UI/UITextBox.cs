@@ -5,31 +5,6 @@ namespace deUI;
 
 public class UITextBox : AUIElement
 {
-    public bool AlignCenter { get; private set; }
-
-    public UITextBox SetAlignCenter(bool value)
-    {
-        if (AlignCenter == value) return this;
-
-        AlignCenter = value;
-        Console.WriteLine($"Align Center: {value}");
-        UpdatePositions();
-
-        return this;
-    }
-    
-    public bool StretchLines { get; private set; }
-
-    public UITextBox SetStretchLines(bool value)
-    {
-        if (StretchLines == value) return this;
-
-        StretchLines = value;
-        UpdatePositions();
-
-        return this;
-    }
-    
     public string Text
     {
         get => textOriginal.DisplayedString;
@@ -45,17 +20,46 @@ public class UITextBox : AUIElement
     private int linesCount = -1;
     private string displayString;
 
-    public UITextBox(UIHost host, string text = "") : 
-        base(host, default)
-    {
-        textOriginal = host.Fabric.MakeText("X");
-        displayString = text;
-    }
-
     private int currentWidth;
     private string currentDisplaying;
 
-    public override void UpdateLayout()
+    public UITextBox(UIHost host) : base(host)
+    {
+        textOriginal = host.Fabric.MakeText("X");
+    }
+
+    public UITextBox WithText(string text)
+    {
+        Text = text;
+        return this;
+    }
+
+    public bool AlignCenter { get; private set; }
+
+    public UITextBox WithAlignCenter(bool value)
+    {
+        if (AlignCenter == value) return this;
+
+        AlignCenter = value;
+        Console.WriteLine($"Align Center: {value}");
+        UpdatePositions();
+
+        return this;
+    }
+    
+    public bool StretchLines { get; private set; }
+
+    public UITextBox WithLinesStretching(bool value)
+    {
+        if (StretchLines == value) return this;
+
+        StretchLines = value;
+        UpdatePositions();
+
+        return this;
+    }
+
+    protected override void UpdateLayoutIm()
     {
         textOriginal.Position = Rect.Position;
 
@@ -174,15 +178,9 @@ public class UITextBox : AUIElement
             else
             {
                 int height = (int)(prev.GetGlobalBounds().Height);
-                
                 if (height == 0) height = (int)Host.Style.FontSize* i;
                 
                 totalLines[i].Position = prev.Position + new Vector2f(0, height);
-            }
-            
-            if (AlignCenter)
-            {
-                totalLines[i].Position = new Vector2f(Rect.Position.X + Rect.Width / 2f - totalLines[i].GetGlobalBounds().Width / 2f, totalLines[i].Position.Y);
             }
             
             prev = totalLines[i];

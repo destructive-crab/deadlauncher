@@ -25,9 +25,28 @@ public static class Utils
 
     public static bool PointInRect(FloatRect rect, Vector2f point)
     {
-        var inner = point - rect.Position;
+        Vector2f inner = point - rect.Position;
+        
         return
             inner.X >= 0 && inner.X <= rect.Width &&
             inner.Y >= 0 && inner.Y <= rect.Height;
+    }
+    
+    public static float GetXPositionOfCharacter(this Text providedText, int position)
+    {
+        string sub = providedText.DisplayedString[..position];
+        float positionX = 0f;
+
+        uint previousSymbol = 0u;
+        foreach (char symbol in sub)
+        {   
+            positionX += 
+                providedText.Font.GetGlyph(symbol, providedText.CharacterSize, true, providedText.OutlineThickness).Advance + 
+                providedText.Font.GetBoldKerning(previousSymbol, symbol, providedText.CharacterSize);
+            
+            previousSymbol = symbol;
+        }
+
+        return providedText.Position.X + positionX;
     }
 }

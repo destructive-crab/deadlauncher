@@ -21,7 +21,7 @@ public class UITabBox : AUIBox
     private RectangleShape tabBackground;
     private Text tabText;
     
-    public UITabBox(UIHost host, params KeyValuePair<AUIElement, string>[] children) : base(host, default)
+    public UITabBox(UIHost host) : base(host)
     {
         backgroundOutline = new RectangleShape();
         background        = new RectangleShape();
@@ -29,15 +29,19 @@ public class UITabBox : AUIBox
         tabText           = new Text();
         tabBackground     = new RectangleShape();
 
-        backgroundOutline.FillColor = UIStyle.OutlineColor;
+        backgroundOutline.FillColor = Host.Style.OutlineColor;
         background.       FillColor = UIStyle.FirstBackgroundColor;
-        separator.        FillColor = UIStyle.OutlineColor;
+        separator.        FillColor = Host.Style.OutlineColor;
 
         tabText.          FillColor = Host.Style.NormalButton.TopColor;
-        tabText.Font = Host.Style.Font;
+        
+        tabText.Font  = Host.Style.Font;
         tabText.Style = Text.Styles.Bold;
         tabText.CharacterSize = (uint)(Host.Style.TabLineHeight - 6);
-        
+    }
+
+    public UITabBox WithTabs(params KeyValuePair<AUIElement, string>[] children)
+    {
         foreach (KeyValuePair<AUIElement, string> element in children)
         {
             AddChild(element.Key, element.Value);
@@ -45,8 +49,10 @@ public class UITabBox : AUIBox
         
         SetActive(this.children[0]);
         UpdateLayout();
-    }
 
+        return this;
+    }
+    
     public override void Draw(RenderTarget target)
     {
         target.Draw(backgroundOutline);
@@ -90,7 +96,7 @@ public class UITabBox : AUIBox
         
         foreach (ClickArea switcher in tabSwitchers)
         {
-            Host.Areas.Process(switcher);
+            Host.InputsHandler.Areas.Process(switcher);
         }
     }
 
@@ -104,9 +110,9 @@ public class UITabBox : AUIBox
         UpdateLayout();
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
-        int outline = UIStyle.BaseOutline;
+        int outline = Host.Style.BaseOutline;
         
         backgroundOutline.Position = Rect.Position - new Vector2f(outline, outline);
         backgroundOutline.Size     = Rect.Size     + new Vector2f(outline * 2, outline * 2);
@@ -151,7 +157,7 @@ public class UITabBox : AUIBox
             SetActive(child);
         };
         
-        if(activeElement != null) UpdateLayout();
+        if(activeElement != null) UpdateLayoutIm();
     }
 
     public override void RemoveChild(AUIElement child)
@@ -159,7 +165,7 @@ public class UITabBox : AUIBox
         children.Remove(child);
         tabNamesMap.Remove(child);
         
-        if(activeElement != null) UpdateLayout();
+        if(activeElement != null) UpdateLayoutIm();
     }
 
     public void Rename(AUIElement child, string tabName)

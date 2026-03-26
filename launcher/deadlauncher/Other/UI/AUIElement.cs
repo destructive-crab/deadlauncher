@@ -1,16 +1,17 @@
+using System.Runtime.CompilerServices;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
 namespace deUI;
 
-public abstract class AUIElement(UIHost host, Vector2f minimalSize)
+public abstract class AUIElement
 {
-    private AUIBox? parent;
+    public AUIBox? Parent { get; private set; }
 
-    protected readonly UIHost Host = host;
+    protected UIHost Host;
     
-    private Vector2f _minimalSize = minimalSize;
+    private Vector2f _minimalSize;
 
     public Vector2f MinimalSize
     {
@@ -19,9 +20,9 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         {
             _minimalSize = value;
             
-            if (GetParent() != null)
+            if (Parent != null)
             {
-                Host.UpdateActionsQueue.Enqueue(GetParent().OnChildUpdate);
+                Host.UpdateActionsQueue.Enqueue(Parent.OnChildUpdate);
             }
         }
     }
@@ -29,13 +30,18 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     public  bool      InheritRect { get; private set; }
     private FloatRect rect;
 
+    protected AUIElement(UIHost host)
+    {
+        Host = host;
+    }
+
     public FloatRect Rect
     {
         get
         {
-            if (InheritRect && parent != null)
+            if (InheritRect && Parent != null)
             {
-                return parent.Rect;
+                return Parent.Rect;
             }
 
             return rect;
@@ -43,17 +49,10 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         protected set => rect = value;
     }
 
-    public AUIBox? GetParent() => parent;
-
-    public void SetParent(AUIBox? value)
-    {
-        if (parent == value) return;
-        
-        parent = value;
-        UpdateLayout();
-    }
-
-    public virtual AUIElement SetRect(FloatRect value)
+    public virtual AUIElement SetRect(FloatRect value ,
+        [CallerFilePath] string file = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0)
     {
         if (Rect == value) return this;
 
@@ -67,6 +66,14 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         return this;
     }
 
+    public void SetParent(AUIBox? value)
+    {
+        if (Parent == value) return;
+        
+        Parent = value;
+        UpdateLayout();
+    }
+
     public AUIElement SetInheritRect(bool value)
     {
         if (InheritRect == value) return this;
@@ -77,7 +84,13 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         return this;
     }
 
-    public abstract void UpdateLayout();
+    public void UpdateLayout()
+    {
+        //Console.WriteLine($"UPDATE LAYOUT: {this.GetType()}; {Rect}; {Parent?.GetType().Name}");
+        UpdateLayoutIm();
+    }
+
+    protected abstract void UpdateLayoutIm();
 
     public abstract void Draw(RenderTarget target);
 
@@ -85,7 +98,7 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     
     public void Destroy()
     {
-        GetParent()?.RemoveChild(this);
+        Parent?.RemoveChild(this);
         SetParent(null);
     }
 
@@ -95,4 +108,20 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     
     public virtual void OnMouseClick(Vector2f pos) {}
 
+    public void OnHostSizeChanged(Vector2f newSize)
+    {
+        OnHostSizeChangedIm(newSize);
+        if (this is AUIBox box)
+        {
+            foreach (AUIElement child in box.GetChildren())
+            {
+                child.OnHostSizeChanged(newSize);
+            }
+        }
+    }
+
+    protected virtual void OnHostSizeChangedIm(Vector2f newSize)
+    {
+        
+    }
 }

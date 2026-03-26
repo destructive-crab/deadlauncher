@@ -46,7 +46,7 @@ public class InstallMenu : Menu
         textBackground.Size      = new Vector2f(progressBarText.GetGlobalBounds().Size.X + 6, progressBar.GetGlobalBounds().Size.Y - 6);
         textBackground.Position  = new Vector2f(progressBar.Position.X + GetBarMaxWidth(rect)/2 - textBackground.Size.X/2 - 3,progressBar.Position.Y+3);
 
-        return new UIOutlineBox(host, new StackBox(host, [new UITextBox(host, "installing!!!!   installing!!!!").SetStretchLines(true)]));
+        return host.New<UIOutlineBox>().WithChild(host.New<StackBox>().WithChildren(host.New<UITextBox>().WithText("installing!!!!   installing!!!!").WithLinesStretching(true)));
     }
 
     private int progress;

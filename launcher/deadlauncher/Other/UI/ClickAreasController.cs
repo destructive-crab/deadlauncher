@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -51,17 +49,7 @@ public class ClickAreasController
         _mousePositionOld = _mousePosition;
         _isPressedOld = _isPressed;
     }
-
-    public void SetViewport(FloatRect rect)
-    {
-        _inViewStack.Push(_inView);
-        _inView = Utils.PointInRect(rect, _mousePositionOld);
-    }
-
-    public void PopViewport()
-    {
-        _inView = _inViewStack.Pop();
-    }
+    
 
     public void Process(ClickArea area)
     {

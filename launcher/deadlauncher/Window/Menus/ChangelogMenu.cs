@@ -23,17 +23,19 @@ public class ChangelogMenu : Menu
     {
         string text = "... wait... wait... wait...";
 
-        textBox = new UITextBox(host, text);
+        textBox = host.New<UITextBox>().WithText(text);
         
         Anchor anchorBack = new(new FloatRect(0, 10, 0, 40), new FloatRect(0, 1, 1, 0));
-        AnchorBox backButtonAnchorBox = new AnchorBox(host);
+        
+        AnchorBox backButtonAnchorBox = host.New<AnchorBox>();
+        
         backButtonAnchorBox.SetInheritRect(true);
-        backButtonAnchorBox.AddChild(anchorBack, new UIButton(host, "\u2190", BackButton));
+        backButtonAnchorBox.WithChild(anchorBack, host.New<UIButton>().WithText("\u2190").OnClick(BackButton));
 
-        UIOutlineBox root = new UIOutlineBox(host, 
-                                new StackBox(host, 
+        UIOutlineBox root = host.New<UIOutlineBox>().WithChild( 
+                                host.New<StackBox>().WithChildren( 
                                     [
-                                        new ScrollBox(host, textBox).SetInheritRect(true), 
+                                        host.New<ScrollBox>().WithChild(textBox).SetInheritRect(true), 
                                         backButtonAnchorBox         
                                     ]).SetInheritRect(true));
         root.SetInheritRect(true);

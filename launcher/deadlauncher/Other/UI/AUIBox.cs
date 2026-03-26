@@ -1,10 +1,11 @@
-using SFML.System;
-
 namespace deUI;
 
-public abstract class AUIBox(UIHost host, Vector2f minimalSize)
-    : AUIElement(host, minimalSize)
+public abstract class AUIBox : AUIElement
 {
+    protected AUIBox(UIHost host) : base(host)
+    {
+    }
+
     public abstract IEnumerable<AUIElement> GetChildren();
 
     public abstract void RemoveChild(AUIElement child);
@@ -24,9 +25,12 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize)
 
     public override void ProcessClicks()
     {
-        var children = GetChildren();
+        IEnumerable<AUIElement> children = GetChildren();
+        
         foreach (var child in children)
-            Host.ClickHandlersStack.Push(child.ProcessClicks);
+        {
+            Host.InputsHandler.PushClickProcessor(child.ProcessClicks);
+        }
     }
 
     public void OnChildUpdate()
@@ -35,6 +39,8 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize)
         UpdateMinimalSize();
         
         if (size == MinimalSize)
+        {
             Host.UpdateActionsQueue.Enqueue(UpdateLayout);
+        }
     }
 }

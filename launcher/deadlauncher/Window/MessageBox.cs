@@ -6,44 +6,65 @@ namespace deadlauncher;
 
 public sealed class MessageBox : AUIElement
 {
-    private readonly UIButton[] buttons;
+    private UIRect     background;
+    private StackBox   stackBox;
 
-    private readonly UIRect     background;
-    private readonly StackBox   stackBox;
-    
-    public MessageBox(string message, Tuple<string, Action>[] tuples) 
-        : base(Application.Launcher.Window.UIHost, new Vector2f(Application.Launcher.Window.UIHost.Size.X / 1.5f, Application.Launcher.Window.UIHost.Size.Y / 3f))
+    private UITextBox textBox;
+    private UIButton[] buttons;
+
+    public MessageBox(UIHost host) : base(host)
+    {
+        MinimalSize = new Vector2f(
+            Application.Launcher.Window.UIHost.Renderer.GetSize().X / 1.5f,
+            Application.Launcher.Window.UIHost.Renderer.GetSize().Y / 3f);
+    }
+
+    public MessageBox WithMessage(string message)
+    {
+        textBox = Host.New<UITextBox>().WithText(message).WithAlignCenter(true);
+        textBox.SetInheritRect(true);
+
+        return this;
+    }
+
+    public MessageBox WithButtons(Tuple<string, Action>[] tuples)
     {
         buttons = new UIButton[tuples.Length];
         
         for (var i = 0; i < tuples.Length; i++)
         {
-            buttons[i] = new UIButton(Application.Launcher.Window.UIHost, tuples[i].Item1, tuples[i].Item2);
+            buttons[i] = Host.New<UIButton>().WithText(tuples[i].Item1).OnClick(tuples[i].Item2);
         }
 
-        UIHost h = Application.Launcher.Window.UIHost;
+        return this;
+    }
+
+    public MessageBox FinishConfiguration()
+    {
+        Anchor buttonsLineAnchor = new Anchor(new FloatRect(20, -50, -40, 0), new FloatRect(0, 1, 1, 0));
         
-        stackBox = new StackBox(h,
+        stackBox = Host.New<StackBox>().WithChildren(
         [
-            new UIRect (h, null, new Vector2f(2,2)).BlockClicks().SetInheritRect(true),
-            new UITextBox(h, message).SetAlignCenter(true).SetInheritRect(true),
-            new AnchorBox(h).AddChild(new Anchor(new FloatRect(20, -50, -40, 0), new FloatRect(0, 1, 1, 0)), 
-                new AxisBox  (h, UIAxis.Horizontal, true, buttons)).SetInheritRect(true),
+            Host.New<UIRect>().WithOutline(2).WithBlockClicks(true).SetInheritRect(true),
+            textBox,
+            Host.New<AnchorBox>().WithChild(buttonsLineAnchor, 
+                Host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(buttons).SetInheritRect(true)),
         ]);
 
-        var originalColor = new Color(0x00000080);
-        background = new UIRect(h, originalColor).BlockClicks();
-        
-        SetInheritRect(true);
-    }
+        background = Host.New<UIRect>().WithColor(new Color(0x00000080)).WithBlockClicks(true);
 
+        SetInheritRect(true);
+        
+        return this;
+    }
+    
     public override void ProcessClicks()
     {
-        base.ProcessClicks();
-        stackBox.ProcessClicks();
+        Host.InputsHandler.PushClickProcessor(background.ProcessClicks);
+        Host.InputsHandler.PushClickProcessor(stackBox.ProcessClicks);
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         Vector2f boxPosition = Rect.Position + Rect.Size/2f - stackBox.Rect.Size/2f;
         

@@ -1,4 +1,3 @@
-using System;
 using SFML.Graphics;
 using SFML.System;
 
@@ -21,7 +20,7 @@ public class UIButton : AUIElement
     private readonly RectangleShape shapeBottom  = new();
     private readonly RectangleShape shapeOutline = new();
     
-    private readonly Text textObj;
+    private Text textObj;
     
     public string Text
     {
@@ -40,28 +39,31 @@ public class UIButton : AUIElement
 
     protected ButtonStateStyle appliedStyle;
     
-    public UIButton(UIHost host, string text, Action? action = null) : 
-        base(host, 
-/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace + new Vector2f(8, host.Style.NormalButton.BottomHeight + host.Style.NormalButton.Outline))
+    public UIButton(UIHost host) : base(host)
     {
-        this.textObj = textObj;
+        textObj = host.Fabric.MakeText("X");
 
-        Action = action;
         BuildClickArea();
-        ApplyStyle(host.Style.NormalButton);
+        ApplyStyle(Host.Style.NormalButton);
+    }
+
+    public UIButton WithText(string text)
+    {
+        textObj.DisplayedString = text;
+        Vector2f textSize = Utils.TextSize(textObj);
+        MinimalSize = textSize + Host.Style.ButtonSpace + new Vector2f(8, Host.Style.NormalButton.BottomHeight + Host.Style.NormalButton.Outline);
+
+        SetRect(new FloatRect(new Vector2f(0,0), MinimalSize));
+        
+        return this;
+    }
+
+    public UIButton OnClick(Action action)
+    {
+        Action = action;
+        return this;
     }
     
-    public UIButton(UIHost host, string text, Vector2f minimalSize, Action? action = null) : 
-        base(host, minimalSize)
-    {
-        host.Fabric.MakeTextOut(text, out Text textObj);
-        this.textObj = textObj;
-
-        Action = action;
-        BuildClickArea();
-        ApplyStyle(host.Style.NormalButton);
-    }
-
     private void BuildClickArea()
     {
         area.OnRightMouseButtonClick    = OnPress;
@@ -79,10 +81,10 @@ public class UIButton : AUIElement
 
         int x            = (int)(Rect.Size.X - style.Outline - 2);
         
-        shapeBottom.Position   = new Vector2f(Rect.Position.X, bottomY-bottomHeight);
+        shapeBottom.Position   =  new Vector2f(Rect.Position.X, bottomY-bottomHeight);
         shapeBottom.Position   += new Vector2f(style.Outline, 0);
-        shapeBottom.Size       = new Vector2f(x, bottomHeight);
-        shapeBottom.FillColor  = style.BottomColor;
+        shapeBottom.Size       =  new Vector2f(x, bottomHeight);
+        shapeBottom.FillColor  =  style.BottomColor;
 
         shapeTop.Position      = new Vector2f(shapeBottom.Position.X, shapeBottom.Position.Y-topHeight);
         shapeTop.Size          = new Vector2f(x, topHeight);
@@ -110,13 +112,15 @@ public class UIButton : AUIElement
         Action?.Invoke();
     }
 
-    public override void ProcessClicks() => Host.Areas.Process(area);
-    public override void UpdateLayout()
+    public override void ProcessClicks() => Host.InputsHandler.Areas.Process(area);
+
+    protected override void UpdateLayoutIm()
     {
         area.Rect = Rect;
      
         ApplyStyle(appliedStyle);
     }
+    
     public override void Draw(RenderTarget target)
     {
         target.Draw(shapeOutline);

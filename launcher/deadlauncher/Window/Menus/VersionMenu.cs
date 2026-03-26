@@ -27,7 +27,7 @@ public class VersionMenu : Menu
         RenderWindow window = Application.Launcher.Window.RenderWindow;
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
         
-        UITabBox uiTabs = new UITabBox(host,
+        UITabBox uiTabs = host.New<UITabBox>().WithTabs(
             new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
             new KeyValuePair<AUIElement, string>(BuildModsTab(),     "Mods"));
         
@@ -73,13 +73,13 @@ public class VersionMenu : Menu
     private void DeleteButton(string id)
     {
         Application.Launcher.Downloader.DeleteVersion(id);
-        actionButtonPlaces[id].SetChild(BuildActionButtons(id));
+        actionButtonPlaces[id].WithChild(BuildActionButtons(id));
     }
 
     private AUIElement BuildVersionsList(string[] includeOnly, string[] excludeOnly)
     {
-        UISelectionList versionList = new(host);
-        AxisBox actionButtonsList   = new(host, UIAxis.Vertical);
+        UISelectionList versionList       = host.New<UISelectionList>();
+        AxisBox         actionButtonsList = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
         
         foreach (string id in Application.Launcher.Model.Available)
         {
@@ -98,39 +98,39 @@ public class VersionMenu : Menu
             }
             if(!valid) continue;
             
-            UISocketBox actionButtonsPlace = new(host);
+            UISocketBox actionButtonsPlace = host.New<UISocketBox>();
             
-            versionList.AddChild(new UIOption(host, GetButtonNameByVersionID(id), new Vector2f(100, 45), () => VersionSelectButton(id), Application.Launcher.Model.IsSelected(id)));
+            versionList.AddChild(host.New<UIOption>().SetState(Application.Launcher.Model.IsSelected(id)).WithText(GetButtonNameByVersionID(id)).OnClick(() => VersionSelectButton(id)) as UIOption);
 
             actionButtonsList.AddChild(actionButtonsPlace);
-            actionButtonsPlace.SetChild(BuildActionButtons(id));
+            actionButtonsPlace.WithChild(BuildActionButtons(id));
             actionButtonPlaces.Add(id, actionButtonsPlace);
         }
 
-        return new ScrollBox(host, new AxisBox(host, UIAxis.Horizontal, true, versionList, actionButtonsList));
+        return host.New<ScrollBox>().WithChild(host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(versionList, actionButtonsList));
     }
 
     private AUIElement BuildVersionsListIncludeOnly(params string[] includeOnly) => BuildVersionsList(includeOnly, []);
     private AUIElement BuildVersionsListExcludeOnly(params string[] excludeOnly) => BuildVersionsList([], excludeOnly);
 
     private AUIElement BuildOfficialTab() => BuildVersionsListExcludeOnly(LauncherModel.MODE_POSTFIX);
-    private AUIElement BuildModsTab() => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
+    private AUIElement BuildModsTab()     => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
 
 
     public AxisBox BuildActionButtons(string id)
     {
-        AxisBox actionButtonsLine = new AxisBox(host, UIAxis.Horizontal, true);
+        AxisBox actionButtonsLine = host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true);
 
         int segmentWidth = VERSION_CONTEXT_ACTIONS_WIDTH;
         
         if (Application.Launcher.Model.IsInstalled(id))
         {
-            actionButtonsLine.AddChild(new UIButton(host, "Folder", new Vector2f(segmentWidth/2f - host.Style.AxisBoxSpace/2f, 45), () => OpenFolder(id)));
-            actionButtonsLine.AddChild(new UIButton(host, "Delete", new Vector2f(segmentWidth/2f - host.Style.AxisBoxSpace/2f, 45), () => DeleteButton(id)));
+            actionButtonsLine.AddChild(host.New<UIButton>().WithText("Folder").OnClick(() => OpenFolder(id)));
+            actionButtonsLine.AddChild(host.New<UIButton>().WithText("Delete").OnClick(() => DeleteButton(id)));
         }
         else
         {
-            actionButtonsLine.AddChild(new UIButton(host, "Install", new Vector2f(segmentWidth, 45), () => InstallVersion(id)));               
+            actionButtonsLine.AddChild(host.New<UIButton>().WithText("Install").OnClick(() => InstallVersion(id)));               
         }
 
         return actionButtonsLine;
