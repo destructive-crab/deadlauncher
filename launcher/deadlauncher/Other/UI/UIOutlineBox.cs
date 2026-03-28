@@ -39,7 +39,8 @@ public sealed class UIOutlineBox : AUIBox
 
     public override IEnumerable<AUIElement> GetChildren()
     {
-        return [Child];
+        if(Child != null) return [Child];
+        else              return new AUIElement[] {};
     }
 
     public override void RemoveChild(AUIElement child)
@@ -55,7 +56,6 @@ public sealed class UIOutlineBox : AUIBox
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0)
     {
-        Console.WriteLine($"GOT RECT {value} {file} {member} {line}");
         return base.SetRect(value);
     }
 
@@ -65,35 +65,39 @@ public sealed class UIOutlineBox : AUIBox
     {
         if (Child == null) return;
         
-        Child.SetRect(Rect);
+        Child.SetRect(GetRect());
     }
 
     public override void Draw(RenderTarget target)
     {
         if (Child == null) return;
         
-        Child.Draw(target);
-        
+        Host.Renderer.PushDrawCallToStack(Child.Draw);
+        Host.Renderer.PushDrawCallToStack(DrawOutline);
+    }
+
+    private void DrawOutline(RenderTarget target)
+    {
         var outline = Host.Style.BaseOutline;
 
         //horizontal
-        line.Position = Rect.Position - new Vector2f(outline, outline);
-        line.Size     = new Vector2f(Rect.Size.X + outline * 2, outline);
+        line.Position = GetRect().Position - new Vector2f(outline, outline);
+        line.Size     = new Vector2f(GetRect().Size.X + outline * 2, outline);
        
         target.Draw(line);
 
-        line.Position += new Vector2f(0, Rect.Size.Y + outline);
+        line.Position += new Vector2f(0, GetRect().Size.Y + outline);
         
         target.Draw(line);
         
         //vertical
         
-        line.Position = Rect.Position - new Vector2f(outline, outline);
-        line.Size     = new Vector2f(outline, Rect.Size.Y + outline * 2);
+        line.Position = GetRect().Position - new Vector2f(outline, outline);
+        line.Size     = new Vector2f(outline, GetRect().Size.Y + outline * 2);
 
         target.Draw(line);
 
-        line.Position += new Vector2f(Rect.Size.X + outline, 0);
+        line.Position += new Vector2f(GetRect().Size.X + outline, 0);
         
         target.Draw(line);
     }

@@ -13,6 +13,6 @@ public interface IUIRenderer
     
     void     Draw        (RenderTarget target);
     
-    void     PushDrawCall(UIDrawCall call);
+    void     PushDrawCallToStack(UIDrawCall call);
     View View { get; }
 }

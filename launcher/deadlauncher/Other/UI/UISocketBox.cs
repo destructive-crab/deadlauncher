@@ -15,7 +15,7 @@ public class UISocketBox : AUIBox
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0)
     {
-        Rect = value;
+        rect = value;
         Child?.SetRect(value);
         
         return this;
@@ -60,7 +60,7 @@ public class UISocketBox : AUIBox
     {
         if (Child != null && !Hidden)
         {
-            Child.SetRect(Rect);
+            Child.SetRect(GetRect());
         }
     }
 
@@ -73,7 +73,7 @@ public class UISocketBox : AUIBox
     {
         if (Child != null && !Hidden)
         {
-            Host.Renderer.PushDrawCall(Child.Draw);
+            Host.Renderer.PushDrawCallToStack(Child.Draw);
         }
     }
 

@@ -91,10 +91,10 @@ public class StackBox : AUIBox
         //TODO REFACTOR STACK BOX
         return;
         var baseRect = new FloatRect(
-            Rect.Left   + Padding.Left, 
-            Rect.Top    + Padding.Top,
-            Rect.Width  - Padding.Left - Padding.Right, 
-            Rect.Height - Padding.Bottom - Padding.Top
+            GetRect().Left   + Padding.Left, 
+            GetRect().Top    + Padding.Top,
+            GetRect().Width  - Padding.Left - Padding.Right, 
+            GetRect().Height - Padding.Bottom - Padding.Top
         );
 
         baseRect.Left += baseRect.Width / 2;
@@ -119,7 +119,7 @@ public class StackBox : AUIBox
     public override void Draw(RenderTarget target)
     {
         foreach (var child in _children.AsEnumerable().Reverse())
-            Host.Renderer.PushDrawCall(child.Draw);
+            Host.Renderer.PushDrawCallToStack(child.Draw);
     }
 
     private bool _centerX;

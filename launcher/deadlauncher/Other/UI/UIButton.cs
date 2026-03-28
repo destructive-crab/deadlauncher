@@ -74,14 +74,14 @@ public class UIButton : AUIElement
 
     protected virtual void ApplyStyle(ButtonStateStyle style)
     {
-        int bottomY      = (int)(Rect.Position.Y + MinimalSize.Y);
+        int bottomY      = (int)(GetRect().Position.Y + MinimalSize.Y);
         
-        int topHeight    = (int)(textObj.CharacterSize + Host.Style.ButtonSpace.Y);
+        int topHeight    = (int)(GetRect().Height);
         int bottomHeight = (int)(style.BottomHeight);
 
-        int x            = (int)(Rect.Size.X - style.Outline - 2);
+        int x            = (int)(GetRect().Size.X - style.Outline - 2);
         
-        shapeBottom.Position   =  new Vector2f(Rect.Position.X, bottomY-bottomHeight);
+        shapeBottom.Position   =  new Vector2f(GetRect().Position.X, bottomY-bottomHeight);
         shapeBottom.Position   += new Vector2f(style.Outline, 0);
         shapeBottom.Size       =  new Vector2f(x, bottomHeight);
         shapeBottom.FillColor  =  style.BottomColor;
@@ -91,8 +91,8 @@ public class UIButton : AUIElement
         shapeTop.FillColor     = style.TopColor;
 
         shapeOutline.Position  = shapeTop.Position - new Vector2f(style.Outline, style.Outline);
-        shapeOutline.Size      = Rect.Size + new Vector2f(style.Outline, style.Outline);
-        shapeOutline.Size      = new Vector2f(Rect.Size.X, shapeTop.Size.Y + shapeBottom.Size.Y + style.Outline);
+        shapeOutline.Size      = GetRect().Size + new Vector2f(style.Outline, style.Outline);
+        shapeOutline.Size      = new Vector2f(GetRect().Size.X, shapeTop.Size.Y + shapeBottom.Size.Y + style.Outline);
         shapeOutline.FillColor = style.OutlineColor;
         
         _styleTextOffset       = Host.Style.ButtonSpace / 2;
@@ -116,7 +116,7 @@ public class UIButton : AUIElement
 
     protected override void UpdateLayoutIm()
     {
-        area.Rect = Rect;
+        area.Rect = GetRect();
      
         ApplyStyle(appliedStyle);
     }

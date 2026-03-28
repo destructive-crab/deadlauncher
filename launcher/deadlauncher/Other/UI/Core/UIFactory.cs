@@ -5,10 +5,12 @@ namespace deUI;
 public sealed class UIFactory : IUIFactory
 {
     private readonly IUIServiceContainer container;
+    private readonly UIHost host;
 
-    public UIFactory(IUIServiceContainer container)
+    public UIFactory(UIHost uiHost)
     {
-        this.container = container;
+        host = uiHost;
+        container = uiHost.Services;
     }
 
     public TElement New<TElement>()
@@ -40,6 +42,8 @@ public sealed class UIFactory : IUIFactory
             values[i] = container.Get(parameters[i].ParameterType);
         }
 
-        return (TElement)constructor.Invoke(values);
+        var element = (TElement)constructor.Invoke(values);
+        element.OnHostSizeChanged(host.Renderer.GetSize());
+        return element;
     }
 }

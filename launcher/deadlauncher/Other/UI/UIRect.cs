@@ -50,7 +50,7 @@ public class UIRect : AUIElement
     public UIRect WithBlockClicks(bool value)
     {
         
-        area = new ClickArea(Rect, true);
+        area = new ClickArea(GetRect(), true);
         return this;
     }
     
@@ -64,13 +64,13 @@ public class UIRect : AUIElement
     
     protected override void UpdateLayoutIm()
     {
-        outlineShape.Position = Rect.Position;
-        outlineShape.Size = Rect.Size + 2 * outline;
+        outlineShape.Position = GetRect().Position;
+        outlineShape.Size = GetRect().Size + 2 * outline;
         
-        shape.Position = Rect.Position + outline;
-        shape.Size = Rect.Size;
+        shape.Position = GetRect().Position + outline;
+        shape.Size = GetRect().Size;
         
-        if(area != null) area.Rect = Rect;
+        if(area != null) area.Rect = GetRect();
     }
 
     public override void Draw(RenderTarget target)

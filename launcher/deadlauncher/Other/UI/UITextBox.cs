@@ -41,7 +41,6 @@ public class UITextBox : AUIElement
         if (AlignCenter == value) return this;
 
         AlignCenter = value;
-        Console.WriteLine($"Align Center: {value}");
         UpdatePositions();
 
         return this;
@@ -61,9 +60,9 @@ public class UITextBox : AUIElement
 
     protected override void UpdateLayoutIm()
     {
-        textOriginal.Position = Rect.Position;
+        textOriginal.Position = GetRect().Position;
 
-        int textWidth = (int)Rect.Width;
+        int textWidth = (int)GetRect().Width;
         
         if (textWidth != currentWidth || currentDisplaying != displayString)
         {
@@ -71,7 +70,7 @@ public class UITextBox : AUIElement
             BuildLines();
         }
 
-        if (linesCount > 0 && totalLines[0].Position != Rect.Position || currentDisplaying != displayString)
+        if (linesCount > 0 && totalLines[0].Position != GetRect().Position || currentDisplaying != displayString)
         {
             currentDisplaying = displayString;
             UpdatePositions();
@@ -80,7 +79,7 @@ public class UITextBox : AUIElement
 
     private void BuildLines()
     {
-        int textWidth = (int)Rect.Width;
+        int textWidth = (int)GetRect().Width;
         List<string> lines = new();
         string[] words = displayString.Split(" ");
 
@@ -161,7 +160,7 @@ public class UITextBox : AUIElement
 
         linesCount = lines.Count;
         MinimalSize = minimalSize;
-        SetRect(new FloatRect(Rect.Position, MinimalSize));
+        SetRect(new FloatRect(GetRect().Position, MinimalSize));
         
         UpdatePositions();
     }
@@ -169,11 +168,11 @@ public class UITextBox : AUIElement
     private void UpdatePositions()
     {
         Text prev = null;
-        for (var i = 0; i < linesCount; i++)
+        for (int i = 0; i < linesCount; i++)
         {
             if (prev == null)
             {
-                totalLines[i].Position = Rect.Position;
+                totalLines[i].Position = GetRect().Position;
             }
             else
             {
@@ -181,6 +180,11 @@ public class UITextBox : AUIElement
                 if (height == 0) height = (int)Host.Style.FontSize* i;
                 
                 totalLines[i].Position = prev.Position + new Vector2f(0, height);
+            }
+            
+            if (AlignCenter)
+            {
+                totalLines[i].Position = new Vector2f(GetRect().Position.X + GetRect().Width / 2f - totalLines[i].GetGlobalBounds().Width / 2f, totalLines[i].Position.Y);
             }
             
             prev = totalLines[i];

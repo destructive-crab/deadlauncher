@@ -10,32 +10,32 @@ public struct Anchor(FloatRect baseRect, FloatRect relative)
 
 public class AnchorBox : AUIBox
 {
-    private readonly List<(Anchor, AUIElement)> _children = [];
+    private readonly List<(Anchor, AUIElement)> children = [];
 
     public AnchorBox(UIHost host) : base(host) { }
 
     protected override void UpdateLayoutIm()
     {
-        foreach (var (anchor, child) in _children)
+        foreach (var (anchor, child) in children)
         {
             var rect = anchor.BaseRect;
-            rect.Left += Rect.Left + anchor.Relative.Left * Rect.Width;
-            rect.Top += Rect.Top + anchor.Relative.Top * Rect.Height;
-            rect.Width += anchor.Relative.Width * Rect.Width;
-            rect.Height += anchor.Relative.Height * Rect.Height;
+            rect.Left += GetRect().Left + anchor.Relative.Left * GetRect().Width;
+            rect.Top += GetRect().Top + anchor.Relative.Top * GetRect().Height;
+            rect.Width += anchor.Relative.Width * GetRect().Width;
+            rect.Height += anchor.Relative.Height * GetRect().Height;
             child.SetRect(rect);
         }
     }
     
     public override IEnumerable<AUIElement> GetChildren()
-        => _children
+        => children
             .Select(tuple => tuple.Item2)
             .AsEnumerable();
 
     public AnchorBox WithChild(Anchor anchor, AUIElement child)
     {
         child.SetParent(this);
-        _children.Add((anchor, child));
+        children.Add((anchor, child));
         
         UpdateLayout();
         return this;
@@ -44,10 +44,10 @@ public class AnchorBox : AUIBox
     public override void RemoveChild(AUIElement child)
     {
         child.SetParent(null);
-        (Anchor, AUIElement) match = _children.FirstOrDefault(tuple => tuple.Item2 == child);
+        (Anchor, AUIElement) match = children.FirstOrDefault(tuple => tuple.Item2 == child);
         if (match.Item2 != null)
         {
-            _children.Remove(match);
+            children.Remove(match);
         }
         UpdateLayoutIm();
     }
@@ -56,7 +56,7 @@ public class AnchorBox : AUIBox
 
     public override void Draw(RenderTarget target)
     {
-        foreach (var child in _children.AsEnumerable().Reverse())
+        foreach (var child in children.AsEnumerable().Reverse())
         {
             child.Item2.Draw(target);
         }

@@ -16,6 +16,8 @@ public class Downloader
     {
         try
         {
+            l.Model.RegisterVersion("v1", "");
+            l.Model.RegisterVersion("v2", "");
             HttpClient client = new()
             {
                 BaseAddress = new Uri(SERVER_URL)
@@ -37,10 +39,12 @@ public class Downloader
                 l.Model.RegisterVersion(info.ID, SERVER_URL+$"/api/versions/download/{info.ID}");
                 Console.WriteLine(SERVER_URL+$"api/download/{info.ID}");
             }
+            
+            await Task.CompletedTask;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            //Console.WriteLine(e);
             
             Application.Launcher.Window.OpenMessageBox("Server Error", 
                 new("Retry", () =>
@@ -49,7 +53,7 @@ public class Downloader
                 }),
                 new("Quit", () =>
                 {
-                    Application.Quit();
+                    Application.Launcher.Window.CloseMessageBox();
                 }));
             
         }
@@ -63,7 +67,6 @@ public class Downloader
 
         //todo
         string[] subdirs = Directory.GetDirectories(Application.Launcher.Model.VersionsFolder);
-        
         
         foreach (string s in subdirs)
         {

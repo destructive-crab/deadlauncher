@@ -6,8 +6,8 @@ namespace deadlauncher;
 
 public sealed class MessageBox : AUIElement
 {
-    private UIRect     background;
-    private StackBox   stackBox;
+    private UIRect background;
+    private StackBox stackBox;
 
     private UITextBox textBox;
     private UIButton[] buttons;
@@ -42,18 +42,29 @@ public sealed class MessageBox : AUIElement
     public MessageBox FinishConfiguration()
     {
         Anchor buttonsLineAnchor = new Anchor(new FloatRect(20, -50, -40, 0), new FloatRect(0, 1, 1, 0));
+
+        var boxBackground = Host
+            .New<UIRect>()
+            .WithOutline(2)
+            .WithBlockClicks(true)
+            .SetInheritRect(true);
+        
+        var buttonsLine = Host
+            .New<AxisBox>()
+            .WithAxis(UIAxis.Horizontal)
+            .FitRect(true)
+            .WithChildren(buttons);
         
         stackBox = Host.New<StackBox>().WithChildren(
         [
-            Host.New<UIRect>().WithOutline(2).WithBlockClicks(true).SetInheritRect(true),
+            boxBackground,
             textBox,
-            Host.New<AnchorBox>().WithChild(buttonsLineAnchor, 
-                Host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true).WithChildren(buttons).SetInheritRect(true)),
+            Host.New<AnchorBox>().WithChild(buttonsLineAnchor, buttonsLine).SetInheritRect(true),
         ]);
 
         background = Host.New<UIRect>().WithColor(new Color(0x00000080)).WithBlockClicks(true);
 
-        SetInheritRect(true);
+        UpdateLayout();
         
         return this;
     }
@@ -66,10 +77,10 @@ public sealed class MessageBox : AUIElement
 
     protected override void UpdateLayoutIm()
     {
-        Vector2f boxPosition = Rect.Position + Rect.Size/2f - stackBox.Rect.Size/2f;
+        Vector2f boxPosition = GetRect().Position + GetRect().Size/2f - stackBox.GetRect().Size/2f;
         
         stackBox.SetRect(new FloatRect(boxPosition,  MinimalSize));
-        background.SetRect(Rect);
+        background.SetRect(GetRect());
         
         background.UpdateLayout();
         stackBox.UpdateLayout();

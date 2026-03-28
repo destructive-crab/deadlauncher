@@ -45,6 +45,24 @@ public class AxisBox : AUIBox
 
     public AxisBox(UIHost host) : base(host) { }
 
+    public override FloatRect GetRect()
+    {
+        return base.GetRect();
+        
+        if (Parent != null)
+        {
+            if (InheritRect) return Parent.GetRect();
+
+            switch (axis)
+            {
+                case UIAxis.Vertical:   return new FloatRect(rect.Position, new(Parent.GetRect().Width, rect.Height));
+                case UIAxis.Horizontal: return new FloatRect(rect.Position, new(rect.Width, Parent.GetRect().Height));
+            }    
+        }
+
+        return rect;
+    }
+
     public AxisBox WithAxis(UIAxis value)
     {
         axis = value;
@@ -99,10 +117,12 @@ public class AxisBox : AUIBox
     
     protected override void UpdateLayoutIm()
     {
+        if (children.Count == 0) return;
+        
         if (children.Count == 1)
         {
             AUIElement child = children[0];
-            child.SetRect(Rect);
+            child.SetRect(GetRect());
 
             return;
         }
@@ -111,9 +131,9 @@ public class AxisBox : AUIBox
         {
             if (fitRect)
             {
-                MakeChildrenFitRect((int)Rect.Width, (int)Rect.Height, 
-                    (c) => (int)c.MinimalSize.X, 
-                    (c, v) => c.SetRect(new FloatRect(c.Rect.Position, new Vector2f(v, Rect.Height))));
+                MakeChildrenFitRect((int)GetRect().Width, (int)GetRect().Height, 
+                    (c)    => (int)c.MinimalSize.X, 
+                    (c, v) => c.SetRect(new FloatRect(c.GetRect().Position, new Vector2f(v, GetRect().Height))));
             }
             else
             {
@@ -121,33 +141,33 @@ public class AxisBox : AUIBox
                 {
                     child.SetRect(new FloatRect(
                         default, default,
-                        child.MinimalSize.X, Rect.Height
+                        child.MinimalSize.X, GetRect().Height
                     ));
                 }
             }
             
-            UpdatePositions((c) => new(c.Rect.Size.X, 0), () => new(Host.Style.AxisBoxSpace, 0));
+            UpdatePositions((c) => new(c.GetRect().Size.X, 0), () => new(Host.Style.AxisBoxSpace, 0));
         }
         else
         {
             if (fitRect)
             {
-                MakeChildrenFitRect((int)Rect.Height, (int)Rect.Width, 
+                MakeChildrenFitRect((int)GetRect().Height, (int)GetRect().Width, 
                     (c) => (int)c.MinimalSize.Y, 
-                    (c, v) => c.SetRect(new FloatRect(c.Rect.Position, new Vector2f(Rect.Width, v))));
+                    (c, v) => c.SetRect(new FloatRect(c.GetRect().Position, new Vector2f(GetRect().Width, v))));
             }
             else
             {
                 foreach (AUIElement child in children)
                 {
                     child.SetRect(new FloatRect(
-                        child.Rect.Position.X, child.Rect.Position.Y,
-                        Rect.Width, child.MinimalSize.Y
+                        child.GetRect().Position.X, child.GetRect().Position.Y,
+                        GetRect().Width, child.MinimalSize.Y
                     ));
                 }
             }
             
-            UpdatePositions((c) => new(0, c.Rect.Size.Y), () => new(0, Host.Style.AxisBoxSpace));
+            UpdatePositions((c) => new(0, c.GetRect().Size.Y), () => new(0, Host.Style.AxisBoxSpace));
         }
     }
 
@@ -157,6 +177,8 @@ public class AxisBox : AUIBox
         Func<AUIElement, int> getMinimal, 
         Action<AUIElement, int> setSize)
     {
+        if (children.Count == 0) return;
+        
         List<AUIElement> doNotFit = new();
         
         int doNotFitValue = 0;
@@ -201,11 +223,11 @@ public class AxisBox : AUIBox
 
     private void UpdatePositions(Func<AUIElement, Vector2f> getPositionStep, Func<Vector2f> getAxisSpace)
     {
-        Vector2f position = Rect.Position;
+        Vector2f position = GetRect().Position;
 
         foreach (AUIElement child in children)
         {
-            child.SetRect(new FloatRect(position, child.Rect.Size));
+            child.SetRect(new FloatRect(position, child.GetRect().Size));
             //Console.WriteLine($"Set Position For {child.GetType()} {position}");
             position += getPositionStep(child) + getAxisSpace();
         }
@@ -221,7 +243,7 @@ public class AxisBox : AUIBox
     {
         foreach (AUIElement child in children)
         {
-            Host.Renderer.PushDrawCall(child.Draw);
+            Host.Renderer.PushDrawCallToStack(child.Draw);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using deadlauncher.Other.UI;
 using deUI;
 using SFML.Graphics;
@@ -45,14 +46,10 @@ public class LauncherWindow
 
         returnButton = UIHost.New<UISocketBox>().WithChild(UIHost.New<UIButton>().WithText("Back").OnClick(BackToPrevious));
 
-        rootElement = UIHost.New<StackBox>().WithChildren(
-                            UIHost.New<AxisBox>().WithAxis(UIAxis.Vertical)
-                                .WithChildren
-                                (
-                                    menuLayer.SetInheritRect(true),
-                                    returnButton
-                                )
-                                .SetRect(MenuRect));
+        rootElement = UIHost.New<StackBox>().WithChildren
+                            (UIHost.New<AxisBox>().WithAxis(UIAxis.Vertical).WithChildren
+                                    (menuLayer.SetInheritRect(true), returnButton).SetRect(MenuRect),
+                            popupLayer);
 
         UIHost.Tree.SetRoot(rootElement);
         
@@ -79,7 +76,7 @@ public class LauncherWindow
         OpenHomeMenu();
         
         while (RenderWindow.IsOpen)
-        {
+        {   
             RenderWindow.DispatchEvents();
             
             if(!RenderWindow.HasFocus())
@@ -107,6 +104,11 @@ public class LauncherWindow
     public void OpenMessageBox(string message, params Tuple<string, Action>[] buttons)
     {
         popupLayer.WithChild(UIHost.New<MessageBox>().WithMessage(message).WithButtons(buttons).FinishConfiguration());
+    }
+
+    public void CloseMessageBox()
+    {
+        popupLayer.WithChild(null);
     }
 
     public void OpenInstallMenu(string id)

@@ -5,19 +5,27 @@ using SFML.Window;
 namespace deUI;
 
 public delegate void MoveAction(Vector2f oldPosition, Vector2f newPosition);
-public class ClickArea(FloatRect rect, bool overlay = true)
+public class ClickArea
 {
-    public FloatRect Rect = rect;
-    public bool Overlay = overlay;
+    public FloatRect Rect;
+    public bool      Overlay;
     
-    public Action? OnRightMouseButtonClick;
-    public Action? OnRightMouseButtonReleased;
-    public Action? OnHover;
-    public Action? OnUnhover;
+    public Action?     OnRightMouseButtonClick;
+    public Action?     OnRightMouseButtonReleased;
+    public Action?     OnHover;
+    public Action?     OnUnhover;
     public MoveAction? OnMove;
 
     public bool IsHovered;
     public bool IsGrabbed;
+
+    public ClickArea(FloatRect rect, bool overlay = true)
+    {
+        Rect = rect;
+        Overlay = overlay;
+    }
+
+    public ClickArea() { }
 }
 
 public class ClickAreasController
@@ -33,7 +41,18 @@ public class ClickAreasController
     private Stack<bool> _inViewStack = new();
 
     private bool _isOverlayed;
+    
+    public void SetViewport(FloatRect rect)
+    {
+        _inViewStack.Push(_inView);
+        _inView = Utils.PointInRect(rect, _mousePositionOld);
+    }
 
+    public void PopViewport()
+    {
+        _inView = _inViewStack.Pop();
+    }
+    
     public void Begin(Vector2f mousePosition)
     {
         _isOverlayed = false;

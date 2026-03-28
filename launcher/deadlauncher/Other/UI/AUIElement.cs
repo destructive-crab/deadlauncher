@@ -28,25 +28,21 @@ public abstract class AUIElement
     }
 
     public  bool      InheritRect { get; private set; }
-    private FloatRect rect;
+    protected FloatRect rect;
 
     protected AUIElement(UIHost host)
     {
         Host = host;
     }
 
-    public FloatRect Rect
+    public virtual FloatRect GetRect()
     {
-        get
+        if (InheritRect && Parent != null)
         {
-            if (InheritRect && Parent != null)
-            {
-                return Parent.Rect;
-            }
-
-            return rect;
+            return Parent.GetRect();
         }
-        protected set => rect = value;
+
+        return rect;
     }
 
     public virtual AUIElement SetRect(FloatRect value ,
@@ -54,9 +50,9 @@ public abstract class AUIElement
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0)
     {
-        if (Rect == value) return this;
+        if (GetRect() == value) return this;
 
-        Rect = new FloatRect(
+        rect = new FloatRect(
             value.Left, value.Top,
             float.Max(MinimalSize.X, value.Width),
             float.Max(MinimalSize.Y, value.Height)
@@ -69,8 +65,9 @@ public abstract class AUIElement
     public void SetParent(AUIBox? value)
     {
         if (Parent == value) return;
-        
+
         Parent = value;
+        
         UpdateLayout();
     }
 

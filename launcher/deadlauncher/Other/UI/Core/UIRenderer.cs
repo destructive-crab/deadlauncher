@@ -23,7 +23,7 @@ public sealed class UIRenderer : IUIRenderer
 
     public void SetSize(Vector2f size)
     {
-        View.Size = size;
+        View.Size   = size;
         View.Center = size / 2;
         
         if (tree.AssertRoot(out AUIElement root))
@@ -48,7 +48,7 @@ public sealed class UIRenderer : IUIRenderer
         }
     }
 
-    public void PushDrawCall(UIDrawCall call)
+    public void PushDrawCallToStack(UIDrawCall call)
     {
         DrawStack.Push(call);
     }

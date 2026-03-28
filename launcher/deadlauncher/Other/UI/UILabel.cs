@@ -22,13 +22,15 @@ public class UILabel : AUIElement
         set
         {
             textObject.DisplayedString = value;
+            
             MinimalSize = Utils.TextSize(textObject);
+            SetRect(new FloatRect(GetRect().Position, MinimalSize));
         }
     }
 
     protected override void UpdateLayoutIm()
     {
-        textObject.Position = Rect.Position;
+        textObject.Position = GetRect().Position;
     }
 
     public override void Draw(RenderTarget target)

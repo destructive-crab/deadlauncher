@@ -114,23 +114,22 @@ public class UITabBox : AUIBox
     {
         int outline = Host.Style.BaseOutline;
         
-        backgroundOutline.Position = Rect.Position - new Vector2f(outline, outline);
-        backgroundOutline.Size     = Rect.Size     + new Vector2f(outline * 2, outline * 2);
+        backgroundOutline.Position = GetRect().Position - new Vector2f(outline, outline);
+        backgroundOutline.Size     = GetRect().Size     + new Vector2f(outline * 2, outline * 2);
 
-        background.Position = Rect.Position;
-        background.Size     = Rect.Size;
+        background.Position = GetRect().Position;
+        background.Size     = GetRect().Size;
         
-        int tabSwitcherWidth = (int)((Rect.Width - outline * (children.Count-1)) / children.Count);
+        int tabSwitcherWidth = (int)((GetRect().Width - outline * (children.Count-1)) / children.Count);
 
         for (var i = 0; i < children.Count; i++)
         {
             FloatRect rect = new FloatRect(
-                Rect.Position + new Vector2f((tabSwitcherWidth + outline)*i, 0),
+                GetRect().Position + new Vector2f((tabSwitcherWidth + outline)*i, 0),
                 new Vector2f(tabSwitcherWidth, Host.Style.TabLineHeight));
 
             ClickArea switcher = tabSwitchersMap[children[i]];
             switcher.Rect = rect;
-            
         }
 
         separator.Size = new Vector2f(outline, Host.Style.TabLineHeight);
@@ -138,24 +137,39 @@ public class UITabBox : AUIBox
         if(activeElement != null)
         {
             activeElement.SetRect(new FloatRect(
-                Rect.Position.X + outline, Rect.Position.Y + Host.Style.TabLineHeight + outline, 
-                Rect.Size.X - outline * 2, Rect.Size.Y - Host.Style.TabLineHeight));
+                GetRect().Position.X + outline, GetRect().Position.Y + Host.Style.TabLineHeight + outline, 
+                GetRect().Size.X - outline * 2, GetRect().Size.Y - Host.Style.TabLineHeight));
+        }
+
+        foreach (var child in children)
+        {
+            child.SetRect(new FloatRect(
+                background.Position + new Vector2f(0, Host.Style.TabLineHeight), 
+                background.Size     - new Vector2f(0, Host.Style.TabLineHeight)));
         }
     }
 
-    public void AddChild(AUIElement child, string tabName)
+    private void AddChildWithoutUpdatingLayout(AUIElement child, string tabName)
     {
         children   .Add(child);
         tabNamesMap.Add(child, tabName);
 
         ClickArea switcher = new ClickArea(default, true);
-        tabSwitchers.Add(switcher);
+        
+        tabSwitchers   .Add(switcher);
         tabSwitchersMap.Add(child, switcher);
+
+        child.SetParent(this);
         
         switcher.OnRightMouseButtonClick += () =>
         {
             SetActive(child);
         };
+    }
+
+    public void AddChild(AUIElement child, string tabName)
+    {
+        AddChildWithoutUpdatingLayout(child, tabName);
         
         if(activeElement != null) UpdateLayoutIm();
     }

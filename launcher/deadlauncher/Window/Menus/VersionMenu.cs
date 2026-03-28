@@ -1,7 +1,6 @@
 using deadlauncher.Other.UI;
 using deUI;
 using SFML.Graphics;
-using SFML.System;
 
 namespace deadlauncher;
 
@@ -26,12 +25,35 @@ public class VersionMenu : Menu
         
         RenderWindow window = Application.Launcher.Window.RenderWindow;
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
+
+        AxisBox axisBox = host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true);
+
+        AxisBox leftColumn  = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
+        AxisBox rightColumn = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
+
+        axisBox.WithChildren(leftColumn, rightColumn);
+        
+        ScrollBox scrollBox = host.New<ScrollBox>();
+        scrollBox.WithChild(axisBox);
+
+        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+
+        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+
+        return host.New<AxisBox>().WithAxis(UIAxis.Vertical)
+            .WithChildren(host.New<UIButton>().WithText("DFKdjf"), host.New<UIButton>().WithText("DFKdjf"))
+            .FitRect(true);
         
         UITabBox uiTabs = host.New<UITabBox>().WithTabs(
-            new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
+            new KeyValuePair<AUIElement, string>(scrollBox, "Official"),
             new KeyValuePair<AUIElement, string>(BuildModsTab(),     "Mods"));
         
         return uiTabs;
+        //return host.New<ScrollBox>().WithChild(host.New<UILabel>().WithText("DKJFDK \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a \n a ")).SetInheritRect(true);
     }
 
     private void InstallVersion(string id) => Application.Launcher.Window.OpenInstallMenu(id);
@@ -79,8 +101,10 @@ public class VersionMenu : Menu
     private AUIElement BuildVersionsList(string[] includeOnly, string[] excludeOnly)
     {
         UISelectionList versionList       = host.New<UISelectionList>();
-        AxisBox         actionButtonsList = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
+        AxisBox         actionButtonsList = host.New<AxisBox>().WithAxis(UIAxis.Vertical).FitRect(true);
         
+        versionList.AxisBox.FitRect(true);
+
         foreach (string id in Application.Launcher.Model.Available)
         {
             bool valid = true;
@@ -98,9 +122,15 @@ public class VersionMenu : Menu
             }
             if(!valid) continue;
             
-            UISocketBox actionButtonsPlace = host.New<UISocketBox>();
+
+            var uiOption = host.New<UIOption>()
+                .SetState(Application.Launcher.Model.IsSelected(id))
+                .WithText(GetButtonNameByVersionID(id))
+                .OnClick(() => VersionSelectButton(id)) as UIOption;
+
+            versionList.AddChild(uiOption);
             
-            versionList.AddChild(host.New<UIOption>().SetState(Application.Launcher.Model.IsSelected(id)).WithText(GetButtonNameByVersionID(id)).OnClick(() => VersionSelectButton(id)) as UIOption);
+            UISocketBox actionButtonsPlace = host.New<UISocketBox>();
 
             actionButtonsList.AddChild(actionButtonsPlace);
             actionButtonsPlace.WithChild(BuildActionButtons(id));
@@ -115,8 +145,7 @@ public class VersionMenu : Menu
 
     private AUIElement BuildOfficialTab() => BuildVersionsListExcludeOnly(LauncherModel.MODE_POSTFIX);
     private AUIElement BuildModsTab()     => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
-
-
+    
     public AxisBox BuildActionButtons(string id)
     {
         AxisBox actionButtonsLine = host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true);

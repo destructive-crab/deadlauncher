@@ -10,13 +10,14 @@ public sealed class UISelectionList : AUIBox
     
     public bool IsSingleSelection = true;
     private readonly List<UIOption> options = new();
-    private AxisBox box;
+    
+    public readonly AxisBox AxisBox;
 
     public UISelectionList(UIHost host, IUIFactory factory) : base(host)
     {
-        box = factory.New<AxisBox>().WithAxis(UIAxis.Vertical);
+        AxisBox = factory.New<AxisBox>().WithAxis(UIAxis.Vertical);
 
-        if(options==null) return;
+        if(options == null) return;
         
         foreach (UIOption option in options)
         {
@@ -28,7 +29,7 @@ public sealed class UISelectionList : AUIBox
     {
         options.Add(option);
         option.SelectionChange += ChangeSelection;
-        box.AddChild(option);
+        AxisBox.AddChild(option);
         UpdateLayout();
         
         if(option.IsSelected)
@@ -36,7 +37,6 @@ public sealed class UISelectionList : AUIBox
             option.IsSelected = false;
             option.IsSelected = true;
         }
-
     }
 
     public override void RemoveChild(AUIElement child)
@@ -70,18 +70,18 @@ public sealed class UISelectionList : AUIBox
 
     public override IEnumerable<AUIElement> GetChildren()
     {
-        return [ box ];
+        return [ AxisBox ];
     }
     
     protected override void UpdateMinimalSize() { }
 
     protected override void UpdateLayoutIm()
     {
-        box.SetRect(Rect);
+        AxisBox.SetRect(GetRect());
     }
 
     public override void Draw(RenderTarget target)
     {   
-        box.Draw(target);
+        AxisBox.Draw(target);
     }
 }

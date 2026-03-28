@@ -30,7 +30,7 @@ public sealed class UIHost
         
         Fabric        = new UIFabric           (this);
         InputsHandler = new InputsHandler      ();
-        Factory       = new UIFactory          (Services);
+        Factory       = new UIFactory          (this);
         Tree          = new UITree             (this);
         Renderer      = new UIRenderer         (Tree);
 
