@@ -38,8 +38,8 @@ public sealed class LauncherModel
         string applicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         
         LauncherFolder = Path.Combine(applicationData, "deadlauncher");
-        DataFolder = Path.Combine(LauncherFolder, "data");
-        VersionsFolder = Path.Combine(LauncherFolder, "versions");
+        DataFolder     = Path.Combine(LauncherFolder,  "data");
+        VersionsFolder = Path.Combine(LauncherFolder,  "versions");
     }
 
     public async Task<string?> Changelog(string id)

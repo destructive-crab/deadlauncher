@@ -6,6 +6,8 @@ public class Downloader
 {
     private Launcher l;
 
+    private const string SERVER_URL = "https://oknoweb.ru";
+    
     public Downloader(Launcher l)
     {
         this.l = l;
@@ -13,36 +15,31 @@ public class Downloader
 
     public async Task PullVersions(string[] ignoreTagsThatContains)
     {
-        GitHubClient client = new("destructive-crab", "deadlauncher");
-        
-        string[] allReleases = await client.GetReleaseTags();
-
-        foreach (var tag in allReleases)
+        try
         {
-            bool valid = true;
+            HttpClient client = new()
             {
-                foreach (string ignore in ignoreTagsThatContains)
-                {
-                    if (tag.Contains(ignore))
-                    {
-                        valid = false;
-                    }
-                }    
-            }
-            
-            if (!valid) continue;
+                BaseAddress = new Uri(SERVER_URL)
+            };
 
-            string assetName = "";
-            
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))   { assetName = "deadays_windows.zip"; }
-            else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) { assetName = "deadays_linux.zip"; }
-            
-            string? downloadURL = client.GetAssetDownloadURL(tag, assetName);
+            var response = await client.GetAsync("api/versions/");
 
-            if (downloadURL != null)
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            VersionInfo[] infos = Newtonsoft.Json.JsonConvert.DeserializeObject<VersionInfo[]>(jsonResponse);
+
+            foreach (var info in infos)
             {
-                l.Model.RegisterVersion(tag, downloadURL);    
+                Console.WriteLine(info.ID + " " + info.Tag);
+                l.Model.RegisterVersion(info.ID, SERVER_URL + $"/api/versions/download/{info.ID}");
+                Console.WriteLine(SERVER_URL + $"api/download/{info.ID}");
             }
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);
         }
     }
 
@@ -54,7 +51,6 @@ public class Downloader
 
         //todo
         string[] subdirs = Directory.GetDirectories(Application.Launcher.Model.VersionsFolder);
-        
         
         foreach (string s in subdirs)
         {
@@ -80,23 +76,31 @@ public class Downloader
 
     public async Task DownloadVersion(string id, Action<string> trackProgress)
     {
-        if (!(l.Model.IsVersionValid(id) && !l.Model.IsInstalled(id))) return;
+        try
+        {
+            if (!(l.Model.IsVersionValid(id) && !l.Model.IsInstalled(id))) return;
         
-        WebClient webClient = new();
-        string zipPath = Path.Combine(Application.Launcher.Model.VersionsFolder + l.Model.SelectedVersionID + ".zip");
+            WebClient webClient = new();
+            string zipPath = Path.Combine(Application.Launcher.Model.VersionsFolder + l.Model.SelectedVersionID + ".zip");
 
-        webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
-        await webClient.DownloadFileTaskAsync(l.Model.DownloadLink(id), zipPath);
-        trackProgress?.Invoke("101");
+            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+            await webClient.DownloadFileTaskAsync(SERVER_URL+$"/api/versions/files/{id}", zipPath);
+            trackProgress?.Invoke("101");
 
-        string path = Path.Combine(Application.Launcher.Model.VersionsFolder, id);
+            string path = Path.Combine(Application.Launcher.Model.VersionsFolder, id);
         
-        Application.Launcher.FileManager.ExtractZipTo(zipPath, path);
-        Application.Launcher.FileManager.Delete(zipPath);
+            Application.Launcher.FileManager.ExtractZipTo(zipPath, path);
+            Application.Launcher.FileManager.Delete(zipPath);
 
-        Application.Launcher.FileManager.ValidateFolder(path);
+            Application.Launcher.FileManager.ValidateFolder(path);
         
-        l.Model.RegisterVersionFolder(id, path);
+            l.Model.RegisterVersionFolder(id, path);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
 
         void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -116,19 +120,34 @@ public class Downloader
 
     public async Task<string?> GetChangelog(string id)
     {
-        GitHubClient client = new("destructive-crab", "deadlauncher");
-        string downloadURL = client.GetAssetDownloadURL(id, "changelog.txt");
-        
-        WebClient webClient = new();
-
         try
         {
-            string changelog = await webClient.DownloadStringTaskAsync(new Uri(downloadURL));
-            return changelog;
+            HttpClient client = new()
+            {
+                BaseAddress = new Uri(SERVER_URL)
+            };
+
+            HttpResponseMessage response = await client.GetAsync($"api/versions/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            VersionInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<VersionInfo>(jsonResponse);
+            return info.Changelog;
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            return null;
+            Console.WriteLine(e);
+            return "No changelog found";
         }
+    }
+    sealed class VersionInfo
+    {
+        public string ID;
+        public string Name;
+        public string Tag;
+        public string Changelog;
+        public string ReleaseDate;
     }
 }

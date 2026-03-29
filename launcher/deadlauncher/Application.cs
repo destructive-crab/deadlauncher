@@ -23,6 +23,10 @@ public static class Application
 
     private static async Task Start()
     {
+        await StartLauncher();
+
+        return;
+        
         LauncherUpdater.InstallerContext context = await StartUpdater();
         
         if(WasExecutableChanged(context))
