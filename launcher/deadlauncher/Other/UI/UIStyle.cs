@@ -49,7 +49,7 @@ public class UIStyle
     
     public readonly ButtonStateStyle NormalButton = new()
     {
-        ContentOffset = new Vector2f(0, 0),
+        ContentOffset = new Vector2f(0, 4),
         
         TextColor     = RectDefault,
         

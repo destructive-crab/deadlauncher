@@ -47,16 +47,14 @@ public class AxisBox : AUIBox
 
     public override FloatRect GetRect()
     {
-        return base.GetRect();
-        
         if (Parent != null)
         {
             if (InheritRect) return Parent.GetRect();
 
             switch (axis)
             {
-                case UIAxis.Vertical:   return new FloatRect(rect.Position, new(Parent.GetRect().Width, rect.Height));
-                case UIAxis.Horizontal: return new FloatRect(rect.Position, new(rect.Width, Parent.GetRect().Height));
+                case UIAxis.Vertical:   return new FloatRect(rect.Position, new(Parent.GetRect().Width, MinimalSize.Y));
+                case UIAxis.Horizontal: return new FloatRect(rect.Position, new(MinimalSize.X, Parent.GetRect().Height));
             }    
         }
 
@@ -94,6 +92,7 @@ public class AxisBox : AUIBox
         
         child.SetParent(null);
         children.Remove(child);
+        
         UpdateMinimalSize();
     }
 
@@ -102,6 +101,7 @@ public class AxisBox : AUIBox
     {
         child.SetParent(this);
         children.Add(child);
+        
         UpdateMinimalSize();
         
         return child;

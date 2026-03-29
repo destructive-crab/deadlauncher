@@ -26,30 +26,30 @@ public class VersionMenu : Menu
         RenderWindow window = Application.Launcher.Window.RenderWindow;
         Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
 
-        AxisBox axisBox = host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true);
-
-        AxisBox leftColumn  = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
-        AxisBox rightColumn = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
-
-        axisBox.WithChildren(leftColumn, rightColumn);
-        
-        ScrollBox scrollBox = host.New<ScrollBox>();
-        scrollBox.WithChild(axisBox);
-
-        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-        leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-
-        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-        rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
-
-        return host.New<AxisBox>().WithAxis(UIAxis.Vertical)
-            .WithChildren(host.New<UIButton>().WithText("DFKdjf"), host.New<UIButton>().WithText("DFKdjf"))
-            .FitRect(true);
+        //AxisBox axisBox = host.New<AxisBox>().WithAxis(UIAxis.Horizontal).FitRect(true);
+//
+        //AxisBox leftColumn  = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
+        //AxisBox rightColumn = host.New<AxisBox>().WithAxis(UIAxis.Vertical);
+//
+        //axisBox.WithChildren(leftColumn, rightColumn);
+        //
+        //ScrollBox scrollBox = host.New<ScrollBox>();
+        //scrollBox.WithChild(axisBox);
+//
+        //leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        //leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        //leftColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+//
+        //rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        //rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+        //rightColumn.AddChild(host.New<UIButton>().WithText("BUTTON"));
+//
+        //return host.New<AxisBox>().WithAxis(UIAxis.Vertical)
+        //    .WithChildren(host.New<UIButton>().WithText("DFKdjf"), host.New<UIButton>().WithText("DFKdjf"))
+        //    .FitRect(true);
         
         UITabBox uiTabs = host.New<UITabBox>().WithTabs(
-            new KeyValuePair<AUIElement, string>(scrollBox, "Official"),
+            new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
             new KeyValuePair<AUIElement, string>(BuildModsTab(),     "Mods"));
         
         return uiTabs;
@@ -128,6 +128,8 @@ public class VersionMenu : Menu
                 .WithText(GetButtonNameByVersionID(id))
                 .OnClick(() => VersionSelectButton(id)) as UIOption;
 
+            uiOption.MinimalSize = new(VERSION_BUTTON_WIDTH, 40);
+                
             versionList.AddChild(uiOption);
             
             UISocketBox actionButtonsPlace = host.New<UISocketBox>();
@@ -159,9 +161,12 @@ public class VersionMenu : Menu
         }
         else
         {
-            actionButtonsLine.AddChild(host.New<UIButton>().WithText("Install").OnClick(() => InstallVersion(id)));               
-        }
+            var button = host.New<UIButton>().WithText("Install").OnClick(() => InstallVersion(id));
+            button.MinimalSize = new(VERSION_BUTTON_WIDTH, 40);
 
+            actionButtonsLine.AddChild(button);               
+        }
+        
         return actionButtonsLine;
     }
 }

@@ -16,7 +16,7 @@ public abstract class AUIElement
     public Vector2f MinimalSize
     {
         get => _minimalSize;
-        protected set
+        set
         {
             _minimalSize = value;
             
