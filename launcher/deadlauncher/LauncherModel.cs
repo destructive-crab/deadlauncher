@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace deadlauncher;
 
 public sealed class LauncherModel
@@ -9,7 +11,9 @@ public sealed class LauncherModel
     public string SelectedVersionFile => Path.Combine(DataFolder, "selected_version");
 
     public const string NONE_SELECTED = "NONE";
-    public const string MODE_POSTFIX  = "mode";
+    
+    public const string MODE_TAG       = "mode";
+    public const string OFFICIAL_TAG   = "official";
     
     public string RunningLineText = "";
     
@@ -23,11 +27,11 @@ public sealed class LauncherModel
     public string[] Installed => installedIDs.ToArray();
     public string[] Available => availableOnServerIDs.ToArray();
 
-    private readonly List<string>               installedIDs = new();
-    private readonly Dictionary<string, string> foldersWithExecutableMap = new();
-
-    private readonly List<string>               availableOnServerIDs = new();
-    private readonly Dictionary<string, string> downloadLinkMap = new();
+    private readonly List<string>                    installedIDs             = new();
+    private readonly Dictionary<string, string>      foldersWithExecutableMap = new();
+     
+    private readonly List<string>                    availableOnServerIDs     = new();
+    private readonly Dictionary<string, VersionInfo> versionInfoMap           = new();
 
     public event Action<string> OnVersionSelected;
     
@@ -42,6 +46,8 @@ public sealed class LauncherModel
         VersionsFolder = Path.Combine(LauncherFolder,  "versions");
     }
 
+    public string Tag(string id) => versionInfoMap[id].tag;
+    
     public async Task<string?> Changelog(string id)
     {
         string? changelog = await Application.Launcher.Downloader.GetChangelog(id);
@@ -77,25 +83,15 @@ public sealed class LauncherModel
         return foldersWithExecutableMap[id];
     }
 
-    public string? DownloadLink(string id)
-    {
-        if (!downloadLinkMap.ContainsKey(id))
-        {
-            return null;
-        }
-
-        return downloadLinkMap[id];
-    }
-    
     public bool IsInstalled(string id) => foldersWithExecutableMap.ContainsKey(id);
     public bool IsVersionValid(string id) => availableOnServerIDs.Contains(id);
 
-    public bool RegisterVersion(string id, string downloadLink)
+    public bool RegisterVersion(string id, VersionInfo versionInfo)
     {
         if (availableOnServerIDs.Contains(id)) return false;
         
         availableOnServerIDs.Add(id);
-        downloadLinkMap.Add(id, downloadLink);
+        versionInfoMap.Add(id, versionInfo);
         
         SortVersions();
 
@@ -143,56 +139,83 @@ public sealed class LauncherModel
 
         int Comparator(string a, string b)
         {
-            if (a.Contains(LauncherModel.MODE_POSTFIX))
+            try
             {
-                a = a.Split("_")[0];
-            }
+                if (a.Contains("mode"))
+                {
+                    a = a.Split("_")[0];
+                }
             
-            if (b.Contains(LauncherModel.MODE_POSTFIX))
-            {
-                b = b.Split("_")[0];
-            }
+                if (b.Contains("mode"))
+                {
+                    b = b.Split("_")[0];
+                }
             
-            a = a.Replace("v", "");
-            a = a.Replace("hotfix", "1");
-            a = a.Replace("_", ".");
+                a = a.Replace("v", "");
+                a = a.Replace("hotfix", "1");
+                a = a.Replace("_", ".");
 
-            b = b.Replace("v", "");
-            b = b.Replace("hotfix", "1");
-            b = b.Replace("_", ".");
+                b = b.Replace("v", "");
+                b = b.Replace("hotfix", "1");
+                b = b.Replace("_", ".");
 
-            while (a.Length != b.Length)
-            {
-                if (a.Length > b.Length)
+                while (a.Length != b.Length)
                 {
-                    b += ".0";
+                    if (a.Length > b.Length)
+                    {
+                        b += ".0";
+                    }
+                    else
+                    {
+                        a += ".0";
+                    }
                 }
-                else
-                {
-                    a += ".0";
-                }
-            }
             
-            
-            string[] aDigits = a.Split(".", StringSplitOptions.RemoveEmptyEntries);
-            string[] bDigits = b.Split(".", StringSplitOptions.RemoveEmptyEntries);
+                string[] aDigits = a.Split(".", StringSplitOptions.RemoveEmptyEntries);
+                string[] bDigits = b.Split(".", StringSplitOptions.RemoveEmptyEntries);
 
-            for (var i = 0; i < aDigits.Length; i++)
-            {
-                if (!Int32.TryParse(aDigits[i], out int aDigit))
+                for (var i = 0; i < aDigits.Length; i++)
                 {
-                    return 0;
-                }
-                if (!Int32.TryParse(bDigits[i], out int bDigit))
-                {
-                    return 0;
-                }
+                    if (!Int32.TryParse(aDigits[i], out int aDigit))
+                    {
+                        return 0;
+                    }
+                    if (!Int32.TryParse(bDigits[i], out int bDigit))
+                    {
+                        return 0;
+                    }
                 
-                if (aDigit > bDigit) return -1;
-                if (aDigit < bDigit) return 1;
+                    if (aDigit > bDigit) return -1;
+                    if (aDigit < bDigit) return 1;
+                }
             }
-
+            catch (Exception e)
+            {
+                return 0;
+            }
+            
             return 0;
         }
+    }
+}
+
+public sealed class VersionInfo
+{
+    public string id          { get; set;}
+    public string name        { get; set;}
+    public string tag         { get; set;}
+    public string changelog   { get; set;}
+    public string releaseDate { get; set;}
+    
+    public VersionInfo() {}
+        
+    [JsonConstructor]    
+    public VersionInfo(string id, string name, string tag, string changelog, string releaseDate)
+    {
+        this.id = id;
+        this.name = name;
+        this.tag = tag;
+        this.changelog = changelog;
+        this.releaseDate = releaseDate;
     }
 }

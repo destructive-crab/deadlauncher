@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace deadlauncher;
 
@@ -20,13 +21,14 @@ public static class Application
     }
     
     public static async Task Main() => await Start();
-
+    
     private static async Task Start()
     {
-        await StartLauncher();
+        //because modern dotnet is not shipped with usable features of preventing code to be trimmed
+        //i will do this
+        VersionInfo defaultConstructor  = new();
+        VersionInfo jsonConstructor     = new("a", "a", "a", "a", "a");
 
-        return;
-        
         LauncherUpdater.InstallerContext context = await StartUpdater();
         
         if(WasExecutableChanged(context))

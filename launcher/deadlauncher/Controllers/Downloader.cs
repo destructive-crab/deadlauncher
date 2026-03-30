@@ -1,4 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace deadlauncher;
 
@@ -13,6 +16,8 @@ public class Downloader
         this.l = l;
     }
 
+    public string GetDownloadLink(string id) => SERVER_URL + $"/api/versions/download/{id}";
+    
     public async Task PullVersions(string[] ignoreTagsThatContains)
     {
         try
@@ -28,13 +33,13 @@ public class Downloader
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
-            VersionInfo[] infos = Newtonsoft.Json.JsonConvert.DeserializeObject<VersionInfo[]>(jsonResponse);
+            VersionInfo[]? infos = JsonSerializer.Deserialize<VersionInfo[]>(jsonResponse);
 
             foreach (var info in infos)
             {
-                Console.WriteLine(info.ID + " " + info.Tag);
-                l.Model.RegisterVersion(info.ID, SERVER_URL + $"/api/versions/download/{info.ID}");
-                Console.WriteLine(SERVER_URL + $"api/download/{info.ID}");
+                Console.WriteLine(info.id + " " + info.tag);
+                l.Model.RegisterVersion(info.id, info);
+                Console.WriteLine(SERVER_URL + $"/api/download/{info.id}");
             }
         }
         catch(Exception e)
@@ -133,21 +138,13 @@ public class Downloader
 
             string jsonResponse = await response.Content.ReadAsStringAsync();
 
-            VersionInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<VersionInfo>(jsonResponse);
-            return info.Changelog;
+            VersionInfo info = JsonSerializer.Deserialize<VersionInfo>(jsonResponse);
+            return info.changelog;
         }
         catch(Exception e)
         {
             Console.WriteLine(e);
             return "No changelog found";
         }
-    }
-    sealed class VersionInfo
-    {
-        public string ID;
-        public string Name;
-        public string Tag;
-        public string Changelog;
-        public string ReleaseDate;
     }
 }

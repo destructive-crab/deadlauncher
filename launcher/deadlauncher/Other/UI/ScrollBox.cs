@@ -26,8 +26,6 @@ class Scroller
         Area = new ClickArea(new FloatRect(limits.Left, limits.Top, size.X, size.Y))
         {
             OnMove = OnMove,
-            OnRightMouseButtonClick    = () => { Shape.FillColor = host.Style.ScrollerPressedColor; },
-            OnRightMouseButtonReleased = () => { Shape.FillColor = host.Style.ScrollerColor; },
         };
         Limits = limits;
         OnUpdate = onUpdate;
@@ -230,6 +228,8 @@ public class ScrollBox : AUIBox
     private void FinishDraw(RenderTarget target)
     {
  //       target.Draw(_scrollerX.Shape);
+        if(_scrollerY.Area.IsGrabbed) _scrollerY.Shape.FillColor = Host.Style.ScrollerPressedColor;
+        else                          _scrollerY.Shape.FillColor = Host.Style.ScrollerColor; 
         target.Draw(_scrollerY.Shape);
         target.SetView(Host.View);
     }

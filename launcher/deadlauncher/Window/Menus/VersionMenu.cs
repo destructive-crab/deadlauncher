@@ -89,12 +89,12 @@ public class VersionMenu : Menu
             {
                 foreach (string include in includeOnly)
                 {
-                    valid = id.Contains(include);
+                    valid = Application.Launcher.Model.Tag(id) == include;
                     if(!valid) break;
                 }
                 foreach (string exclude in excludeOnly)
                 {
-                    valid = !id.Contains(exclude);
+                    valid = Application.Launcher.Model.Tag(id) != exclude;
                     if(!valid) break;
                 }    
             }
@@ -115,9 +115,8 @@ public class VersionMenu : Menu
     private AUIElement BuildVersionsListIncludeOnly(params string[] includeOnly) => BuildVersionsList(includeOnly, []);
     private AUIElement BuildVersionsListExcludeOnly(params string[] excludeOnly) => BuildVersionsList([], excludeOnly);
 
-    private AUIElement BuildOfficialTab() => BuildVersionsListExcludeOnly(LauncherModel.MODE_POSTFIX);
-    private AUIElement BuildModsTab() => BuildVersionsListIncludeOnly(LauncherModel.MODE_POSTFIX);
-
+    private AUIElement BuildOfficialTab() => BuildVersionsListIncludeOnly(LauncherModel.OFFICIAL_TAG);
+    private AUIElement BuildModsTab()     => BuildVersionsListIncludeOnly(LauncherModel.MODE_TAG);
 
     public AxisBox BuildActionButtons(string id)
     {
