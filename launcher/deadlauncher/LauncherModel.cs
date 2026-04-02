@@ -12,7 +12,7 @@ public sealed class LauncherModel
 
     public const string NONE_SELECTED = "NONE";
     
-    public const string MODE_TAG       = "mode";
+    public const string MODE_TAG       = "mod";
     public const string OFFICIAL_TAG   = "official";
     
     public string RunningLineText = "";
@@ -47,6 +47,7 @@ public sealed class LauncherModel
     }
 
     public string Tag(string id) => versionInfoMap[id].tag;
+    public string Name(string id) => versionInfoMap[id].name;
     
     public async Task<string?> Changelog(string id)
     {
@@ -141,12 +142,12 @@ public sealed class LauncherModel
         {
             try
             {
-                if (a.Contains("mode"))
+                if (a.Contains("mod"))
                 {
                     a = a.Split("_")[0];
                 }
             
-                if (b.Contains("mode"))
+                if (b.Contains("mod"))
                 {
                     b = b.Split("_")[0];
                 }
@@ -159,6 +160,7 @@ public sealed class LauncherModel
                 b = b.Replace("hotfix", "1");
                 b = b.Replace("_", ".");
 
+                int it = 0;
                 while (a.Length != b.Length)
                 {
                     if (a.Length > b.Length)
@@ -169,6 +171,9 @@ public sealed class LauncherModel
                     {
                         a += ".0";
                     }
+
+                    it++;
+                    if (it > 100) return 1;
                 }
             
                 string[] aDigits = a.Split(".", StringSplitOptions.RemoveEmptyEntries);

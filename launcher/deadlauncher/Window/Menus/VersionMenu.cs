@@ -23,7 +23,7 @@ public class VersionMenu : Menu
         actionButtonPlaces.Clear();
         
         RenderWindow window = Application.Launcher.Window.RenderWindow;
-        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
+        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.Name(Application.Launcher.Model.SelectedVersionID);
         
         UITabBox uiTabs = new UITabBox(host,
             new KeyValuePair<AUIElement, string>(BuildOfficialTab(), "Official"),
@@ -42,30 +42,7 @@ public class VersionMenu : Menu
 
     private void VersionSelectButton(string id) => Application.Launcher.Model.SetVersion(id);
 
-    private string GetButtonNameByVersionID(string id)
-    {
-        //slice
-        var sliced = id.Split("_");
-        
-        //
-        string result = "";
-
-        for (var i = 0; i < sliced.Length; i++)
-        {
-            string s = sliced[i];
-            
-            if (i != 0)
-            {
-                result += " ";
-            }
-
-            s = s[0].ToString().ToUpper() + s.Substring(1);
-
-            result += s;
-        }
-
-        return result;
-    }
+    private string GetButtonNameByVersionID(string id) => Application.Launcher.Model.Name(id);
 
     private void BackButton()
     {

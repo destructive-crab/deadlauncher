@@ -30,7 +30,7 @@ public static class Application
         VersionInfo jsonConstructor     = new("a", "a", "a", "a", "a");
 
         LauncherUpdater.InstallerContext context = await StartUpdater();
-        
+
         if(WasExecutableChanged(context))
         {
             await StartLauncher();

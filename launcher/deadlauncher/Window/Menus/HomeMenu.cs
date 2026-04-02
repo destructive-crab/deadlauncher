@@ -1,4 +1,3 @@
-using deadlauncher.Other.UI;
 using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
@@ -43,7 +42,7 @@ public sealed class HomeMenu : Menu
             firstButtonPlace.Child = new UIButton(host, "install! install!", new Vector2f(320, 50), InstallSelectedVersion);
         }
         
-        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.SelectedVersionID;
+        Application.Launcher.Model.RunningLineText = Application.Launcher.Model.Name(Application.Launcher.Model.SelectedVersionID);
         return new StackBox(host, [anchor]);
     }
 
